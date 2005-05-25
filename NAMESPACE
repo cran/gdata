@@ -1,0 +1,32 @@
+
+export(
+       Args,
+       aggregate.table,
+       combine,
+       ConvertMedUnits,
+       drop.levels,
+       elem,
+       env,
+       frameApply,
+       interleave,
+       is.what,
+       keep,
+       ll,
+       matchcols,
+       nobs,
+       read.xls,
+       rename.vars,
+       remove.vars,
+       reorder.factor,
+       trim,
+       unmatrix
+)
+
+importFrom(stats, reorder, na.omit)
+importFrom(gtools, odd, invalid, mixedsort)
+
+S3method(nobs,data.frame)
+S3method(nobs,default)
+S3method(nobs,lm)
+S3method(reorder,factor)
+
