@@ -1,4 +1,4 @@
-# $Id: interleave.R,v 1.5 2004/09/03 17:27:44 warneg Exp $
+# $Id: interleave.R,v 1.6 2005/06/09 14:20:24 nj7w Exp $
 
 interleave <- function(..., append.source=TRUE, sep=": ")
   {

@@ -1,4 +1,4 @@
-% $Id: drop.levels.Rd,v 1.1 2005/04/02 04:19:18 warnes Exp $
+% $Id: drop.levels.Rd,v 1.2 2005/06/09 14:20:25 nj7w Exp $
 %
 \name{drop.levels}
 \alias{drop.levels}

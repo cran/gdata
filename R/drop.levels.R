@@ -1,13 +1,10 @@
 drop.levels <- function(x, reorder = TRUE, ...) {
-  sapply(x, function(xi)
-              {
-                if(is.factor(xi))
-                  {
-                    xi <- factor(xi)
-                    if(reorder)
-                      xi <- reorder.factor(xi, ...)
-                  }
-                xi
-              }
-         )
+ as.data.frame(lapply(x, function(xi) {
+    if(is.factor(xi)) {
+      xi <- factor(xi)
+      if(reorder)
+        xi <- reorder(xi, ...)
+    }
+    xi
+  }))
 }

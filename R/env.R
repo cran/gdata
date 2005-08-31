@@ -1,4 +1,4 @@
-# $Id: env.R,v 1.8 2005/03/22 02:51:56 warnes Exp $
+# $Id: env.R,v 1.9 2005/06/09 14:20:24 nj7w Exp $
 
 env <- function(unit=c("KB","MB","bytes"), digits=0)
 {

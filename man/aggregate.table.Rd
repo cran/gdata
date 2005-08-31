@@ -1,6 +1,12 @@
-% $Id: aggregate.table.Rd,v 1.5 2003/11/17 22:09:00 warnes Exp $
+% $Id: aggregate.table.Rd,v 1.6 2005/06/09 14:20:25 nj7w Exp $
 %
 % $Log: aggregate.table.Rd,v $
+% Revision 1.6  2005/06/09 14:20:25  nj7w
+% Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
+%
+% Revision 1.1.1.1  2005/05/25 22:07:33  nj7w
+% Initial entry for individual package gdata
+%
 % Revision 1.5  2003/11/17 22:09:00  warnes
 % Fix syntax error.
 %

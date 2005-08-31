@@ -1,0 +1,10 @@
+CHANGES IN GDATA 2.0.8
+-----------------------
+
+ - Added DESCRIPTION and removed DESCRIPTION.in
+
+ - Updated ll.Rd documentation
+
+ - Fixed bug in Args.R, is.what.R, ll.R 
+
+

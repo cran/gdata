@@ -23,7 +23,7 @@ export(
 )
 
 importFrom(stats, reorder, na.omit)
-importFrom(gtools, odd, invalid, mixedsort)
+## importFrom(gtools, mixedsort)
 
 S3method(nobs,data.frame)
 S3method(nobs,default)

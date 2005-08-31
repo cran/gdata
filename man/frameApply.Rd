@@ -61,7 +61,7 @@ nrow(xi)), subset = TRUE, simplify = TRUE, byvar.sep = "\\$\\@\\$", ...)
   hardly an efficient function.}
 
 \examples{
-
+library(gtools)
 data(ELISA)
 
 # Default is slightly unintuitive, but commonly useful: 

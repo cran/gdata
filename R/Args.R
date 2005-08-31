@@ -1,8 +1,6 @@
-# $Id: Args.R,v 1.3 2005/03/22 02:51:55 warnes Exp $
-
 Args <- function(name, sort.args=FALSE)
 {
-  a <- formals(get(as.character(substitute(name))))
+  a <- formals(get(as.character(substitute(name)), pos=1))
   if(is.null(a))
     return(NULL)
   arg.labels <- names(a)

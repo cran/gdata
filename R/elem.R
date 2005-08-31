@@ -1,4 +1,4 @@
-# $Id: elem.R,v 1.6 2005/02/25 23:22:36 warnes Exp $
+# $Id: elem.R,v 1.7 2005/06/09 14:20:24 nj7w Exp $
 
 elem <- function(object=1, unit=c("KB","MB","bytes"), digits=0,
                  dimensions=FALSE)

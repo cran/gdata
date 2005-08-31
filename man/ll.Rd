@@ -10,7 +10,7 @@
 }
 \usage{
 ll(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
-               function.dim="", ...)
+   function.dim="", sort.elements=FALSE, ...)
 }
 \arguments{
   \item{pos}{environment position number, environment name, data frame,
@@ -22,6 +22,7 @@ ll(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
   \item{dimensions}{whether object dimensions should be returned.}
   \item{function.dim}{value to report as the dimension of function
     objects.}
+  \item{sort.elements}{whether elements should be sorted by name.}
   \item{...}{passed to \code{ls()}.}
 }
 \details{
@@ -60,6 +61,7 @@ data(infert)
 ll(infert)
 model <- glm(case~spontaneous+induced, family=binomial, data=infert)
 ll(model, dim=TRUE)
+ll(model, sort=TRUE)
 ll(model$family)
 }
 % Basics

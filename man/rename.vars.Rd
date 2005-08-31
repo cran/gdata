@@ -1,6 +1,12 @@
-% $Id: rename.vars.Rd,v 1.7 2004/04/01 20:23:15 warnes Exp $
+% $Id: rename.vars.Rd,v 1.8 2005/06/09 14:20:25 nj7w Exp $
 %
 % $Log: rename.vars.Rd,v $
+% Revision 1.8  2005/06/09 14:20:25  nj7w
+% Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
+%
+% Revision 1.1.1.1  2005/05/25 22:07:33  nj7w
+% Initial entry for individual package gdata
+%
 % Revision 1.7  2004/04/01 20:23:15  warnes
 % Add function remove.vars().
 %

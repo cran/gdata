@@ -1,6 +1,12 @@
-% $Id: combine.Rd,v 1.2 2002/09/23 13:59:30 warnes Exp $
+% $Id: combine.Rd,v 1.3 2005/06/09 14:20:25 nj7w Exp $
 %
 % $Log: combine.Rd,v $
+% Revision 1.3  2005/06/09 14:20:25  nj7w
+% Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
+%
+% Revision 1.1.1.1  2005/05/25 22:07:33  nj7w
+% Initial entry for individual package gdata
+%
 % Revision 1.2  2002/09/23 13:59:30  warnes
 % - Modified all files to include CVS Id and Log tags.
 %

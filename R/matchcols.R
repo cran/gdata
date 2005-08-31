@@ -1,4 +1,4 @@
-# $Id: matchcols.R,v 1.3 2004/09/03 17:27:44 warneg Exp $
+# $Id: matchcols.R,v 1.4 2005/06/09 14:20:24 nj7w Exp $
 # select the columns which match/don't match a set of include/omit patterns.
 
 matchcols <- function(object, with, without, method=c("and","or"), ...)

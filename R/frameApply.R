@@ -1,4 +1,4 @@
-# $Id: frameApply.R,v 1.1 2005/04/02 04:14:37 warnes Exp $
+# $Id: frameApply.R,v 1.2 2005/06/09 14:20:24 nj7w Exp $
 #
 frameApply <- function(x, by = NULL, on = by[1], fun = function(xi) c(Count = nrow(xi)) , subset = TRUE, simplify = TRUE, byvar.sep = "\\$\\@\\$", ...) {
   subset <- eval(substitute(subset), x, parent.frame())                               

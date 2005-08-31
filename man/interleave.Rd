@@ -1,6 +1,12 @@
-% $Id: interleave.Rd,v 1.4 2003/06/07 17:58:37 warnes Exp $
+% $Id: interleave.Rd,v 1.5 2005/06/09 14:20:25 nj7w Exp $
 %
 % $Log: interleave.Rd,v $
+% Revision 1.5  2005/06/09 14:20:25  nj7w
+% Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
+%
+% Revision 1.1.1.1  2005/05/25 22:07:33  nj7w
+% Initial entry for individual package gdata
+%
 % Revision 1.4  2003/06/07 17:58:37  warnes
 %
 % - Fixed error in examples.  Had sqrt(var(x)/(n-1)) for the standard

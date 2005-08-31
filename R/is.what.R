@@ -1,5 +1,3 @@
-# $Id: is.what.R,v 1.5 2004/09/03 17:27:44 warneg Exp $
-
 is.what <- function(object, verbose=FALSE)
 {
   do.test <- function(test, object)
@@ -8,25 +6,24 @@ is.what <- function(object, verbose=FALSE)
     return(result)
   }
 
-  # get all names starting with "is."
-  is.names <- unlist(sapply( search(),
-                            function(name) ls(name, pattern="^is\\.")))
+  ## Get all names starting with "is."
+  is.names <- unlist(sapply(search(), function(name) ls(name,pattern="^is\\.")))
 
-  # narrow to functions
-  is.functions <- is.names[sapply( is.names, function(x) is.function(get(x)) )]
+  ## Narrow to functions
+  is.functions <- is.names[sapply(is.names, function(x) is.function(get(x)))]
 
   not.using <- c("is.element", "is.empty.model", "is.loaded", "is.mts",
                  "is.na.data.frame", "is.na.POSIXlt", "is.na<-",
                  "is.na<-.default", "is.na<-.factor", "is.pairlist", "is.qr",
-                 "is.R", "is.single", "is.unsorted",
-                 "is.what")
+                 "is.R", "is.single", "is.unsorted", "is.what")
   tests <- is.functions[!(is.functions %in% not.using)]
   names(tests) <- NULL
+  old.warn <- options(warn=-1)
   results <- sapply(tests, do.test, object=object)
+  options(old.warn)
   names(results) <- tests
 
-
-  if(verbose == FALSE)
+  if(!verbose)
   {
     output <- tests[results==TRUE & !is.na(results)]
   }

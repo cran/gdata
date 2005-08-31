@@ -1,7 +1,5 @@
-# $Id: ll.R,v 1.8 2005/03/22 02:51:56 warnes Exp $
-
 ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
-               function.dim="", ...)
+               function.dim="", sort.elements=FALSE, ...)
 {
   get.object.classname <- function(object.name, pos)
   {
@@ -38,6 +36,8 @@ ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
     pos <- match(pos, search())
   if(is.list(pos))  # pos is a list-like object
   {
+    if(length(pos) == 0)
+      return(data.frame())
     attach(pos, pos=2)
     original.rank <- rank(names(pos))
     was.list <- TRUE
@@ -78,7 +78,8 @@ ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
   if(was.list)
   {
     detach(pos=2)
-    object.frame <- object.frame[original.rank,]
+    if(!sort.elements)
+      object.frame <- object.frame[original.rank, ]
   }
 
   return(object.frame)
