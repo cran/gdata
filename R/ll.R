@@ -38,7 +38,7 @@ ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
   {
     if(length(pos) == 0)
       return(data.frame())
-    attach(pos, pos=2)
+    attach(pos, pos=2, warn.conflicts=FALSE)
     original.rank <- rank(names(pos))
     was.list <- TRUE
     pos <- 2

@@ -51,7 +51,7 @@ read.xls(xls, sheet=1, verbose=FALSE, ..., perl="perl")
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")
    }
 }
-\author{Jim Rogers \email{james\_a\_rogers@groton.pfizer.com}, modified
+\author{Jim Rogers \email{james.a.rogers@pfizer.com}, modified
   and extended by Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}.
 }
 \keyword{file}

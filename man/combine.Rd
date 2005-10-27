@@ -1,6 +1,9 @@
-% $Id: combine.Rd,v 1.3 2005/06/09 14:20:25 nj7w Exp $
+% $Id: combine.Rd,v 1.4 2005/12/01 16:41:14 nj7w Exp $
 %
 % $Log: combine.Rd,v $
+% Revision 1.4  2005/12/01 16:41:14  nj7w
+% Updated Greg's email address
+%
 % Revision 1.3  2005/06/09 14:20:25  nj7w
 % Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
 %
@@ -56,7 +59,7 @@ combine(..., names=NULL)
 %   ...
 % }
 %\references{ ~put references to the literature/web site here ~ }
-\author{Gregory R. Warnes \email{Gregory\_R\_Warnes@groton.pfizer.com}}
+\author{Gregory R. Warnes \email{Gregory.R.Warnes@pfizer.com}}
 %\note{ ~~further notes~~ }
 \seealso{ \code{\link{rbind}}, \code{\link{merge}}}
 

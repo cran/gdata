@@ -40,7 +40,7 @@ ll(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
 
 \author{Arni Magnusson \email{arnima@u.washington.edu}, with a
   contribution by Jim Rogers
-  \email{james\_a\_rogers@groton.pfizer.com}.}
+  \email{james.a.rogers@pfizer.com}}
 
 \seealso{
   \code{\link{ls}} displays names of objects in a given environment.

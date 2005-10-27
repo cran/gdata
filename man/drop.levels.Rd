@@ -1,4 +1,4 @@
-% $Id: drop.levels.Rd,v 1.2 2005/06/09 14:20:25 nj7w Exp $
+% $Id: drop.levels.Rd,v 1.3 2005/12/01 16:39:39 nj7w Exp $
 %
 \name{drop.levels}
 \alias{drop.levels}
@@ -16,5 +16,5 @@ drop.levels(x, reorder = TRUE, ...)
 }
 \value{a data frame
 }
-\author{Jim Rogers \email{james\_a\_rogers@groton.pfizer.com}}
+\author{Jim Rogers \email{james.a.rogers@pfizer.com}}
 \keyword{manip}

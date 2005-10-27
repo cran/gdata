@@ -1,4 +1,4 @@
-% $Id: reorder.Rd,v 1.13 2005/10/27 18:19:31 warnes Exp $
+% $Id: reorder.Rd,v 1.14 2005/12/01 16:41:14 nj7w Exp $
 
 
 \name{reorder.factor}
@@ -57,7 +57,7 @@
   A new factor with the levels ordered as specified.
 }
 
-\author{Gregory R. Warnes \email{Gregory\_R\_Warnes@groton.pfizer.com}}
+\author{Gregory R. Warnes \email{Gregory.R.Warnes@pfizer.com}}
 
 \seealso{ \code{\link{factor}}, \code{\link[stats]{reorder}} }
 

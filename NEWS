@@ -1,3 +1,30 @@
+CHANGES IN GDATA 2.1.2
+-----------------------
+
+ - Fixed bug in interleave.R - option to covert 1-column matrices to
+   vector (based on Andrew Burgess's suggestion)
+
+ - Updated Greg and Jim's email adresses
+
+ - ll.R: Suppressed warning message in attach() call.
+
+ - frameApply.Rd, reorder.Rd: Remove explicit loading of
+   gtools in examples, so that failure to import functions from
+   gtools gets properly caught by running the examples.
+
+ - upperTriangle.R, man/upperTriangle.Rd: Add functions for
+   extracting and modifying the upper and lower trianglular components of
+   matrices.
+
+ - is.what.R: Replaced the "not.using" vector with a more robust
+   try(get(test)) to find out whether a particular is.* function
+   returns a logical of length one.
+
+-  DESCRIPTION: Added Suggests field
+
+ -  Updated the example in frameApply
+
+
 CHANGES IN GDATA 2.0.8
 -----------------------
 

@@ -81,6 +81,6 @@ frameApply(ELISA, on = "Signal", by = "Concentration",
            na.rm = TRUE,
            subset = !is.na(Concentration))
 }
-\author{Jim Rogers \email{james\_a\_rogers@groton.pfizer.com}}
+\author{Jim Rogers \email{james.a.rogers@pfizer.com}}
 \keyword{manip}
 
