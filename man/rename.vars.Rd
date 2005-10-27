@@ -1,6 +1,9 @@
-% $Id: rename.vars.Rd,v 1.8 2005/06/09 14:20:25 nj7w Exp $
+% $Id: rename.vars.Rd,v 1.9 2005/09/12 15:42:45 nj7w Exp $
 %
 % $Log: rename.vars.Rd,v $
+% Revision 1.9  2005/09/12 15:42:45  nj7w
+% Updated Greg's email
+%
 % Revision 1.8  2005/06/09 14:20:25  nj7w
 % Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
 %
@@ -46,7 +49,7 @@ remove.vars(data, names="", info=TRUE)
 }
 \author{Code by Don MacQueen \email{macq\@llnl.gov}.
   Documentation by Gregory R. Warnes
-  \email{gregory\_r\_warnes\@groton.pfizer.com} }
+  \email{gregory.r.warnes@pfizer.com} }
 \seealso{ \code{\link{names}},
   \code{\link{colnames}},
   \code{\link{data.frame}}

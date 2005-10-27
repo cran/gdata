@@ -1,6 +1,9 @@
-% $Id: aggregate.table.Rd,v 1.6 2005/06/09 14:20:25 nj7w Exp $
+% $Id: aggregate.table.Rd,v 1.7 2005/09/12 15:42:45 nj7w Exp $
 %
 % $Log: aggregate.table.Rd,v $
+% Revision 1.7  2005/09/12 15:42:45  nj7w
+% Updated Greg's email
+%
 % Revision 1.6  2005/06/09 14:20:25  nj7w
 % Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
 %
@@ -46,7 +49,7 @@ aggregate.table(x, by1, by2, FUN=mean, ...)
   Returns a matrix with one element for each combination of \code{by1}
   and \code{by2}.
 }
-\author{ Gregory R. Warnes \email{gregory\_r\_warnes\@groton.pfizer.com}}
+\author{ Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}}
 
 \seealso{ \code{\link{aggregate}}, \code{\link{tapply}},
           \code{\link{interleave}} }

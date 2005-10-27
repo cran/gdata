@@ -1,6 +1,9 @@
-% $Id: interleave.Rd,v 1.5 2005/06/09 14:20:25 nj7w Exp $
+% $Id: interleave.Rd,v 1.6 2005/09/12 15:42:45 nj7w Exp $
 %
 % $Log: interleave.Rd,v $
+% Revision 1.6  2005/09/12 15:42:45  nj7w
+% Updated Greg's email
+%
 % Revision 1.5  2005/06/09 14:20:25  nj7w
 % Updating the version number, and various help files to synchronize splitting of gregmisc bundle in 4 individual components.
 %
@@ -52,7 +55,7 @@ interleave(..., append.source=TRUE, sep=": ")
 \value{
   Matrix containing the interleaved rows of the function arguments.
   }
-\author{ Gregory R. Warnes \email{gregory\_r\_warnes\@groton.pfizer.com}
+\author{ Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}
   }
 \seealso{ \code{\link{cbind}}, \code{\link{rbind}}, \code{\link{combine}} }
 

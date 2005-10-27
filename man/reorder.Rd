@@ -1,4 +1,4 @@
-% $Id: reorder.Rd,v 1.11 2005/06/09 14:20:26 nj7w Exp $
+% $Id: reorder.Rd,v 1.13 2005/10/27 18:19:31 warnes Exp $
 
 
 \name{reorder.factor}
@@ -68,7 +68,6 @@
    summary(trt)
    # Note that the levels are not in a meaningful order.
 
-   library(gtools)
    # Change the order to something useful
    # default "mixedsort" ordering
    trt2 <- reorder(trt)

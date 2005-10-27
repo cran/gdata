@@ -13,7 +13,7 @@ trim(s)
 \value{
   Elements of \code{s} with all leading and traling spaces removed.
 }
-\author{ Gregory R. Warnes \email{gregory\_r\_warnes@groton.pfizer.com} }
+\author{ Gregory R. Warnes \email{gregory.r.warnes@pfizer.com} }
 \seealso{ \code{\link[base]{sub}}, \code{\link[base]{gsub}} }
 \examples{
 s <- "    this is an example string    "

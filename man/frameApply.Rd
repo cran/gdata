@@ -61,8 +61,7 @@ nrow(xi)), subset = TRUE, simplify = TRUE, byvar.sep = "\\$\\@\\$", ...)
   hardly an efficient function.}
 
 \examples{
-library(gtools)
-data(ELISA)
+data(ELISA, package="gtools")
 
 # Default is slightly unintuitive, but commonly useful: 
 frameApply(ELISA, by = c("PlateDay", "Read"))

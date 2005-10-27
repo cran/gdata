@@ -12,6 +12,8 @@ export(
        is.what,
        keep,
        ll,
+       lowerTriangle,
+       "lowerTriangle<-",       
        matchcols,
        nobs,
        read.xls,
@@ -19,11 +21,13 @@ export(
        remove.vars,
        reorder.factor,
        trim,
-       unmatrix
+       unmatrix,
+       upperTriangle,
+       "upperTriangle<-"
 )
 
 importFrom(stats, reorder, na.omit)
-## importFrom(gtools, mixedsort)
+importFrom(gtools, mixedsort)
 
 S3method(nobs,data.frame)
 S3method(nobs,default)
