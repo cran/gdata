@@ -19,7 +19,7 @@ unmatrix(x, byrow=FALSE)
   matrix. If the the row or column names are missing, ('r1', 'r2', ..,) or
   ('c1', 'c2', ..) will be used as appropriate.
 }
-\author{Gregory R. Warnes \email{gregory.r.warnes@pfizer.com} }
+\author{Gregory R. Warnes \email{warnes@bst.rochester.edu} }
 \seealso{ \code{\link[base]{as.vector}} }
 \examples{
 # simple, useless example

@@ -52,6 +52,6 @@ read.xls(xls, sheet=1, verbose=FALSE, ..., perl="perl")
    }
 }
 \author{Jim Rogers \email{james.a.rogers@pfizer.com}, modified
-  and extended by Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}.
+  and extended by Gregory R. Warnes \email{warnes@bst.rochester.edu}.
 }
 \keyword{file}

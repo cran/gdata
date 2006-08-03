@@ -1,4 +1,4 @@
-# $Id: unmatrix.R,v 1.3 2005/06/09 14:20:24 nj7w Exp $
+# $Id: unmatrix.R 625 2005-06-09 14:20:30Z nj7w $
 
 unmatrix <- function(x, byrow=FALSE)
   {

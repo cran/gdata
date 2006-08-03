@@ -30,7 +30,7 @@ lowerTriangle(x, diag=FALSE) <- value
   replace the upper or lower traingular area of the
   matrix with the provided value(s).
   }
-\author{Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}}
+\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}}
 \seealso{ \code{\link[base]{diag}} }
 \examples{
   x <- matrix( 1:25, nrow=5, ncol=5)

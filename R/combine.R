@@ -1,4 +1,4 @@
-# $Id: combine.R,v 1.4 2005/06/09 14:20:24 nj7w Exp $
+# $Id: combine.R 625 2005-06-09 14:20:30Z nj7w $
 
 combine  <-  function(..., names=NULL)
   {

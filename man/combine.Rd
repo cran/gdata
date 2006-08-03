@@ -1,6 +1,6 @@
-% $Id: combine.Rd,v 1.4 2005/12/01 16:41:14 nj7w Exp $
+% $Id: combine.Rd 977 2006-08-02 22:21:49Z warnes $
 %
-% $Log: combine.Rd,v $
+% $Log$
 % Revision 1.4  2005/12/01 16:41:14  nj7w
 % Updated Greg's email address
 %
@@ -59,7 +59,7 @@ combine(..., names=NULL)
 %   ...
 % }
 %\references{ ~put references to the literature/web site here ~ }
-\author{Gregory R. Warnes \email{Gregory.R.Warnes@pfizer.com}}
+\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}}
 %\note{ ~~further notes~~ }
 \seealso{ \code{\link{rbind}}, \code{\link{merge}}}
 

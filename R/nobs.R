@@ -1,4 +1,4 @@
-# $Id: nobs.R,v 1.6 2005/06/09 14:20:24 nj7w Exp $
+# $Id: nobs.R 625 2005-06-09 14:20:30Z nj7w $
 
 nobs <- function(x,...)
   UseMethod("nobs",x)

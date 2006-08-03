@@ -1,4 +1,4 @@
-# $Id: read.xls.R,v 1.8 2005/06/09 14:20:24 nj7w Exp $
+# $Id: read.xls.R 625 2005-06-09 14:20:30Z nj7w $
 
 read.xls <- function(xls, sheet = 1, verbose=FALSE, ..., perl="perl")
   {

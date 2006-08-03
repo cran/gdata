@@ -1,4 +1,4 @@
-# $Id: rename.vars.R,v 1.7 2005/06/09 14:20:24 nj7w Exp $
+# $Id: rename.vars.R 625 2005-06-09 14:20:30Z nj7w $
 
 rename.vars <- function(data,from='',to='',info=TRUE) {
 

@@ -1,4 +1,4 @@
-# $Id: keep.R,v 1.5 2005/06/09 14:20:24 nj7w Exp $
+# $Id: keep.R 625 2005-06-09 14:20:30Z nj7w $
 
 keep <- function(..., list=character(0), sure=FALSE)
 {

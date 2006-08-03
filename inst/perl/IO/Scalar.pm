@@ -158,7 +158,7 @@ use overload '""'   => sub { ${*{$_[0]}->{SR}} };
 use overload 'bool' => sub { 1 };      ### have to do this, so object is true!
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = substr q$Revision: 1.2 $, 10;
+$VERSION = substr q$Revision: 625 $, 10;
 
 ### Inheritance:
 @ISA = qw(IO::Handle);
@@ -718,7 +718,7 @@ use the OO version; e.g.:
 
 =head1 VERSION
 
-$Id: Scalar.pm,v 1.2 2005/06/09 14:20:24 nj7w Exp $
+$Id: Scalar.pm 625 2005-06-09 14:20:30Z nj7w $
 
 
 =head1 AUTHORS

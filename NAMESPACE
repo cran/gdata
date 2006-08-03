@@ -3,6 +3,7 @@ export(
        Args,
        aggregate.table,
        combine,
+       combineLevels,
        ConvertMedUnits,
        drop.levels,
        elem,
@@ -13,13 +14,15 @@ export(
        keep,
        ll,
        lowerTriangle,
-       "lowerTriangle<-",       
+       "lowerTriangle<-",
+       mapFactor,
        matchcols,
        nobs,
        read.xls,
        rename.vars,
        remove.vars,
        reorder.factor,
+       resample,
        trim,
        unmatrix,
        upperTriangle,
@@ -32,5 +35,14 @@ importFrom(gtools, mixedsort)
 S3method(nobs,data.frame)
 S3method(nobs,default)
 S3method(nobs,lm)
+S3method(trim, character)
+S3method(trim, default)
+S3method(trim, factor)
+S3method(trim, list)
+S3method(trim, data.frame)
 S3method(reorder,factor)
 
+S3method(drop.levels, default)
+S3method(drop.levels, factor)
+S3method(drop.levels, list)
+S3method(drop.levels, data.frame)

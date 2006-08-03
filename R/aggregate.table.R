@@ -1,4 +1,4 @@
-# $Id: aggregate.table.R,v 1.5 2005/06/09 14:20:24 nj7w Exp $
+# $Id: aggregate.table.R 625 2005-06-09 14:20:30Z nj7w $
 
 aggregate.table <- function(x, by1, by2, FUN=mean, ... )
   {

@@ -1,4 +1,4 @@
-# $Id: reorder.R,v 1.7 2005/06/09 14:20:24 nj7w Exp $
+# $Id: reorder.R 625 2005-06-09 14:20:30Z nj7w $
 
 # Reorder the levels of a factor.
 

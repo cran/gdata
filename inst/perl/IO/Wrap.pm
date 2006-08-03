@@ -13,7 +13,7 @@ use FileHandle;
 use Carp;
 
 # The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = substr q$Revision: 1.2 $, 10;
+$VERSION = substr q$Revision: 625 $, 10;
 
 
 #------------------------------
@@ -204,7 +204,7 @@ or as C<"Foo::FOO">.  However, C<"STDIN"> and friends will work just fine.
 
 =head1 VERSION
 
-$Id: Wrap.pm,v 1.2 2005/06/09 14:20:25 nj7w Exp $
+$Id: Wrap.pm 625 2005-06-09 14:20:30Z nj7w $
     
 
 =head1 AUTHOR

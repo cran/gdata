@@ -20,7 +20,7 @@ matchcols(object, with, without, method=c("and","or"), ...)
   none of the patterns specified in \code{without}.
 }
 
-\author{Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}}
+\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}}
 \seealso{ \code{\link[base]{grep}} }
 \examples{
 

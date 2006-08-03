@@ -1,6 +1,6 @@
-% $Id: interleave.Rd,v 1.8 2005/12/12 22:02:48 nj7w Exp $
+% $Id: interleave.Rd 977 2006-08-02 22:21:49Z warnes $
 %
-% $Log: interleave.Rd,v $
+% $Log$
 % Revision 1.8  2005/12/12 22:02:48  nj7w
 % Updated version number for CRAN release
 %
@@ -66,7 +66,7 @@ interleave(..., append.source=TRUE, sep=": ", drop=FALSE)
 \value{
   Matrix containing the interleaved rows of the function arguments.
   }
-\author{ Gregory R. Warnes \email{gregory.r.warnes@pfizer.com}
+\author{ Gregory R. Warnes \email{warnes@bst.rochester.edu}
   }
 \seealso{ \code{\link{cbind}}, \code{\link{rbind}}, \code{\link{combine}} }
 
