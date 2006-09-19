@@ -1,29 +1,30 @@
-# $Id: trim.R 973 2006-08-02 19:04:55Z warnes $
+# $Id: trim.R 983 2006-09-18 20:24:18Z warnes $
 
-trim <- function(s)
+trim <- function(s, recode.factor=TRUE)
   UseMethod("trim", s)
 
-trim.default <- function(s)
-  return(s)
+trim.default <- function(s, recode.factor=TRUE)
+  s
 
-trim.character <- function(s)
+trim.character <- function(s, recode.factor=TRUE)
 {
   s <- sub(pattern="^ +", replacement="", x=s)
   s <- sub(pattern=" +$", replacement="", x=s)
-  return(s)
+  s
 }
 
-trim.factor <- function(s)
+trim.factor <- function(s, recode.factor=TRUE)
 {
   levels(s) <- trim(levels(s))
-  return(s)
+  if(recode.factor) s <- reorder.factor(s, sort=sort)
+  s
 }
 
-trim.list <- function(s)
-  return(lapply(s, trim))
+trim.list <- function(s, recode.factor=TRUE)
+  lapply(s, trim, recode.factor=recode.factor)
 
-trim.data.frame <- function(s)
+trim.data.frame <- function(s, recode.factor=TRUE)
 {
-  s[] <- trim.list(s)
-  return(s)
+  s[] <- trim.list(s, recode.factor=recode.factor)
+  s
 }

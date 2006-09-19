@@ -1,3 +1,25 @@
+CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
+---------------------------------------
+
+- Added mapLevels(), which produces a map with information on levels and/or
+  internal integer codes.  Contributed by Gregor Gorjanc.
+
+- Extended dropLevels() to work on the factors contained in a data
+  frame, as well as individual factors.
+
+- Add unknown(), which changes given unknown value to NA and vice
+  versa. Contributed by Gregor Gorjanc.
+
+- Extended trim() to handle a variety of data types data.frames,
+  lists, factors, etc.  Code changes contributed by Gregor Gorjanc.
+ 
+- Added resample() command that acts like sample() except that it
+  _always_ samples from the arguments provided, even if only a single
+  argument is present.  This differs from sample() which behaves
+  differently in this case.
+
+- Updated my email address.
+
 CHANGES IN GDATA 2.1.2
 -----------------------
 

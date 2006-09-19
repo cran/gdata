@@ -1,0 +1,43 @@
+Index: gdata/R/trim.R
+===================================================================
+--- gdata/R/trim.R	(revision 981)
++++ gdata/R/trim.R	(working copy)
+@@ -1,29 +1,30 @@
+ # $Id$
+ 
+-trim <- function(s)
++trim <- function(s, sort=TRUE)
+   UseMethod("trim", s)
+ 
+-trim.default <- function(s)
++trim.default <- function(s, sort=TRUE)
+   s
+ 
+-trim.character <- function(s)
++trim.character <- function(s, sort=TRUE)
+ {
+   s <- sub(pattern="^ +", replacement="", x=s)
+   s <- sub(pattern=" +$", replacement="", x=s)
+   s
+ }
+ 
+-trim.factor <- function(s)
++trim.factor <- function(s, sort=TRUE)
+ {
+   levels(s) <- trim(levels(s))
++  if(sort) s <- factor(s)
+   s
+ }
+ 
+-trim.list <- function(s)
+-  lapply(s, trim)
++trim.list <- function(s, sort=TRUE)
++  lapply(s, trim, sort=sort)
+ 
+-trim.data.frame <- function(s)
++trim.data.frame <- function(s, sort=TRUE)
+ {
+-  s[] <- trim.list(s)
++  s[] <- trim.list(s, sort=sort)
+   s
+ }

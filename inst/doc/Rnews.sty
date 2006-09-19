@@ -20,13 +20,13 @@
 %% original source files, as listed above, are part of the
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
-\def\fileversion{v0.3.1}
+\def\fileversion{v0.3.6}
 \def\filename{Rnews}
-\def\filedate{2001/09/04}
-\def\docdate {2001/09/04}
+\def\filedate{2002/06/02}
+\def\docdate {2001/10/31}
 %%
 %% Package `Rnews' to use with LaTeX2e
-%% Copyright (C) 2001 by the R Core Development Team
+%% Copyright (C) 2001--2002 by the R Core Development Team
 %% Please report errors to KH or FL
 %%
 %% -*- LaTeX -*-
@@ -53,31 +53,37 @@
 \newenvironment{article}{%
   \author{}\title{}\subtitle{}}{\end{multicols}}
 \renewcommand{\maketitle}{
-  \chapter{\Rnews@title}
-  \refstepcounter{chapter}
-  \begin{multicols}{2}
-    \ifx\empty\Rnews@subtitle\else\par\addvspace{\baselineskip}
-    \noindent\textbf{\Rnews@subtitle}\fi
-    \ifx\empty\Rnews@author\else\par\addvspace{\baselineskip}
-    \noindent\textit{\Rnews@author}\fi}
-\renewcommand\chapter{\secdef\@chapter\@schapter}
+  \begin{multicols}{2}[\chapter{\Rnews@title}\refstepcounter{chapter}][3cm]
+    \ifx\empty\Rnews@subtitle\else\noindent\textbf{\Rnews@subtitle}
+    \par\nobreak\addvspace{\baselineskip}\fi
+    \ifx\empty\Rnews@author\else\noindent\textit{\Rnews@author}
+    \par\nobreak\addvspace{\baselineskip}\fi
+    \@afterindentfalse\@nobreaktrue\@afterheading}
+\renewcommand\chapter{\secdef\Rnews@chapter\@schapter}
+\providecommand{\nohyphens}{%
+  \hyphenpenalty=10000\exhyphenpenalty=10000\relax}
+\newcommand{\Rnews@chapter}{%
+  \renewcommand{\@seccntformat}[1]{}%
+  \@startsection{chapter}{0}{0mm}{%
+    -2\baselineskip \@plus -\baselineskip \@minus -.2ex}{\p@}{%
+    \normalfont\Huge\bfseries\raggedright}}
 \renewcommand*\l@chapter{\@dottedtocline{0}{0pt}{1em}}
-\def\@makechapterhead#1{%
-  \addvspace{2\baselineskip}%
-  {\parindent \z@ \raggedright \normalfont
-    \ifnum \c@secnumdepth >\m@ne
-        \huge\bfseries \@chapapp\space \thechapter
-        \par\nobreak
-        \vskip 20\p@
-    \fi
-    \interlinepenalty\@M
-    \Huge \bfseries #1\par\nobreak}}
 \def\@schapter#1{\section*#1}
 \renewenvironment{figure}[1][]{%
   \def\@captype{figure}
-  \begin{minipage}{0.9\columnwidth}}{
+  \noindent
+  \begin{minipage}{\columnwidth}}{%
   \end{minipage}\par\addvspace{\baselineskip}}
 \renewcommand{\theequation}{\@arabic\c@equation}
+\def\equation{%
+  \let\refstepcounter\H@refstepcounter
+  \H@equation
+  \def\newname{\arabic{chapter}.\theequation}%
+  \let\theHequation\newname%
+  \hyper@makecurrent{equation}%
+  \Hy@raisedlink{\hyper@anchorstart{\@currentHref}}%
+  \let\refstepcounter\new@refstepcounter}%
+\def\endequation{\Hy@raisedlink{\hyper@anchorend}\H@endequation}
 \renewcommand{\thefigure}{\@arabic\c@figure}
 \renewcommand{\thetable}{\@arabic\c@table}
 \renewcommand{\contentsname}{Contents of this issue:}
@@ -145,12 +151,22 @@
       \hspace*{-\Rnews@len}\fbox{\usebox{\Rnews@box}}
     \end{center}
   \end{figure*}}
-\newenvironment{boxedverbatim}{%
-  \begin{lrbox}{\Rnews@box}
-    \begin{smallverbatim}}{%
-    \end{smallverbatim}
-  \end{lrbox}
-  \hspace*{-\fboxsep}\fbox{\usebox{\Rnews@box}}}
+\RequirePackage{verbatim}
+\def\boxedverbatim{%
+  \def\verbatim@processline{%
+    {\setbox0=\hbox{\the\verbatim@line}%
+    \hsize=\wd0 \the\verbatim@line\par}}%
+  \@minipagetrue
+  \@tempswatrue
+  \setbox0=\vbox
+  \bgroup\small\verbatim
+}
+\def\endboxedverbatim{%
+  \endverbatim
+  \unskip\setbox0=\lastbox
+  \egroup
+  \fbox{\box0}
+}
 \pagestyle{fancy}
 } % \ifthenelse{\boolean{Rnews@driver}}
 \newcommand\code{\bgroup\@codex}
@@ -172,6 +188,7 @@
 \newenvironment{example}{\begin{alltt}}{\end{alltt}}
 \newenvironment{smallexample}{\begin{alltt}\small}{\end{alltt}}
 \newenvironment{display}{\list{}{}\item\relax}{\endlist}
+\newenvironment{smallverbatim}{\small\verbatim}{\endverbatim}
 \providecommand{\operatorname}[1]{%
   \mathop{\operator@font#1}\nolimits}
 \renewcommand{\P}{%

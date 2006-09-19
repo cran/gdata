@@ -1,0 +1,23 @@
+Index: gdata/tests/doRUnit.R
+===================================================================
+--- gdata/tests/doRUnit.R	(revision 981)
++++ gdata/tests/doRUnit.R	(working copy)
+@@ -1,8 +1,8 @@
+-## doRUnit.R
++### doRUnit.R
+ ###------------------------------------------------------------------------
+-## What: Run RUnit tests
+-## $Id$
+-## Time-stamp: <2006-08-09 23:27:21 ggorjan>
++### What: Run RUnit tests
++### $Id$
++### Time-stamp: <2006-09-18 13:14:34 ggorjan>
+ ###------------------------------------------------------------------------
+ 
+ if(require("RUnit", quietly=TRUE)) {
+@@ -46,4 +46,4 @@
+ }
+ 
+ ###------------------------------------------------------------------------
+-## doRUnit.R ends here
++### doRUnit.R ends here
