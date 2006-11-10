@@ -1,6 +1,6 @@
 
 drop.levels  <- function(x, reorder=TRUE, ...)
-  UseMethod("drop.levels")
+  UseMethod("drop.levels", x=x)
 
 drop.levels.default <- function(x, reorder=TRUE, ...)
   x

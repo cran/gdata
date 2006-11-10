@@ -1,8 +1,8 @@
 ### mapLevels.R
 ###------------------------------------------------------------------------
 ### What: Mapping levels
-### $Id: mapLevels.R,v 1.1 2006/03/29 13:47:15 ggorjan Exp ggorjan $
-### Time-stamp: <2006-09-10 03:54:56 ggorjan>
+### $Id: mapLevels.R 993 2006-10-30 17:10:08Z ggorjan $
+### Time-stamp: <2006-10-29 16:45:20 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ mapLevels
@@ -12,7 +12,7 @@
 mapLevels <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
                       combine=FALSE, ...)
 {
-  UseMethod("mapLevels")
+  UseMethod("mapLevels", x=x)
 }
 
 mapLevels.default <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
@@ -88,10 +88,10 @@ mapLevels.data.frame <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
 .unlistLevelsMap <- function(x, ind=FALSE)
 {
   y <- unlist(x, use.names=FALSE)
-  length <- sapply(x, FUN=length)
-  names(y) <- rep(names(x), times=length)
+  len <- sapply(x, FUN=length)
+  names(y) <- rep(names(x), times=len)
   if(ind) {
-    return(list(y, rep(1:length(x), times=length), length))
+    return(list(y, rep(1:length(x), times=len), len))
   } else {
     return(y)
   }
@@ -214,6 +214,7 @@ c.levelsMap <- function(..., sort=TRUE, recursive=FALSE)
 {
   x <- list(...)
   class(x) <- "listLevelsMap"
+  ## we use recursive=TRUE here because ... is a lists of lists
   c(x, sort=sort, recursive=TRUE)
 }
 
@@ -231,7 +232,7 @@ c.listLevelsMap <- function(..., sort=TRUE, recursive=FALSE)
     x <- unlist(x, recursive=FALSE)
     ## how to merge components with the same name?
     class(x) <- "levelsMap"
-    if(sort) x <- sort.levelsMap(x)
+    if(sort) x <- sort(x)
     x <- unique(x)
   }
   x
@@ -330,13 +331,7 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
                    dQuote("listLevelsMap"), dQuote("levelsMap")))
     }
   }
-  ## FIXME: mapply drops names
-  if(!is.null(names(x))) {
-    isNamed <- TRUE
-    namesX <- names(x)
-  }
   x <- mapply(FUN="mapLevels<-", x=x, value=value, SIMPLIFY=FALSE)
-  if(isNamed) names(x) <- namesX
   x
 }
 

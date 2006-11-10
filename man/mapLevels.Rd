@@ -2,7 +2,7 @@
 %--------------------------------------------------------------------------
 % What: Mapping levels
 % $Id: mapLevels.Rd,v 1.1 2006/03/29 13:47:10 ggorjan Exp ggorjan $
-% Time-stamp: <2006-08-31 02:43:29 ggorjan>
+% Time-stamp: <2006-11-01 00:15:57 ggorjan>
 %--------------------------------------------------------------------------
 
 \name{mapLevels}
@@ -144,7 +144,7 @@ indicated in \code{\link{levels}} examples. \bold{Integer
 applied to \dQuote{character} or \dQuote{factor}. Methods for
 \dQuote{list} and \dQuote{data.frame} can work only on mentioned atomic
 components/columns and can accept either \dQuote{levelsMap} or
-\dQuote{levelsMap}. Recycling occours, if length of \code{value} is not
+\dQuote{listLevelsMap}. Recycling occurs, if length of \code{value} is not
 the same as number of components/columns of a \dQuote{list/data.frame}.
 }
 

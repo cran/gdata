@@ -25,6 +25,7 @@ export(
        unmatrix,
        upperTriangle,
        "upperTriangle<-",
+       write.fwf,
 
        ## mapLevels stuff
        mapLevels,
@@ -32,7 +33,6 @@ export(
        as.listLevelsMap,
        is.levelsMap,
        is.listLevelsMap,
-       sort.levelsMap, ## FIXME remove in R 2.4
        "mapLevels<-",
 
        ## unknown stuff
@@ -41,29 +41,27 @@ export(
        NAToUnknown
 )
 
-importFrom(stats, reorder, na.omit)
+importFrom(stats, reorder)
 importFrom(gtools, mixedsort)
 
-S3method(nobs,data.frame)
-S3method(nobs,default)
-S3method(nobs,lm)
-S3method(trim, character)
-S3method(trim, default)
-S3method(trim, factor)
-S3method(trim, list)
-S3method(trim, data.frame)
-S3method(reorder,factor)
+S3method(reorder, factor)
 
+## drop.levels stuff
 S3method(drop.levels, default)
 S3method(drop.levels, factor)
 S3method(drop.levels, list)
 S3method(drop.levels, data.frame)
 
+## mapLevels stuff
 S3method(mapLevels, default)
 S3method(mapLevels, character)
 S3method(mapLevels, factor)
 S3method(mapLevels, list)
 S3method(mapLevels, data.frame)
+
+S3method("mapLevels<-", default)
+S3method("mapLevels<-", list)
+S3method("mapLevels<-", data.frame)
 
 S3method(print, levelsMap)
 S3method(print, listLevelsMap)
@@ -75,16 +73,19 @@ S3method(c, levelsMap)
 S3method(c, listLevelsMap)
 
 S3method(unique, levelsMap)
-## S3method(sort, levelsMap) ## FIXME uncomment in R 2.4
+S3method(sort, levelsMap)
 
-S3method("mapLevels<-", default)
-S3method("mapLevels<-", list)
-S3method("mapLevels<-", data.frame)
+## nobs stuff
+S3method(nobs, data.frame)
+S3method(nobs, default)
+S3method(nobs, lm)
 
+## unknown stuff
 S3method(isUnknown, default)
 S3method(isUnknown, POSIXlt)
 S3method(isUnknown, list)
 S3method(isUnknown, data.frame)
+S3method(isUnknown, matrix)
 
 S3method(unknownToNA, default)
 S3method(unknownToNA, factor)
@@ -95,3 +96,10 @@ S3method(NAToUnknown, default)
 S3method(NAToUnknown, factor)
 S3method(NAToUnknown, list)
 S3method(NAToUnknown, data.frame)
+
+## trim stuff
+S3method(trim, character)
+S3method(trim, default)
+S3method(trim, factor)
+S3method(trim, list)
+S3method(trim, data.frame)

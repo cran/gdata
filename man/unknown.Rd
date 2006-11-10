@@ -1,8 +1,8 @@
 % unknown.Rd
 %--------------------------------------------------------------------------
 % What: Change given unknown value to NA and vice versa man page
-% $Id$
-% Time-stamp: <2006-09-07 15:38:12 ggorjan>
+% $Id: unknown.Rd 1002 2006-11-02 15:08:32Z ggorjan $
+% Time-stamp: <2006-11-01 00:15:08 ggorjan>
 %--------------------------------------------------------------------------
 
 \name{unknownToNA}
@@ -12,6 +12,7 @@
 \alias{isUnknown.POSIXlt}
 \alias{isUnknown.list}
 \alias{isUnknown.data.frame}
+\alias{isUnknown.matrix}
 
 \alias{unknownToNA}
 \alias{unknownToNA.default}
@@ -39,8 +40,8 @@ values to \code{NA} and vice versa.
 \usage{
 
 isUnknown(x, unknown=NA, \ldots)
-unknownToNA(x, unknown, warning=FALSE)
-NAToUnknown(x, unknown, force=FALSE, call.=FALSE)
+unknownToNA(x, unknown, warning=FALSE, \ldots)
+NAToUnknown(x, unknown, force=FALSE, call.=FALSE, \ldots)
 
 }
 
@@ -49,7 +50,8 @@ NAToUnknown(x, unknown, force=FALSE, call.=FALSE)
   \item{unknown}{generic, value used instead of \code{NA}}
   \item{warning}{logical, issue warning if \code{x} already has \code{NA}}
   \item{force}{logical, force to apply already existing value in \code{x}}
-  \item{\ldots}{arguments pased to as.character POSIXlt method}
+  \item{\ldots}{arguments pased to other methods (as.character for POSIXlt
+    in case of isUnknown)}
   \item{call.}{logical, look in \code{\link{warning}}}
 }
 
@@ -58,25 +60,26 @@ NAToUnknown(x, unknown, force=FALSE, call.=FALSE)
 This functions were written to handle different variants of
 \dQuote{other \code{NA}} like representations that are usually used in
 various external data sources. \code{unknownToNA} can help to change
-unknown values to NA for work in \R, while \code{NAToUnknown} is meant
-for the opposite and would usually be used prior to export of data from
-\R. \code{isUnknown} is utility function for testing for unknown values.
+unknown values to \code{NA} for work in \R, while \code{NAToUnknown} is
+meant for the opposite and would usually be used prior to export of data
+from \R. \code{isUnknown} is utility function for testing for unknown
+values.
 
 All functions are generic and the following classes were tested to work
 with latest version: \dQuote{integer}, \dQuote{numeric},
 \dQuote{character}, \dQuote{factor}, \dQuote{Date}, \dQuote{POSIXct},
-\dQuote{POSIXlt}, \dQuote{list}, \dQuote{data.frame}. For others default
-method might work just fine.
+\dQuote{POSIXlt}, \dQuote{list}, \dQuote{data.frame} and
+\dQuote{matrix}. For others default method might work just fine.
 
 \code{unknownToNA} and \code{isUnknown} can cope with multiple values in
 \code{unknown}, but those should be given as a \dQuote{vector}. If not,
 coercing to vector is applied. Argument \code{unknown} can be feed also
 with \dQuote{list} in \dQuote{list} and \dQuote{data.frame} methods.
 
-If names \dQuote{list} or \dQuote{vector} is passed to argument
+If named \dQuote{list} or \dQuote{vector} is passed to argument
 \code{unknown} and \code{x} is also named, matching of names will occur.
 
-Recycling occours in all \dQuote{list} and \dQuote{data.frame} methods,
+Recycling occurs in all \dQuote{list} and \dQuote{data.frame} methods,
 when \code{unknown} argument is not of the same length as \code{x} and
 \code{unknown} is not named.
 

@@ -1,15 +1,15 @@
 ### unknown.R
 ###------------------------------------------------------------------------
 ### What: Change given unknown value to NA and vice versa
-### $Id$
-### Time-stamp: <2006-09-10 03:52:39 ggorjan>
+### $Id: unknown.R 993 2006-10-30 17:10:08Z ggorjan $
+### Time-stamp: <2006-10-30 18:06:17 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ isUnknown
 ###------------------------------------------------------------------------
 
 isUnknown <- function(x, unknown=NA, ...)
-  UseMethod("isUnknown")
+  UseMethod("isUnknown", x=x)
 
 isUnknown.default <- function(x, unknown=NA, ...)
 {
@@ -21,20 +21,19 @@ isUnknown.default <- function(x, unknown=NA, ...)
 
 isUnknown.POSIXlt <- function(x, unknown=NA, ...)
 {
+  ## FIXME: codetools say
+  ## isUnknown.POSIXlt: wrong number of arguments to as.character
   if(is.list(unknown) && !inherits(x=unknown, what="POSIXlt")) {
     unknown <- lapply(unknown, FUN=as.character, ...)
   } else {
-    unknown <- as.character(unknown, ...)
+    unknown <- as.character(x=unknown, ...)
   }
   isUnknown.default(x=as.character(x), unknown=unknown)
 }
 
 isUnknown.list <- function(x, unknown=NA, ...) {
   unknown <- gdata:::.unknownList(x=x, unknown=unknown)
-  ## FIXME - do I still need attributes here; R 2.4
-  attrX <- attributes(x)
   x <- mapply(FUN="isUnknown", x=x, unknown=unknown, ..., SIMPLIFY=FALSE)
-  attributes(x) <- attrX
   x
 }
 
@@ -44,14 +43,18 @@ isUnknown.data.frame <- function(x, unknown=NA, ...)
   x
 }
 
+isUnknown.matrix <- function(x, unknown=NA, ...)
+  apply(X=x, MARGIN=ifelse(ncol(x) > nrow(x), 1, 2), FUN=isUnknown,
+        unknown=unknown)
+
 ### }}}
 ### {{{ unknownToNA
 ###------------------------------------------------------------------------
 
-unknownToNA <- function(x, unknown, warning=FALSE)
+unknownToNA <- function(x, unknown, warning=FALSE, ...)
   UseMethod("unknownToNA")
 
-unknownToNA.default <- function(x, unknown, warning=FALSE)
+unknownToNA.default <- function(x, unknown, warning=FALSE, ...)
 {
   if(warning) {
     if(any(is.na(x)))
@@ -61,7 +64,7 @@ unknownToNA.default <- function(x, unknown, warning=FALSE)
   x
 }
 
-unknownToNA.factor <- function(x, unknown, warning=FALSE)
+unknownToNA.factor <- function(x, unknown, warning=FALSE, ...)
 {
   ## could put this func into default method, but I need unlisted unknown
   ## for levels handling
@@ -76,18 +79,15 @@ unknownToNA.factor <- function(x, unknown, warning=FALSE)
   factor(x, levels=levs)
 }
 
-unknownToNA.list <- function(x, unknown, warning=FALSE)
+unknownToNA.list <- function(x, unknown, warning=FALSE, ...)
 {
   unknown <- gdata:::.unknownList(x=x, unknown=unknown)
-  ## FIXME - do I still need attributes here; R 2.4
-  attrX <- attributes(x)
   x <- mapply(FUN="unknownToNA", x=x, unknown=unknown, warning=warning,
               SIMPLIFY=FALSE)
-  attributes(x) <- attrX
   return(x)
 }
 
-unknownToNA.data.frame <- function(x, unknown, warning=FALSE)
+unknownToNA.data.frame <- function(x, unknown, warning=FALSE, ...)
 {
   x[] <- unknownToNA.list(x=x, unknown=unknown, warning=warning)
   x
@@ -97,10 +97,10 @@ unknownToNA.data.frame <- function(x, unknown, warning=FALSE)
 ### {{{ NAToUnknown
 ###------------------------------------------------------------------------
 
-NAToUnknown <- function(x, unknown, force=FALSE, call.=FALSE)
+NAToUnknown <- function(x, unknown, force=FALSE, call.=FALSE, ...)
   UseMethod("NAToUnknown")
 
-NAToUnknown.default <- function(x, unknown, force=FALSE, call.=FALSE)
+NAToUnknown.default <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 {
   if(length(as.character(unknown)) != 1) # as.character allows also POSIXlt
     stop("'unknown' must be a single value")
@@ -120,7 +120,7 @@ NAToUnknown.default <- function(x, unknown, force=FALSE, call.=FALSE)
   x
 }
 
-NAToUnknown.factor <- function(x, unknown, force=FALSE, call.=FALSE)
+NAToUnknown.factor <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 {
   if(length(unknown) != 1)
     stop("'unknown' must be a single value")
@@ -136,18 +136,15 @@ NAToUnknown.factor <- function(x, unknown, force=FALSE, call.=FALSE)
   x
 }
 
-NAToUnknown.list <- function(x, unknown, force=FALSE, call.=FALSE)
+NAToUnknown.list <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 {
   unknown <- gdata:::.unknownList(x=x, unknown=unknown)
-  ## FIXME - do I still need attributes here; R 2.4
-  attrX <- attributes(x)
   x <- mapply(FUN="NAToUnknown", x=x, unknown=unknown, force=force,
               call.=call., SIMPLIFY=FALSE)
-  attributes(x) <- attrX
   x
 }
 
-NAToUnknown.data.frame <- function(x, unknown, force=FALSE, call.=FALSE)
+NAToUnknown.data.frame <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 {
   x[] <- NAToUnknown.list(x=x, unknown=unknown, force=force, call.=call.)
   x

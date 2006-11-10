@@ -1,3 +1,21 @@
+CHANGES IN 2.3.1 (2006-10-29)
+---------------------------------------
+
+- Arguments as well as their position of reorder.factor have been changed
+  to conform with reorder.factor method in stats package, due to collision
+  bug. Argument 'make.ordered' is now 'order' and old argument 'order' is
+  now 'new.order'! Therefore, you have to implicitly specify new.order i.e.
+
+  reorder(trt, new.order=c("PLACEBO", "300 MG", "600 MG", "1200 MG"))
+
+- trim() gains ... argument.
+
+- Added "unknown" methods for matrices.
+
+- Added c() method for factors based on mapLevels() functions.
+
+- Added write.fwf, which writes file in *F*ixed *W*idth *F*ormat.
+
 CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
 ---------------------------------------
 
@@ -12,7 +30,7 @@ CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
 
 - Extended trim() to handle a variety of data types data.frames,
   lists, factors, etc.  Code changes contributed by Gregor Gorjanc.
- 
+
 - Added resample() command that acts like sample() except that it
   _always_ samples from the arguments provided, even if only a single
   argument is present.  This differs from sample() which behaves
@@ -54,6 +72,4 @@ CHANGES IN GDATA 2.0.8
 
  - Updated ll.Rd documentation
 
- - Fixed bug in Args.R, is.what.R, ll.R 
-
-
+ - Fixed bug in Args.R, is.what.R, ll.R

@@ -1,8 +1,8 @@
 ### runit.unknown.R
 ###------------------------------------------------------------------------
 ### What: Tests for Change given unknown value to NA and vice versa methods
-### $Id$
-### Time-stamp: <2006-09-07 15:33:50 ggorjan>
+### $Id: runit.unknown.R 993 2006-10-30 17:10:08Z ggorjan $
+### Time-stamp: <2006-10-30 17:46:21 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ --- Test setup ---
@@ -48,28 +48,31 @@ xFacUnkLev <- factor(c("A", "0", 0, "NA", "NA", intUnk, numUnk, "-", "A"))
 xFacUnkLevTest <-    c(1,    0,  0, 0,    0,    0,      0,      0,   1)
 xFacUnkLevTest <- as.logical(xFacUnkLevTest)
 
-dateUnk <- as.Date("1900-1-1")
-xDate     <- c(as.Date("2006-08-31"), NA)
-xDateUnk  <- c(as.Date("2006-08-31"), dateUnk)
-xDateTest <- c(FALSE,                 TRUE)
+dateUnk <- as.Date("2006-08-14")
+tmp <- as.Date("2006-08-15")
+xDate     <- c(tmp, NA)
+xDateUnk  <- c(tmp,   dateUnk)
+xDateTest <- c(FALSE, TRUE)
 
-xDate1Unk  <- c(as.Date("2006-08-31"), dateUnk, NA)
-xDate1Test <- c(FALSE,                 TRUE,    FALSE)
+xDate1Unk  <- c(tmp,   dateUnk, NA)
+xDate1Test <- c(FALSE, TRUE,    FALSE)
 
-POSIXltUnk <- strptime("1900-1-1", format="%Y-%m-%d")
-xPOSIXlt     <- c(strptime("2006-08-31", format="%Y-%m-%d"), NA)
-xPOSIXltUnk  <- c(strptime("2006-08-31", format="%Y-%m-%d"), POSIXltUnk)
-xPOSIXltTest <- c(FALSE,                                     TRUE)
+POSIXltUnk <- strptime("2006-08-14", format="%Y-%m-%d")
+tmp <- strptime("2006-08-15", format="%Y-%m-%d")
+xPOSIXlt     <- c(tmp, NA)
+xPOSIXltUnk  <- c(tmp,   POSIXltUnk)
+xPOSIXltTest <- c(FALSE, TRUE)
 
-xPOSIXlt1Unk  <- c(strptime("2006-08-31", format="%Y-%m-%d"), POSIXltUnk, NA)
-xPOSIXlt1Test <- c(FALSE,                                     TRUE,       FALSE)
+xPOSIXlt1Unk  <- c(tmp,   POSIXltUnk, NA)
+xPOSIXlt1Test <- c(FALSE, TRUE,       FALSE)
 
-POSIXctUnk <- as.POSIXct(strptime("1900-1-1 01:01:01", format="%Y-%m-%d %H:%M:%S"))
-xPOSIXct     <- c(as.POSIXct(strptime("2006-08-31 01:01:01", format="%Y-%m-%d %H:%M:%S")), NA)
-xPOSIXctUnk  <- c(as.POSIXct(strptime("2006-08-31 01:01:01", format="%Y-%m-%d %H:%M:%S")), POSIXctUnk)
+POSIXctUnk <- as.POSIXct(strptime("2006-08-14 01:01:01", format="%Y-%m-%d %H:%M:%S"))
+tmp <- as.POSIXct(strptime("2006-08-15 01:01:01", format="%Y-%m-%d %H:%M:%S"))
+xPOSIXct     <- c(tmp, NA)
+xPOSIXctUnk  <- c(tmp, POSIXctUnk)
 xPOSIXctTest <- xPOSIXltTest
 
-xPOSIXct1Unk  <- c(as.POSIXct(strptime("2006-08-31 01:01:01", format="%Y-%m-%d %H:%M:%S")), POSIXctUnk, NA)
+xPOSIXct1Unk  <- c(tmp, POSIXctUnk, NA)
 xPOSIXct1Test <- xPOSIXlt1Test
 
 ### }}}
@@ -125,7 +128,7 @@ names(xListNUnk1) <- c("int", "cha", "num", "fac")
 xDFUnk1 <- as.data.frame(xListNUnk1)
 xDFUnk1$cha <- as.character(xDFUnk1$cha)
 xDFUnk1Test <- as.data.frame(xListUnk1Test)
-colnames(xDFUnk1Test) <- names(xListNUnk1)
+names(xDFUnk1Test) <- names(xListNUnk1)
 
 unkC2 <- c(0, "notAvail")
 xListUnk2 <- list(as.integer(c(unkC2[1], 1, 2, unkC2[1], 5, 6, 7, 8, 9)),
@@ -163,6 +166,20 @@ xList2a <- list(xListUnk2a[[1]],
                 c("A", "B", NA, "C", NA, "-", "7", "8", "9"),
                 xListUnk2a[[3]],
                 factor(c("A", NA, NA, "NA", "NA", 9999, NA, "-", NA)))
+
+### }}}
+### {{{ --- Matrix ---
+
+matUnk <- 9999
+mat        <- matrix(1:25, nrow=5, ncol=5)
+mat[1, 2] <- NA; mat[1, 4] <- NA; mat[2, 2] <- NA;
+mat[3, 2] <- NA; mat[3, 5] <- NA; mat[5, 4] <- NA;
+matUnk1       <- mat
+matUnk1[1, 2] <- matUnk; matUnk1[1, 4] <- matUnk; matUnk1[2, 2] <- matUnk;
+matUnk1[3, 2] <- matUnk; matUnk1[3, 5] <- matUnk; matUnk1[5, 4] <- matUnk;
+matUnkTest <- matUnk1Test <- is.na(mat)
+
+matUnk2Test <- matUnkTest | mat == 1
 
 ### }}}
 ### {{{ --- Use of unknown=list(.default=, ...) or similarly named vector ---
@@ -280,6 +297,11 @@ test.isUnknown <- function()
   ## list(.default=, 99) ERROR as we do not know where to apply 99
   checkException(isUnknown(x=xListNUnk, unknown=unkLND2E))
 
+  ## --- matrix ---
+
+  checkIdentical(isUnknown(x=mat, unknown=NA), matUnkTest)
+  checkIdentical(isUnknown(x=matUnk1, unknown=matUnk), matUnkTest)
+  checkIdentical(isUnknown(x=matUnk1, unknown=c(1, matUnk)), matUnk2Test)
 }
 
 ### }}}
@@ -310,8 +332,7 @@ test.unknownToNA <- function()
 
   ## Date-time classes
   checkIdentical(unknownToNA(xDateUnk, unknown=dateUnk), xDate)
-  ## FIXME uncomment in R 2.4
-  ## checkIdentical(unknownToNA(xPOSIXltUnk, unknown=POSIXltUnk), xPOSIXlt)
+  checkIdentical(unknownToNA(xPOSIXltUnk, unknown=POSIXltUnk), xPOSIXlt)
   checkIdentical(unknownToNA(xPOSIXctUnk, unknown=POSIXctUnk), xPOSIXct)
 
   ## --- lists and data.frames ---
@@ -368,6 +389,10 @@ test.unknownToNA <- function()
   checkIdentical(unknownToNA(x=xListNUnkD3, unknown=unkLND3), xListN)
   ## list(.default=, 99) ERROR as we do not know where to apply 99
   checkException(unknownToNA(x=xListNUnk, unknown=unkLND2E))
+
+  ## --- matrix ---
+
+  checkEquals(unknownToNA(x=matUnk1, unknown=matUnk), mat)
 }
 
 ### }}}
@@ -405,8 +430,7 @@ test.NAToUnknown <- function()
 
   ## Date-time classes
   checkIdentical(NAToUnknown(xDate, unknown=dateUnk), xDateUnk)
-  ## FIXME uncomment in R 2.4
-  ## checkIdentical(NAToUnknown(xPOSIXlt, unknown=POSIXltUnk), xPOSIXltUnk)
+  checkIdentical(NAToUnknown(xPOSIXlt, unknown=POSIXltUnk), xPOSIXltUnk)
   checkIdentical(NAToUnknown(xPOSIXct, unknown=POSIXctUnk), xPOSIXctUnk)
 
   ## --- lists and data.frames ---
@@ -464,6 +488,9 @@ test.NAToUnknown <- function()
   ## list(.default=, 99) ERROR as we do not know where to apply 99
   checkException(NAToUnknown(x=xListN, unknown=unkLND2E))
 
+  ## --- matrix ---
+
+  checkEquals(NAToUnknown(x=mat, unknown=matUnk), matUnk1)
 }
 
 ### }}}
