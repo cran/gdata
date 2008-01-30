@@ -7,12 +7,14 @@
   Remove all objects from the default workspace, except those specified.
 }
 \usage{
-keep(..., list = character(0), sure = FALSE)
+keep(..., list = character(0), all = FALSE, sure = FALSE)
 }
 \arguments{
   \item{...}{objects to be kept, specified one by one, quoted or
     unquoted.}
   \item{list}{character vector of object names to be kept.}
+  \item{all}{whether hidden objects (beginning with a \code{.}) should
+    be removed, unless explicitly kept.}
   \item{sure}{whether to perform the removal, otherwise return names of
     objects that would have been removed.}
 }

@@ -1,9 +1,9 @@
-% $Id: drop.levels.Rd 973 2006-08-02 19:04:55Z warnes $
-%
+% $Id: drop.levels.Rd 1096 2007-06-06 10:19:15Z ggorjan $
+
 \name{drop.levels}
 \alias{drop.levels}
 \title{Drop unused factor levels}
-\description{Drop unused levels in a factor.}
+\description{Drop unused levels in a factor}
 \usage{
 drop.levels(x, reorder=TRUE, ...)
 }
@@ -11,22 +11,24 @@ drop.levels(x, reorder=TRUE, ...)
   \item{x}{object to be processed}
   \item{reorder}{should factor levels be reordered using
     \code{\link{reorder.factor}}?}
-  \item{...}{additional arguments to \code{reorder.factor}}
+  \item{...}{additional arguments to \code{\link{reorder.factor}}}
 }
 
 \details{
 
 \code{drop.levels} is a generic function, where default method does
-nothing, while method for factor \code{s} drops all unused levels. There
-are also convinient methods for \code{list} and \code{data.frame}, where
-all unused levels are droped in all factors (one by one) in a
+nothing, while method for factor \code{s} drops all unused levels. Drop
+is done with \code{x[, drop=TRUE]}.
+
+There are also convenient methods for \code{list} and \code{data.frame},
+where all unused levels are dropped in all factors (one by one) in a
 \code{list} or a \code{data.frame}.
 
 }
 
-\value{a data frame}
+\value{Input object without unused levels.}
 
-\author{Jim Rogers \email{james.a.rogers@pfizer.com}}
+\author{Jim Rogers \email{james.a.rogers@pfizer.com} and Gregor Gorjanc}
 
 \examples{
 

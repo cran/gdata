@@ -21,9 +21,7 @@ lowerTriangle(x, diag=FALSE) <- value
     of the current upper/lower triangular.  Should be of a mode which 
     can be coerced to that of \code{x}.}
 }
-%\details{
-%  ~~ If necessary, more details than the __description__  above ~~
-}
+
 \value{
   \code{upperTriangle(x)} and \code{lowerTriangle(x)} return the upper
   or lower triangle of matrix x, respectively. The assignment forms

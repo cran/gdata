@@ -1,8 +1,8 @@
 ### mapLevels.R
 ###------------------------------------------------------------------------
 ### What: Mapping levels
-### $Id: mapLevels.R 993 2006-10-30 17:10:08Z ggorjan $
-### Time-stamp: <2006-10-29 16:45:20 ggorjan>
+### $Id: mapLevels.R 1094 2007-06-06 10:15:49Z ggorjan $
+### Time-stamp: <2007-04-26 13:16:18 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ mapLevels
@@ -12,7 +12,7 @@
 mapLevels <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
                       combine=FALSE, ...)
 {
-  UseMethod("mapLevels", x=x)
+  UseMethod("mapLevels")
 }
 
 mapLevels.default <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
@@ -282,6 +282,7 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
 
 ### }}}
 ### {{{ mapLevels<-
+
 ###------------------------------------------------------------------------
 
 "mapLevels<-" <- function(x, value)

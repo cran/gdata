@@ -1,15 +1,16 @@
 ### unknown.R
 ###------------------------------------------------------------------------
 ### What: Change given unknown value to NA and vice versa
-### $Id: unknown.R 993 2006-10-30 17:10:08Z ggorjan $
-### Time-stamp: <2006-10-30 18:06:17 ggorjan>
+### $Id: unknown.R 1094 2007-06-06 10:15:49Z ggorjan $
+### Time-stamp: <2007-04-26 13:16:10 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ isUnknown
+
 ###------------------------------------------------------------------------
 
 isUnknown <- function(x, unknown=NA, ...)
-  UseMethod("isUnknown", x=x)
+  UseMethod("isUnknown")
 
 isUnknown.default <- function(x, unknown=NA, ...)
 {
@@ -49,6 +50,7 @@ isUnknown.matrix <- function(x, unknown=NA, ...)
 
 ### }}}
 ### {{{ unknownToNA
+
 ###------------------------------------------------------------------------
 
 unknownToNA <- function(x, unknown, warning=FALSE, ...)
@@ -95,6 +97,7 @@ unknownToNA.data.frame <- function(x, unknown, warning=FALSE, ...)
 
 ### }}}
 ### {{{ NAToUnknown
+
 ###------------------------------------------------------------------------
 
 NAToUnknown <- function(x, unknown, force=FALSE, call.=FALSE, ...)
@@ -184,7 +187,7 @@ NAToUnknown.data.frame <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 
   if(unkN < n) {
     if(unkNamesNullTest | defInNames) {
-      if(defInNames) {
+      if(defInNames) { # handling .default
         names(def) <- NULL
         unknownDef <- rep(def, length=(n - unkN))
         names(unknownDef) <- namesX[!(namesX %in% unkNames)]

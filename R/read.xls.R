@@ -1,6 +1,6 @@
-# $Id: read.xls.R 625 2005-06-09 14:20:30Z nj7w $
+# $Id: read.xls.R 1099 2007-07-10 17:51:08Z warnes $
 
-read.xls <- function(xls, sheet = 1, verbose=FALSE, ..., perl="perl")
+xls2csv <- function(xls, sheet = 1, verbose=FALSE, ..., perl="perl")
   {
 
   # Creating a temporary function to quote the string
@@ -16,6 +16,12 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, ..., perl="perl")
   ###
   # files
 
+  tf <- NULL
+  if (substring(xls, 1, 7) == "http://") {
+	tf <- paste(tempfile(), "xls", sep = ".")
+	download.file(xls, tf, mode = "wb")
+	xls <- tf
+   }
   xls <- dQuote.ascii(xls) # dQuote.ascii in case of spaces in path
   xls2csv <- file.path(perl.dir,'xls2csv.pl')
   csv <- paste(tempfile(), "csv", sep = ".")
@@ -39,13 +45,29 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, ..., perl="perl")
   ###
 
   # prepare for cleanup now, in case of error reading file
-  on.exit(file.remove(csv))  
-  
-  # now read the csv file
-  out <- read.csv(csv, ...)
-
-  # clean up
-  file.remove(csv)
-  
-  return(out)
+  file(csv)
 }
+
+
+read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ..., perl="perl") {
+   con <- tfn <- NULL
+   on.exit({ 
+        if (inherits(con, "connection") && isOpen(con)) close(con)
+        if (file.exists(tfn)) file.remove(tfn)
+   })
+   con <- xls2csv(xls, sheet, verbose, ..., perl = perl)
+   open(con)
+   tfn <- summary(con)$description
+   print(tfn)
+   if (missing(pattern)) read.csv(con, ...)
+   else {
+     idx <- grep(pattern, readLines(con))
+     if (length(idx) == 0) {
+        warning("pattern not found")
+        return(NULL)
+     }
+     seek(con, 0)
+     read.csv(con, skip = idx[1]-1, ...)
+   }
+}
+

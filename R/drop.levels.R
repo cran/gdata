@@ -1,13 +1,13 @@
 
 drop.levels  <- function(x, reorder=TRUE, ...)
-  UseMethod("drop.levels", x=x)
+  UseMethod("drop.levels")
 
 drop.levels.default <- function(x, reorder=TRUE, ...)
   x
 
 drop.levels.factor <- function(x, reorder=TRUE, ...)
 {
-  x <- factor(x)
+  x <- x[, drop=TRUE]
   if(reorder) x <- reorder(x, ...)
   x
 }

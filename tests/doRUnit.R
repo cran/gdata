@@ -1,47 +1,62 @@
 ### doRUnit.R
 ###------------------------------------------------------------------------
-### What: Run RUnit tests
-### $Id: doRUnit.R 993 2006-10-30 17:10:08Z ggorjan $
-### Time-stamp: <2006-10-29 16:37:40 ggorjan>
+### What: Run unit tests with RUnit
+### $Id: doRUnit.R 1095 2007-06-06 10:17:52Z ggorjan $
+### Time-stamp: <2007-06-06 14:02:41 ggorjan>
 ###------------------------------------------------------------------------
 
+## unit tests will not be done if RUnit is not available
 if(require("RUnit", quietly=TRUE)) {
 
   ## --- Setup ---
 
-  wd <- getwd()
-  pkg <- basename(sub(pattern="tests$", replacement="", wd))
-  ## Path for standalone i.e. not by R CMD check testing
+  pkg <- "gdata"
   if(Sys.getenv("RCMDCHECK") == "FALSE") {
-    path <- file.path("..", "inst")
+    ## Path to unit tests for standalone running under Makefile (not R CMD check)
+    ## PKG/tests/../inst/unitTests
+    path <- file.path(getwd(), "..", "inst", "unitTests")
   } else {
-    pkg <- sub(pattern="\.Rcheck$", replacement="", pkg)
-    path <- file.path("..", pkg)
+    ## Path to unit tests for R CMD check
+    ## PKG.Rcheck/tests/../PKG/unitTests
+    path <- system.file(package=pkg, "unitTests")
   }
-  path <- file.path(wd, path, "unitTests")
-  pathReport <- file.path(path, "report")
+  cat("\nRunning unit tests\n")
+  print(list(pkg=pkg, getwd=getwd(), pathToUnitTests=path))
 
   library(package=pkg, character.only=TRUE)
 
   ## --- Testing ---
 
   ## Define tests
-  testSuite <- defineTestSuite(name=paste(pkg, "unit testing"), dirs=path)
+  testSuite <- defineTestSuite(name=paste(pkg, "unit testing"),
+                                          dirs=path)
   ## Run
   tests <- runTestSuite(testSuite)
 
-  ## Print results
-  printTextProtocol(tests)
-  printTextProtocol(tests, fileName=paste(pathReport, ".txt", sep=""))
+  ## Default report name
+  pathReport <- file.path(path, "report")
 
-  ## Print HTML version to a file
+  ## Report to stdout and text files
+  cat("------------------- UNIT TEST SUMMARY ---------------------\n\n")
+  printTextProtocol(tests, showDetails=FALSE)
+  printTextProtocol(tests, showDetails=FALSE,
+                    fileName=paste(pathReport, "Summary.txt", sep=""))
+  printTextProtocol(tests, showDetails=TRUE,
+                    fileName=paste(pathReport, ".txt", sep=""))
+
+  ## Report to HTML file
   printHTMLProtocol(tests, fileName=paste(pathReport, ".html", sep=""))
 
-  ## Return stop() if there are any failures i.e. FALSE to unit test.
-  ## This will cause R CMD check to return error and stop
-  if(getErrors(tests)$nFail > 0) {
-    stop("one of unit tests failed")
+  ## Return stop() to cause R CMD check stop in case of
+  ##  - failures i.e. FALSE to unit tests or
+  ##  - errors i.e. R errors
+  tmp <- getErrors(tests)
+  if(tmp$nFail > 0 | tmp$nErr > 0) {
+    stop(paste("\n\nunit testing failed (#test failures: ", tmp$nFail,
+               ", #R errors: ",  tmp$nErr, ")\n\n", sep=""))
   }
+} else {
+  warning("cannot run unit tests -- package RUnit is not available")
 }
 
 ###------------------------------------------------------------------------

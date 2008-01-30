@@ -1,16 +1,24 @@
-# $Id: keep.R 625 2005-06-09 14:20:30Z nj7w $
-
-keep <- function(..., list=character(0), sure=FALSE)
+keep <- function(..., list=character(0), all=FALSE, sure=FALSE)
 {
   if(missing(...) && missing(list))
-    stop("Keep something, or use rm(list=ls()) to clear workspace.")
+  {
+    warning("Keep something, or use rm(list=ls()) to clear workspace. ",
+            "Nothing was removed.")
+    return(invisible(NULL))
+  }
   names <- as.character(substitute(list(...)))[-1]
   list <- c(list, names)
-  keep.elements <- match(list, ls(1))
+  keep.elements <- match(list, ls(1,all.names=all))
+  if(any(is.na(keep.elements)))
+  {
+    warning("You tried to keep \"", list[which(is.na(keep.elements))[1]],
+            "\" which doesn't exist in workspace. Nothing was removed.", sep="")
+    return(invisible(NULL))
+  }
 
-  if(sure == FALSE)
-    return(ls(1)[-keep.elements])
+  if(sure)
+    rm(list=ls(1,all.names=all)[-keep.elements], pos=1)
   else
-    rm(list=ls(1)[-keep.elements], pos=1)
+    return(ls(1,all.names=all)[-keep.elements])
 }
 
