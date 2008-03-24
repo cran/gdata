@@ -3,12 +3,11 @@
 # This Program is ALPHA version.
 #==============================================================================
 package Spreadsheet::ParseExcel::FmtDefault;
-require Exporter;
 use strict;
+use warnings;
+
 use Spreadsheet::ParseExcel::Utility qw(ExcelFmt);
-use vars qw($VERSION @ISA);
-@ISA = qw(Exporter);
-$VERSION = '0.05'; # 
+our $VERSION = '0.05'; # 
 
 my %hFmtDefault = (
     0x00 => '@',
@@ -52,7 +51,7 @@ my %hFmtDefault = (
 #------------------------------------------------------------------------------
 # new (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub new($;%) {
+sub new {
     my($sPkg, %hKey) = @_;
     my $oThis={ 
     };
@@ -62,15 +61,15 @@ sub new($;%) {
 #------------------------------------------------------------------------------
 # TextFmt (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub TextFmt($$;$) {
+sub TextFmt {
     my($oThis, $sTxt, $sCode) =@_;
     return $sTxt if((! defined($sCode)) || ($sCode eq '_native_'));
-    return pack('C*', unpack('n*', $sTxt));
+    return pack('U*', unpack('n*', $sTxt));
 }
 #------------------------------------------------------------------------------
 # FmtStringDef (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub FmtStringDef($$$;$) {
+sub FmtStringDef {
     my($oThis, $iFmtIdx, $oBook, $rhFmt) =@_;
     my $sFmtStr = $oBook->{FormatStr}->{$iFmtIdx};
 
@@ -83,7 +82,7 @@ sub FmtStringDef($$$;$) {
 #------------------------------------------------------------------------------
 # FmtString (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub FmtString($$$) {
+sub FmtString {
     my($oThis, $oCell, $oBook) =@_;
 
     my $sFmtStr = $oThis->FmtStringDef(
@@ -115,7 +114,7 @@ sub FmtString($$$) {
 #------------------------------------------------------------------------------
 # ValFmt (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub ValFmt($$$) {
+sub ValFmt {
     my($oThis, $oCell, $oBook) =@_;
 
     my($Dt, $iFmtIdx, $iNumeric, $Flg1904);
@@ -134,7 +133,7 @@ sub ValFmt($$$) {
 #------------------------------------------------------------------------------
 # ChkType (for Spreadsheet::ParseExcel::FmtDefault)
 #------------------------------------------------------------------------------
-sub ChkType($$$) {
+sub ChkType {
     my($oPkg, $iNumeric, $iFmtIdx) =@_;
     if ($iNumeric) {
         if((($iFmtIdx >= 0x0E) && ($iFmtIdx <= 0x16)) ||

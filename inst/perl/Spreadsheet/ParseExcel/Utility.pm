@@ -5,30 +5,24 @@
 # Spreadsheet::ParseExcel::Utility;
 #==============================================================================
 package Spreadsheet::ParseExcel::Utility;
-require Exporter;
 use strict;
-use vars qw($VERSION @ISA @EXPORT_OK);
+use warnings;
+
+require Exporter;
+use vars qw(@ISA @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(ExcelFmt LocaltimeExcel ExcelLocaltime 
                 col2int int2col sheetRef xls2csv);
-$VERSION=0.06;
+our $VERSION = '0.06';
+
 #my $sNUMEXP = '^[+-]?\d+(\.\d+)?$';
 #my $sNUMEXP = '(^[+-]?\d+(\.\d+)?$)|(^[+-]?\d\.*(\d+)[eE][+-](\d+))$';
 my $sNUMEXP = '(^[+-]?\d+(\.\d+)?$)|(^[+-]?\d+\.?(\d*)[eE][+-](\d+))$';
 
-#ProtoTypes
-sub ExcelFmt($$;$$);
-sub LocaltimeExcel($$$$$$;$$);
-sub ExcelLocaltime($;$);
-sub AddComma($);
-sub MakeBun($$;$);
-sub MakeE($$);
-sub LeapYear($);
-
 #------------------------------------------------------------------------------
 # ExcelFmt (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub ExcelFmt($$;$$) {
+sub ExcelFmt {
     my($sFmt, $iData, $i1904, $sType) =@_;
     my $sCond;
     my $sWkF ='';
@@ -642,7 +636,7 @@ sub ExcelFmt($$;$$) {
 #------------------------------------------------------------------------------
 # AddComma (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub AddComma($) {
+sub AddComma {
     my($sNum) = @_;
 
     if($sNum=~ /^([^\d]*)(\d\d\d\d+)(\.*.*)$/) {
@@ -659,7 +653,7 @@ sub AddComma($) {
 #------------------------------------------------------------------------------
 # MakeBun (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub MakeBun($$;$) {
+sub MakeBun {
     my($sFmt, $iData, $iFlg) = @_;
     my $iBunbo;
     my $iShou;
@@ -704,7 +698,7 @@ sub MakeBun($$;$) {
 #------------------------------------------------------------------------------
 # MakeE (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub MakeE($$) {
+sub MakeE {
     my($sFmt, $iData) = @_;
 
     $sFmt=~/(([#0]*)[\.]?[#0]*)([eE])([\+\-][0#]+)/;
@@ -723,7 +717,7 @@ sub MakeE($$) {
 #------------------------------------------------------------------------------
 # LeapYear (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub LeapYear($) {
+sub LeapYear {
     my($iYear)=@_;
     return 1 if($iYear==1900); #Special for Excel
     return ((($iYear % 4)==0) && (($iYear % 100) || ($iYear % 400)==0))? 1: 0;
@@ -731,7 +725,7 @@ sub LeapYear($) {
 #------------------------------------------------------------------------------
 # LocaltimeExcel (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub LocaltimeExcel($$$$$$;$$) {
+sub LocaltimeExcel {
     my($iSec, $iMin, $iHour, $iDay, $iMon, $iYear, $iMSec, $flg1904) = @_;
 
 #0. Init
@@ -783,8 +777,7 @@ sub LocaltimeExcel($$$$$$;$$) {
 #------------------------------------------------------------------------------
 # ExcelLocaltime (for Spreadsheet::ParseExcel::Utility)
 #------------------------------------------------------------------------------
-sub ExcelLocaltime($;$)
-{
+sub ExcelLocaltime {
   my($dObj, $flg1904) = @_;
   my($iSec, $iMin, $iHour, $iDay, $iMon, $iYear, $iwDay, $iMSec);
   my($iDt, $iTime, $iYDays);

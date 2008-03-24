@@ -5,13 +5,11 @@
 # Spreadsheet::ParseExcel::Dump
 #==============================================================================
 package Spreadsheet::ParseExcel::Dump;
-require Exporter;
 use strict;
-use vars qw($VERSION @ISA);
-@ISA = qw(Exporter);
-$VERSION=0.01;
-sub subDUMP($$$$);
-sub OpName($);
+use warnings;
+
+our $VERSION = 0.01;
+
 my %NameTbl = (
 #P291
     0x0A    =>'EOF',                    0x0C    =>'CALCCOUNT',
@@ -168,8 +166,7 @@ my %NameTbl = (
 #------------------------------------------------------------------------------
 # subDUMP (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
-sub subDUMP($$$$)
-{
+sub subDUMP {
     my($oBook, $bOp, $bLen, $sWk) = @_;
     printf "%04X:%-23s (Len:%3d) : %s\n", 
             $bOp, OpName($bOp), $bLen, unpack("H40",$sWk);
@@ -177,7 +174,7 @@ sub subDUMP($$$$)
 #------------------------------------------------------------------------------
 # Spreadsheet::ParseExcel->OpName
 #------------------------------------------------------------------------------
-sub OpName($) {
+sub OpName {
     my($bOp)=@_;
     return (defined $NameTbl{$bOp})? $NameTbl{$bOp}: 'undef';
 }

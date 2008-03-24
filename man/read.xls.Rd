@@ -54,7 +54,7 @@ xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
   \dontrun{
    # Example specifying exact Perl path for default MS-Windows install of
    # ActiveState perl
-   iris <- read.xls(xlsfile, perl="C:\\perl\bin\perl.exe")
+   iris <- read.xls(xlsfile, perl="C:/perl/bin/perl.exe")
 
    # Example specifying exact Perl path for Unix systems
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")

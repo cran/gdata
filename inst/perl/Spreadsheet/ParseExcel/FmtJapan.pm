@@ -3,14 +3,13 @@
 # This Program is ALPHA version.
 #==============================================================================
 package Spreadsheet::ParseExcel::FmtJapan;
-require Exporter;
 use strict;
-use Spreadsheet::ParseExcel::FmtDefault;
-use Jcode;
-use vars qw($VERSION @ISA);
-@ISA = qw(Spreadsheet::ParseExcel::FmtDefault Exporter);
+use warnings;
 
-$VERSION = '0.05'; # 
+use Jcode;
+use base 'Spreadsheet::ParseExcel::FmtDefault';
+our $VERSION = '0.05';
+
 my %hFmtJapan = (
     0x00 => '@',
     0x01 => '0',
@@ -67,7 +66,7 @@ my $_Code;
 #------------------------------------------------------------------------------
 # new (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub new($%) {
+sub new {
     my($sPkg, %hKey) = @_;
     my $oThis={ 
         Code => $hKey{Code},
@@ -85,7 +84,7 @@ sub new($%) {
 #------------------------------------------------------------------------------
 # TextFmt (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub TextFmt($$;$) {
+sub TextFmt {
     my($oThis, $sTxt, $sCode) =@_;
 
     if($oThis->{Code}) {
@@ -105,21 +104,21 @@ sub TextFmt($$;$) {
 #------------------------------------------------------------------------------
 # FmtStringDef (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub FmtStringDef($$$) {
+sub FmtStringDef {
     my($oThis, $iFmtIdx, $oBook) =@_;
     return $oThis->SUPER::FmtStringDef($iFmtIdx, $oBook, \%hFmtJapan);
 }
 #------------------------------------------------------------------------------
 # ValFmt (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub ValFmt($$$) {
+sub ValFmt {
     my($oThis, $oCell, $oBook) =@_;
     return $oThis->SUPER::ValFmt($oCell, $oBook);
 }
 #------------------------------------------------------------------------------
 # ChkType (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub ChkType($$$) {
+sub ChkType {
     my($oPkg, $iNumeric, $iFmtIdx) =@_;
 # Is there something special for Japan?
     return $oPkg->SUPER::ChkType($iNumeric, $iFmtIdx);
@@ -127,7 +126,7 @@ sub ChkType($$$) {
 #------------------------------------------------------------------------------
 # CnvNengo (for Spreadsheet::ParseExcel::FmtJapan)
 #------------------------------------------------------------------------------
-sub CnvNengo($@) {
+sub CnvNengo {
     my($iKind, @aTime) = @_;
     my $iWk = sprintf('%04d%02d%02d', $aTime[5], $aTime[4], $aTime[3]);
     if($iWk    lt '19120730') {

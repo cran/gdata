@@ -1,3 +1,16 @@
+CHANGES IN 2.4.1 (2008-03-24)
+-----------------------------
+
+- Update perl libraries needed by xls2csv() and read.xls() 
+  to latest available versions on CRAN.
+
+- Add read.xls() to exported function list
+
+- Correct iris.xls example file.  It didn't contain the complete
+  & properly formatted iris data set. Fixed.
+
+- Fix typo in win32 example for read.xls()
+
 CHANGES IN 2.4.0 (2008-01-30)
 -----------------------------
 

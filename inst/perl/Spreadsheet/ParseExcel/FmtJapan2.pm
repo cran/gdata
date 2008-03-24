@@ -3,19 +3,18 @@
 # This Program is ALPHA version.
 #==============================================================================
 package Spreadsheet::ParseExcel::FmtJapan2;
-require Exporter;
 use strict;
+use warnings;
+
 use Jcode;
 use Unicode::Map;
-use Spreadsheet::ParseExcel::FmtJapan;
-use vars qw($VERSION @ISA);
-@ISA = qw(Spreadsheet::ParseExcel::FmtJapan Exporter);
-$VERSION = '0.05'; # 
+use base 'Spreadsheet::ParseExcel::FmtJapan';
+our $VERSION = '0.05'; # 
 
 #------------------------------------------------------------------------------
 # new (for Spreadsheet::ParseExcel::FmtJapan2)
 #------------------------------------------------------------------------------
-sub new($%) {
+sub new {
     my($sPkg, %hKey) = @_;
     my $oMap = Unicode::Map->new('CP932Excel');
     die "NO MAP FILE CP932Excel!!" 
@@ -32,7 +31,7 @@ sub new($%) {
 #------------------------------------------------------------------------------
 # TextFmt (for Spreadsheet::ParseExcel::FmtJapan2)
 #------------------------------------------------------------------------------
-sub TextFmt($$;$) {
+sub TextFmt {
     my($oThis, $sTxt, $sCode) =@_;
 #    $sCode = 'sjis' if((! defined($sCode)) || ($sCode eq '_native_'));
     if($oThis->{Code}) {

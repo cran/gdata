@@ -4,17 +4,18 @@
 # This Program is ALPHA version.
 #==============================================================================
 package Spreadsheet::ParseExcel::FmtUnicode;
-require Exporter;
 use strict;
-use Spreadsheet::ParseExcel::FmtDefault;
-use vars qw($VERSION @ISA);
-@ISA = qw(Spreadsheet::ParseExcel::FmtDefault Exporter);
-$VERSION = '0.05'; # 
+use warnings;
+
 use Unicode::Map;
+use base 'Spreadsheet::ParseExcel::FmtDefault';
+
+our $VERSION = '0.05';
+
 #------------------------------------------------------------------------------
 # new (for Spreadsheet::ParseExcel::FmtUnicode)
 #------------------------------------------------------------------------------
-sub new($%) {
+sub new {
     my($sPkg, %hKey) = @_;
     my $sMap = $hKey{Unicode_Map};
     my $oMap;
@@ -29,7 +30,7 @@ sub new($%) {
 #------------------------------------------------------------------------------
 # TextFmt (for Spreadsheet::ParseExcel::FmtUnicode)
 #------------------------------------------------------------------------------
-sub TextFmt($$;$) {
+sub TextFmt {
     my($oThis, $sTxt, $sCode) =@_;
     if($oThis->{_UniMap}) {
         if(! defined($sCode)) {

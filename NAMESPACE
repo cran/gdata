@@ -26,6 +26,7 @@ export(
        upperTriangle,
        "upperTriangle<-",
        write.fwf,
+       xls2csv,
 
        ## mapLevels stuff
        mapLevels,
