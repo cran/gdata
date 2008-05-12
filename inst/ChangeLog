@@ -1,3 +1,42 @@
+2008-05-13 03:09  warnes
+
+	* [r1269] R/read.xls.R: Use path.expand() to give proper full path
+	  to xls file to be translated by read.xls()
+
+2008-05-13 02:55  warnes
+
+	* [r1268] R/read.xls.R: Modifed read.xls() failed to return the
+	  converted data... fixed.
+
+2008-05-13 02:47  warnes
+
+	* [r1267] inst/perl/Spreadsheet/ParseExcel/Utility.pm: Correct
+	  broken patch for open-office support
+
+2008-05-13 02:40  warnes
+
+	* [r1266] DESCRIPTION, R/read.xls.R: For read.xls() and xls2csv():
+	  - Implement more informative log messages when verbose=TRUE
+	  - Quote temporary file name to avoid errors when calling perl to
+	  do the work.
+	  - Add better error messages, particularly when perl fails to
+	  generate an
+	  output .csv file.
+	  
+	  Update version number in DESCRIPTION.
+
+2008-05-12 00:00  warnes
+
+	* [r1265] inst/perl/Spreadsheet/ParseExcel/Utility.pm: Patch to
+	  correct issue with OpenOffice-created XLS files. Thanks to
+	  Robert Burns for pointing out the patch at
+	  http://rt.cpan.org/Public/Bug/Display.html?id=7206
+
+2008-03-25 01:01  warnes
+
+	* [r1250] DESCRIPTION, inst/NEWS, inst/doc/mapLevels.pdf,
+	  inst/doc/unknown.pdf: Update for version 2.4.1
+
 2008-03-25 00:57  warnes
 
 	* [r1249] inst/xls/iris.xls: Example iris.xls file didn't complete

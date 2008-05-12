@@ -1,3 +1,23 @@
+CHANGES IN 2.4.2 (2008-05-11)
+-----------------------------
+
+- Enhancements and bug fixes for read.xls() and xls2csv():
+
+    - More informative log messages when verbose=TRUE
+
+    - File paths containing spaces or other non-traditional characters
+      are now properly handled
+
+    - Better error messages, particularly when perl fails to generate
+      an output .csv file.
+
+    - The 'shortcut' character "~" (meaning user's home directory) is
+      now properly handled in file paths.
+
+    - XLS files created by OpenOffice are now properly handled.  Thanks to
+       Robert Burns for pointing out the patch
+       (http://rt.cpan.org/Public/Bug/Display.html?id=7206)
+
 CHANGES IN 2.4.1 (2008-03-24)
 -----------------------------
 
