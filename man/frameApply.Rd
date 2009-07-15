@@ -6,8 +6,8 @@
 \description{Apply a function to row subsets of a data frame. 
 }
 \usage{
-frameApply(x, by = NULL, on = by[1], fun = function(xi) c(Count =
-nrow(xi)), subset = TRUE, simplify = TRUE, byvar.sep = "\\$\\@\\$", ...)
+frameApply(x, by=NULL, on=by[1], fun=function(xi) c(Count=nrow(xi)), 
+           subset=TRUE, simplify=TRUE, byvar.sep="\\\\$\\\\@\\\\$", ...)
 }
 \arguments{
   \item{x}{a data frame}

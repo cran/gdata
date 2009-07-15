@@ -16,7 +16,7 @@ lowerTriangle(x, diag=FALSE) <- value
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{Matrix}
-  \item{diag}{Logical.  If code{TRUE}, include the matrix diagonal.}
+  \item{diag}{Logical.  If \code{TRUE}, include the matrix diagonal.}
   \item{value}{Either a single value or a vector of length equal to that
     of the current upper/lower triangular.  Should be of a mode which 
     can be coerced to that of \code{x}.}
@@ -28,7 +28,7 @@ lowerTriangle(x, diag=FALSE) <- value
   replace the upper or lower traingular area of the
   matrix with the provided value(s).
   }
-\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}}
+\author{Gregory R. Warnes \email{greg@random-technologies-llc.com}}
 \seealso{ \code{\link[base]{diag}} }
 \examples{
   x <- matrix( 1:25, nrow=5, ncol=5)

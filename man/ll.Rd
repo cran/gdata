@@ -9,8 +9,8 @@
   object, its elements are listed and described.
 }
 \usage{
-ll(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
-   function.dim="", sort.elements=FALSE, ...)
+ll(pos=1, unit="KB", digits=0, dimensions=FALSE, function.dim="",
+   sort.elements=FALSE, ...)
 }
 \arguments{
   \item{pos}{environment position number, environment name, data frame,
@@ -39,8 +39,7 @@ ll(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
 }
 
 \author{Arni Magnusson \email{arnima@u.washington.edu}, with a
-  contribution by Jim Rogers
-  \email{james.a.rogers@pfizer.com}}
+  contribution by Jim Rogers \email{james.a.rogers@pfizer.com}}
 
 \seealso{
   \code{\link{ls}} displays names of objects in a given environment.

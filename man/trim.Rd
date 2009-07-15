@@ -32,7 +32,7 @@ disabled by setting \code{recode.factor=FALSE}. Recoding is done with
 \value{
   \code{s} with all leading and trailing spaces removed in its elements.
 }
-\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}  with
+\author{Gregory R. Warnes \email{greg@random-technologies-llc.com}  with
   contributions by Gregor Gorjanc}
 \seealso{ \code{\link[base]{sub}}, \code{\link[base]{gsub}} as well as
   argument \code{strip.white} in \code{\link{read.table}} and

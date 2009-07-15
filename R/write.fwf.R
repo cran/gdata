@@ -1,16 +1,22 @@
 ### write.fwf.R
 ###------------------------------------------------------------------------
-### What: Write fixed width format
-### $Id: write.fwf.R 997 2006-10-30 19:04:53Z ggorjan $
-### Time-stamp: <2006-10-30 18:58:40 ggorjan>
+### What: Write fixed width format - code
+### $Id: write.fwf.R 1300 2008-08-05 11:47:18Z ggorjan $
+### Time-stamp: <2008-08-05 12:11:27 ggorjan>
 ###------------------------------------------------------------------------
 
 write.fwf <- function(x, file="", append=FALSE, quote=FALSE, sep=" ",
                       na="", rownames=FALSE, colnames=TRUE, rowCol=NULL,
-                      justify="right", formatInfo=FALSE, quoteInfo=TRUE, ...)
+                      justify="left", formatInfo=FALSE, quoteInfo=TRUE,
+                      width=NULL, ...)
 {
+  ## --- Setup ---
+
   if(!(is.data.frame(x) || is.matrix(x)))
     stop("'x' must be a data.frame or matrix")
+  if(length(na) > 1)
+    stop("only single value can be defined for 'na'")
+
   if(rownames) {
     x <- cbind(rownames(x), x)
     rowColVal <- ifelse(!is.null(rowCol), rowCol, "row")
@@ -18,54 +24,112 @@ write.fwf <- function(x, file="", append=FALSE, quote=FALSE, sep=" ",
   }
   colnamesMy <- colnames(x)
 
+  nRow <- nrow(x)
+  nCol <- length(colnamesMy)
+
+  widthNULL <- is.null(width)
+  if(!widthNULL && length(width) != nCol) {
+    warning("recycling 'width'")
+    widthOld <- width
+    width <- integer(length=nCol)
+    width[] <- widthOld
+  }
+
   ## --- Format info ---
 
-  if(formatInfo) {
-    retFormat <- data.frame(colname=colnamesMy,
-                            nlevels=0,
-                            position=0,
-                            width=0,
-                            digits=0,
-                            exp=0)
-    retFormat$colname <- as.character(retFormat$colname)
+  retFormat <- data.frame(colname=colnamesMy,
+                          nlevels=0,
+                          position=0,
+                          width=0,
+                          digits=0,
+                          exp=0,
+                          stringsAsFactors=FALSE)
 
-    isNum <- sapply(x, is.numeric)
-    ## is.numeric picks also Date and POSIXt
-    isNum <- isNum & !(sapply(x, inherits, what="Date") |
-                       sapply(x, inherits, what="POSIXt"))
+  ## Which columns are numeric like
+  isNum <- sapply(x, is.numeric)
+  ## is.numeric picks also Date and POSIXt
+  isNum <- isNum & !(sapply(x, inherits, what="Date") |
+                     sapply(x, inherits, what="POSIXt"))
 
-    ## Numeric is a bit special and we need to get info before format turns
-    ## all to character
-    if(any(isNum)) {
-      tmp <- lapply(x[, isNum, drop=FALSE], format.info, ...)
-      tmp1 <- sapply(tmp, length)
-      tmp <- t(as.data.frame(tmp))
-      j <- 1
-      for(i in which(isNum)) {
-        retFormat[i, 4:(3+tmp1[j])] <- tmp[j, 1:tmp1[j]]
-        ## length 1 for exp should mean 1 and not 1+1
-        if(tmp1[j] > 2 && tmp[j, 3] > 1)
-          retFormat[i, "exp"] <- retFormat[i, "exp"] + 1
-        j <- j + 1
-      }
+  ## Which columns are factors --> convert them to character
+  isFac <- sapply(x, is.factor)
+  x[, isFac] <- lapply(x[, isFac, drop=FALSE], as.character)
+
+  ## Collect information about how format() will format columns.
+  ## We need to get this info now, since format will turn all columns to character
+  tmp <- lapply(x, format.info, ...)
+  tmp1 <- sapply(tmp, length)
+  tmp <- t(as.data.frame(tmp))
+  retFormat$width <- tmp[, 1]
+
+  ## Collect other details for numeric columns
+  if(any(isNum)) {
+    ## Numeric columns with digits
+    test <- tmp1 > 1
+    if(any(test)) {
+      retFormat[test, c("digits", "exp")] <- tmp[test, c(2, 3)]
+      ## Numeric columns with scientific notation
+      test2 <- tmp[test, 3] > 0
+      if(any(test2)) ## adding +1; see ?format.info
+        retFormat[test, ][test2, "exp"] <- retFormat[test, ][test2, "exp"] + 1
     }
   }
 
   ## --- Format ---
 
-  x <- apply(X=x, MARGIN=2,
-             FUN=function(z) {
-               ## NAToUnknown is used since format corces NA to "NA" and
-               ## then argument na in write.table does not do its job
-               format(gdata:::NAToUnknown.default(as.character(z),
-                                                  unknown=as.character(na)),
-                      justify=justify, ...) })
-  if(formatInfo) {
-    if(any(!isNum)) { # need apply as x is now a matrix
-      retFormat[!isNum, "width"] <- apply(X=x[, !isNum, drop=FALSE], MARGIN=2,
-                                          FUN=function(z) format.info(z)[1])
-      retFormat[!isNum, "nlevels"] <- apply(X=x[, !isNum, drop=FALSE], MARGIN=2,
-                                            FUN=function(z) length(unique(z)))
+  ## Formatting (to character)
+  for(i in 1:nCol) {
+    if(widthNULL) {
+      tmp <- NULL
+    } else {
+      tmp <- width[i]
+    }
+    ## Due to na.encode bug in format() in 2.7.1; na.encode=TRUE should
+    ## return NA values and not "NA", but even then we rely on the
+    ## following test to "fiddle" with the value in 'na' argument since -
+    ## NA should not increase the width of column with width 1, while wider
+    ## value for 'na' should increase the width
+    test <- is.na(x[, i])
+    ## Make a copy to make sure we get character after first format() - Date class caused problems
+    x2 <- character(length=nRow)
+    ## Add formatted values
+    x2[!test] <- format(x[!test, i], justify=justify, width=tmp, ...)
+    ## Add 'na' value
+    x2[test] <- na
+    ## Replace the original
+    x[, i] <- x2
+    ## Collect width (again)
+    tmp2 <- format.info(x[, i], ...)[1]
+    ## Reformat if 'na' value change the width of the column
+    if(tmp2 != retFormat[i, "width"]) {
+      retFormat[i, "width"] <- tmp2
+      ## ifelse() makes sure that numeric columns are justified to right
+      x[, i] <- format(x[, i], justify=ifelse(isNum[i], "right", justify),
+                       width=tmp, ...)
+    }
+    ## Reformat 'na' value if it is narrower than the width of the column
+    if(nchar(na) < retFormat[i, "width"]) {
+      x[test, i] <- format(na, justify=ifelse(isNum[i], "right", justify),
+                           width=retFormat[i, "width"], ...)
+    }
+  }
+
+  ## Number of levels for "non-numeric"" columns
+  if(any(!isNum)) {
+    retFormat[!isNum, "nlevels"] <- sapply(x[, !isNum, drop=FALSE],
+                                           function(z) length(unique(z)))
+  }
+
+  ## Check that width was not to small
+  if(!widthNULL) {
+    test <- retFormat$width > width
+    if(any(test)) {
+      tmpCol <- paste(colnamesMy[test], collapse=", ")
+      tmpWidth <- paste(width[test], collapse=", ")
+      tmpNeed <- paste(retFormat$width[test], collapse=", ")
+      stop(paste("'width' (", tmpWidth, ") was too small for columns: ",
+                 tmpCol, "\n 'width' should be at least (", tmpNeed, ")",
+                 sep=""))
     }
   }
 
@@ -87,10 +151,12 @@ write.fwf <- function(x, file="", append=FALSE, quote=FALSE, sep=" ",
     retFormat$position[1] <- ifelse(quote, ifelse(quoteInfo, 1, 2), 1)
     if(ifelse(quote, quoteInfo, FALSE)) retFormat$width <- retFormat$width + 2
     N <- nrow(retFormat)
-    for(i in 2:N) {
-      retFormat$position[i] <- retFormat$position[i - 1] +
-        retFormat$width[i - 1] + nchar(x=sep, type="chars") +
-          ifelse(quote, ifelse(quoteInfo, 0, 1), 0)
+    if(N > 1) {
+      for(i in 2:N) {
+        retFormat$position[i] <- retFormat$position[i - 1] +
+          retFormat$width[i - 1] + nchar(x=sep, type="chars") +
+            ifelse(quote, ifelse(quoteInfo, 0, 1), 0)
+      }
     }
     if(rownames && is.null(rowCol)) {
       retFormat <- retFormat[-1,]

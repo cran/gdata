@@ -1,8 +1,8 @@
 ### runit.write.fwf.R
 ###------------------------------------------------------------------------
 ### What: Unit tests for write.fwf
-### $Id: runit.write.fwf.R 997 2006-10-30 19:04:53Z ggorjan $
-### Time-stamp: <2006-10-30 18:49:04 ggorjan>
+### $Id: runit.write.fwf.R 1300 2008-08-05 11:47:18Z ggorjan $
+### Time-stamp: <2008-08-05 11:58:50 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ --- Test setup ---
@@ -22,14 +22,23 @@ test.write.fwf <- function()
   checkException(write.fwf(1:10))
   checkException(write.fwf(list(1:10)))
 
+  ## only single value is allowed in 'na'
+  checkException(write.fwf(data.frame(1:10, letters[1:10]), na=c("", " ")))
+
+  ## Example dataset
+  num <- round(c(733070.345678, 1214213.78765456, 553823.798765678,
+                 1085022.8876545678,  571063.88765456, 606718.3876545678,
+                 1053686.6, 971024.187656, 631193.398765456, 879431.1),
+               digits=3)
+
   testData <- data.frame(num1=c(1:10, NA),
                          num2=c(NA, seq(from=1, to=5.5, by=0.5)),
-                         num3=c(NA, rnorm(n=10, mean=1e6, sd=3e5)),
-                         int1=c(as.integer(1:4), NA, as.integer(5:10)),
-                         fac1=factor(c(NA, letters[1:10])),
+                         num3=c(NA, num),
+                         int1=c(as.integer(1:4), NA, as.integer(4:9)),
+                         fac1=factor(c(NA, letters[1:9], "hjh")),
                          fac2=factor(c(letters[6:15], NA)),
                          cha1=c(letters[17:26], NA),
-                         cha2=c(NA, letters[26:17]),
+                         cha2=c(NA, "longer", letters[25:17]),
                          stringsAsFactors=FALSE)
   levels(testData$fac1) <- c(levels(testData$fac1), "unusedLevel")
   testData$Date <- as.Date("1900-1-1")
@@ -38,7 +47,7 @@ test.write.fwf <- function()
   testData$POSIXt[5] <- NA
 
   ## --- output ---
-  ## in regular tests
+  ## is tested with regular tests
 
   ## --- formatInfo ---
 
@@ -53,13 +62,34 @@ test.write.fwf <- function()
   formatInfo  <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE)
   checkEquals(formatInfo, formatInfoT)
 
+  ## scientific notation
+  dd <- options("digits"); options(digits = 7)
+  testData2 <- data.frame(a=123, b=pi, c=1e8, d=1e222)
+  formatInfo <- write.fwf(x=testData2, formatInfo=TRUE)
+  checkEquals(formatInfo$width, c(3, 8, 5, 6))
+  checkEquals(formatInfo$digits, c(0, 6, 0, 0))
+  checkEquals(formatInfo$exp, c(0, 0, 2, 3))
+  options(dd) ## reset old options
+
+  ## 'na' can either decrease or increase the width
+  ## --> values of int1 have width 1 and using na="" should not increase
+  ##     the width
+  formatInfo  <- write.fwf(testData[, "int1", drop=FALSE], formatInfo=TRUE,
+                           na="")
+  checkEquals(formatInfo$width, 1)
+  ## --> values of int1 have width 1 and using na="1234" should increase
+  ##     the width to 4
+  formatInfo  <- write.fwf(testData[, "int1", drop=FALSE], formatInfo=TRUE,
+                           na="1234")
+  checkEquals(formatInfo$width, 4)
+
   ## rowCol
   formatInfoTR <- data.frame(colname=c("row", "num1", "num2"),
-                            nlevels=c(11, 0, 0),
-                            position=c(1, 4, 7),
-                            width=c(2, 2, 3),
-                            digits=c(0, 0, 1),
-                            exp=c(0, 0, 0),
+                             nlevels=c(11, 0, 0),
+                             position=c(1, 4, 7),
+                             width=c(2, 2, 3),
+                             digits=c(0, 0, 1),
+                             exp=c(0, 0, 0),
                              stringsAsFactors=FALSE)
   formatInfoR <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE,
                            rownames=TRUE, rowCol="row")
@@ -84,6 +114,16 @@ test.write.fwf <- function()
   formatInfoTQI <-  formatInfoT
   formatInfoTQI$position <- c(2, 6)
   checkEquals(formatInfoQI, formatInfoTQI)
+
+  ## width
+  ## --> default width for num1 is 2
+  formatInfo <- write.fwf(testData[, "num1", drop=FALSE], width=10, formatInfo=TRUE)
+  checkEquals(formatInfo$width, 10)
+
+  ## too small value in width (this also tests recycling)
+  ## --> proper width for num1 is 2, while for num2 it is 3
+  checkException(write.fwf(testData[, c("num1", "num2")], width=2))
+  checkException(write.fwf(testData[, c("num1", "num2")], width=c(2, 1)))
 }
 
 ### }}}

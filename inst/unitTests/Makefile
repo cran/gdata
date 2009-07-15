@@ -1,18 +1,16 @@
 TOP=../..
 PKG=${shell cd ${TOP};pwd}
-SUITE=doRUnit.R
-R=${R_HOME}/bin/R
+SUITE=runRUnitTests.R
+R=R
 
-all: inst test
+test: # Run unit tests
+	${R} --vanilla --slave < ${SUITE}
 
 inst: # Install package
 	cd ${TOP}/..;\
 	${R} CMD INSTALL ${PKG}
 
-test: # Run unit tests
-	export RCMDCHECK=FALSE;\
-	cd ${TOP}/tests;\
-	${R} --vanilla --slave < ${SUITE}
+all: inst test
 
 echo: # Echo env. variables
 	@echo "Package folder: ${PKG}"

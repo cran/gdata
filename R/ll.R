@@ -1,5 +1,5 @@
-ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
-               function.dim="", sort.elements=FALSE, ...)
+ll <- function(pos=1, unit="KB", digits=0, dimensions=FALSE, function.dim="",
+               sort.elements=FALSE, ...)
 {
   get.object.classname <- function(object.name, pos)
   {
@@ -23,13 +23,13 @@ ll <- function(pos=1, unit=c("KB","MB","bytes"), digits=0, dimensions=FALSE,
   get.object.size <- function(object.name, pos)
   {
     object <- get(object.name, pos=pos)
-    size <- try(object.size(object), silent=TRUE)
+    size <- try(unclass(object.size(object)), silent=TRUE)
     if(class(size) == "try-error")
       size <- 0
     return(size)
   }
 
-  unit <- match.arg(unit)
+  unit <- match.arg(unit, c("bytes","KB","MB"))
   denominator <- switch(unit, "KB"=1024, "MB"=1024^2, 1)
 
   if(is.character(pos))  # pos is an environment name

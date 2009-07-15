@@ -7,7 +7,7 @@
   Display name, number of objects, and size of all loaded environments.
 }
 \usage{
-env(unit=c("KB","MB","bytes"), digits=0)
+env(unit="KB", digits=0)
 }
 \arguments{
   \item{unit}{required unit for displaying environment size: "bytes",

@@ -1,4 +1,4 @@
-% $Id: reorder.Rd 988 2006-10-29 12:55:08Z ggorjan $
+% $Id: reorder.Rd 1345 2009-07-16 02:55:27Z warnes $
 
 \name{reorder.factor}
 \alias{reorder.factor}
@@ -56,7 +56,7 @@
   A new factor with reordered levels
 }
 
-\author{Gregory R. Warnes \email{warnes@bst.rochester.edu}}
+\author{Gregory R. Warnes \email{greg@random-technologies-llc.com}}
 
 \seealso{\code{\link{factor}} and \code{\link[stats]{reorder}}}
 

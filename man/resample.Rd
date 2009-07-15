@@ -25,36 +25,19 @@ resample(x, size, replace = FALSE, prob = NULL)
   have identical behavior.
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  ...
+  Vector of the same length as the input, with the elements permuted.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ 
-
- ~Make other sections like Warning with \section{Warning }{....} ~
-}
-\seealso{ ~~objects to See Also as \code{\link{help}}, ~~~ }
+\author{Gregory R. Warnes \email{greg@random-technologies-llc.com} }
+\seealso{ \code{\link{sample}} }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function(x, n, ...)
-  {
-    if(length(x)==1)
-      {
-        if(n==1)
-          x
-        else
-          stop("Requested sample of size ", n, " from list of length 1")
-      }
-    else
-      sample(x, n, ...)
-  }
+## sample behavior differs if first argument is scalar vs vector
+sample( c(10) )
+sample( c(10,10) )
+
+## resample has the consistent behavior for both cases
+resample( c(10) )
+resample( c(10,10) )
+
 }
-\keyword{misc}% at least one, from doc/KEYWORDS
+\keyword{misc}

@@ -1,11 +1,9 @@
-# $Id: env.R 625 2005-06-09 14:20:30Z nj7w $
-
-env <- function(unit=c("KB","MB","bytes"), digits=0)
+env <- function(unit="KB", digits=0)
 {
   get.object.size <- function(object.name, pos)
   {
     object <- get(object.name, pos=pos)
-    size <- try(object.size(object), silent=TRUE)
+    size <- try(unclass(object.size(object)), silent=TRUE)
     if(class(size) == "try-error")
       size <- 0
     return(size)
@@ -26,7 +24,7 @@ env <- function(unit=c("KB","MB","bytes"), digits=0)
     return(nobjects)
   }
 
-  unit <- match.arg(unit)
+  unit <- match.arg(unit, c("bytes","KB","MB"))
   denominator <- switch(unit, "KB"=1024, "MB"=1024^2, 1)
   size.vector <- sapply(seq(along=search()), get.environment.size)
   size.vector <- round(size.vector/denominator, digits)

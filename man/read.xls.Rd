@@ -1,41 +1,53 @@
 \name{read.xls}
 \alias{read.xls}
 \alias{xls2csv}
+\alias{xls2tab}
+\alias{xls2sep}
 \title{Read Excel files}
 \description{Reads a Microsoft Excel file into a data frame}
 \usage{
-read.xls(xls, sheet=1, verbose=FALSE, pattern, ..., perl="perl")
+read.xls(xls, sheet=1, verbose=FALSE, pattern, ...,
+         method=c("csv","tab"), perl="perl")
+
 xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
+xls2tab(xls, sheet=1, verbose=FALSE, ..., perl="perl")
+xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
+        perl="perl")
 }
 \arguments{
-  \item{xls}{name of the Microsoft Excel file.  If on internet it
-   should begin with code{"http://"}.}
-  \item{sheet}{number of sheet within the Excel file from which data are
-    to be read}
+  \item{xls}{path to the Microsoft Excel file.  To access a file on the
+    internet, start the path with "http://".}
+  \item{sheet}{number of the sheet within the Excel file from which data
+    are to be read}
   \item{verbose}{logical flag indicating whether details should be
     printed as the file is processed.}
   \item{pattern}{if specified, them skip all lines before the first 
-   containing this string}
+    containing this string}
   \item{perl}{name of the perl executable to be called.}
+  \item{method}{intermediate file format, "csv" for comma-separated and
+    "tab" for tab-separated}
   \item{...}{additional arguments to read.table. The defaults of
     read.csv are used.}
 }
 \value{
-  \code{"read.xls"} returns a data frame. \code{"xls2csv"} returns a 
-  connection to a temporary file in csv format.
+  \code{"read.xls"} returns a data frame.
+
+  \code{"xls2sep"} returns a temporary file in the specified format.  
+  \code{"xls2csv"} and \code{"xls2tab"} are simply wrappers for
+  \code{"xls2sep"} specifying method as "csv" or "tab", respectively.
 }
 \details{
   This function works translating the named Microsoft Excel file into a
-  temporary .csv file, using Greg Warnes' xls2csv Perl script (installed
-  as part of the gregmisc package).
+  temporary .csv or .tab file, using the xls2csv or xls2tab
+  Perl script installed as part of this (gdata) package.
 
   Caution: In the conversion to csv, strings will be quoted. This can be
     problem if you are trying to use the \code{comment.char} option of
   \code{read.table} since the first character of all lines (including
   comment lines) will be "\"" after conversion.
 
-  Caution: With \code{"xls2csv"} it is the responsibility of the user
-   to close and delete the file after using it.
+  Caution: If you call \code{"xls2csv"} directly, is your responsibility 
+  to close and delete the file after using it.
 }
 \references{http://www.analytics.washington.edu/statcomp/downloads/xls2csv}
 \note{ Either a working version of Perl must be present in the executable
@@ -48,8 +60,21 @@ xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
    xlsfile <- file.path(.path.package('gdata'),'xls','iris.xls')
    xlsfile
 
-   iris <- read.xls(xlsfile)
+   iris <- read.xls(xlsfile) # defaults to csv format
+   iris <- read.xls(xlsfile,method="csv") # specify csv format
+   iris <- read.xls(xlsfile,method="tab") # specify tab format
+
    head(iris)  # look at the top few rows
+
+   \dontshow{
+   iris.1 <- read.xls(xlsfile) # defaults to csv format
+   iris.2 <- read.xls(xlsfile,method="csv") # specify csv format
+   iris.3 <- read.xls(xlsfile,method="tab") # specify tab format
+
+   stopifnot(all.equal(iris.1, iris.2))
+   stopifnot(all.equal(iris.1, iris.3))
+   }
+
 
   \dontrun{
    # Example specifying exact Perl path for default MS-Windows install of

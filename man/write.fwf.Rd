@@ -1,8 +1,8 @@
 % write.fwf.Rd
 %--------------------------------------------------------------------------
 % What: Write fixed width format man page
-% $Id: write.fwf.Rd 1001 2006-10-30 22:54:51Z ggorjan $
-% Time-stamp: <2006-10-30 23:52:00 ggorjan>
+% $Id: write.fwf.Rd 1344 2009-07-16 02:52:07Z warnes $
+% Time-stamp: <2008-08-05 12:40:32 ggorjan>
 %--------------------------------------------------------------------------
 
 \name{write.fwf}
@@ -21,8 +21,8 @@
 \usage{
 
 write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
-  rownames=FALSE, colnames=TRUE, rowCol=NULL, justify="right",
-  formatInfo=FALSE, quoteInfo=TRUE, \ldots)
+  rownames=FALSE, colnames=TRUE, rowCol=NULL, justify="left",
+  formatInfo=FALSE, quoteInfo=TRUE, width=NULL, \ldots)
 
 }
 
@@ -38,59 +38,75 @@ write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
   \item{rownames}{logical, print row names}
   \item{colnames}{logical, print column names}
   \item{rowCol}{character, rownames column name}
-  \item{justify}{character, allignment of character columns}
+  \item{justify}{character, alignment of character columns; see
+    \code{\link{format}}}
   \item{formatInfo}{logical, return information on number of levels,
     widths and format}
   \item{quoteInfo}{logical, should \code{formatInfo} account for quotes}
+  \item{width}{numeric, width of the columns in the output}
   \item{\ldots}{further arguments to \code{\link{format.info}},
     \code{\link{format}} and \code{\link{write.table}}}
 }
 
 \details{
 
-Output is similar to \code{print(x)} or \code{format(x)}. Formating is
+*F*ixed *w*idth *f*ormat is not used widely anymore. Use some other
+format (say *c*omma *s*eparated *v*alues; see \code{\link{read.csv}}) if
+you can. However, if you need fixed width format then \code{write.fwf}
+can help you.
+
+Output is similar to \code{print(x)} or \code{format(x)}. Formatting is
 done completely by \code{\link{format}} on a column basis. Columns in
 the output are by default separated with a space i.e. empty column with
 a width of one character, but that can be changed with \code{sep}
 argument as passed to \code{\link{write.table}} via \ldots.
 
+As mentioned formatting is done completely by
+\code{\link{format}}. Arguments can be passed to \code{format} via
+\code{\ldots} to further modify the output. However, note that the
+returned \code{formatInfo} might not properly account for this, since
+\code{\link{format.info}} (which is used to collect information about
+formatting) lacks the arguments of \code{\link{format}}.
+
 \code{quote} can be used to quote fields in the output. Since all
-columns of \code{x} are converted to character during the output, all
-columns will be quoted! The following is needed for \code{read.fwf} or
-any other tools outside \R. If quotes are used, \code{\link{read.table}}
-can be easily used to read the data back into \R. Check examples. Do read
-details on \code{quoteInfo}.
+columns of \code{x} are converted to character (via
+\code{\link{format}}) during the output, all columns will be quoted! If
+quotes are used, \code{\link{read.table}} can be easily used to read the
+data back into \R. Check examples. Do read the details about
+\code{quoteInfo} argument.
 
-Use only *true* character i.e. not "\t" or similar for \code{sep} as
-number of characters in \code{sep} is needed internally.
+Use only *true* character, i.e., avoid use of "T" or similar separators
+for \code{sep}. Width of the separator is taken as number of characters
+in \code{sep} as evaluated via \code{\link{nchar}}.
 
-Use \code{na} to convert missing/unknown values. Only single value can
-be specified. Take a look at \code{\link{NAToUnknown}} if you need
-greater flexibility.
+Use \code{NA} to convert missing/unknown values. Only single value can
+be specified in \code{na}. Use \code{\link{NAToUnknown}} prior to export
+if you need greater flexibility.
 
-If \code{rowCol} is not \code{NULL} and \code{rownames=TRUE} rownames
+If \code{rowCol} is not \code{NULL} and \code{rownames=TRUE}, rownames
 will also have column name with \code{rowCol} value. This is mainly for
 flexibility with tools outside \R. Note that (at least in \R 2.4.0) it
 is not "easy" to import data back to \R with \code{\link{read.fwf}} if
-you also export rownames. That is the reason, that default is
+you also export rownames. This is the reason, that default is
 \code{rownames=FALSE}.
 
-Information about format of output can be returned if
+Information about format of output will be returned if
 \code{formatInfo=TRUE}. Returned value is described in value
-section. Result is provided by \code{\link{format.info}} and care was
-taken to handle numeric properly. If output contains rownames, returned
-value accounts for this. Additionally, if \code{rowCol} is not
-\code{NULL} then returned value contains also information about format
+section. This information is gathered by \code{\link{format.info}} and
+care was taken to handle numeric properly. If output contains rownames,
+values account for this. Additionally, if \code{rowCol} is not
+\code{NULL} returned values contain also information about format
 of rownames.
 
-If \code{quote=TRUE} output is wider due to quotes. Return value (with
-\code{formatInfo=TRUE}) can account for this in two ways; controlled
-with argument \code{quoteInfo}. However, note that there is no way to
-properly read data back to \R if \code{quote=TRUE & quoteInfo=FALSE} was
-specifed for export. \code{quoteInfo} applies only when
-\code{quote=TRUE}. Assume there is a file with quoted data as shown
-bellow (column numbers in first three line are only for demonstration of
-the values in the output).
+If \code{quote=TRUE}, the output is of course wider due to
+quotes. Return value (with \code{formatInfo=TRUE}) can account for this
+in two ways; controlled with argument \code{quoteInfo}. However, note
+that there is no way to properly read the data back to \R if
+\code{quote=TRUE & quoteInfo=FALSE} arguments were used for
+export. \code{quoteInfo} applies only when \code{quote=TRUE}. Assume
+that there is a file with quoted data as shown bellow (column numbers in
+first three lines are only for demonstration of the values in the
+output).
 
 \preformatted{
 123456789 12345678 # for position
@@ -100,7 +116,7 @@ the values in the output).
 " " "   bb" " 123"
 }
 
-With \code{quoteInfo=TRUE} \code{write.fwf} will return (symbolically)
+With \code{quoteInfo=TRUE} \code{write.fwf} will return
 
 \preformatted{
 colname position width
@@ -117,6 +133,13 @@ V1             2     1
 V2             6     5
 V3            14     4
 }
+
+Argument \code{width} can be used to increase the width of the columns
+in the output. This argument is passed to the width argument of
+\code{\link{format}} function. Values in \code{width} are recycled if
+there is less values than the number of columns. If the specified width
+is to short in comparison to the "width" of the data in particular
+column, error is issued.
 
 }
 
@@ -148,14 +171,19 @@ following columns:
 \examples{
 
   ## Some data
+  num <- round(c(733070.345678, 1214213.78765456, 553823.798765678,
+                 1085022.8876545678,  571063.88765456, 606718.3876545678,
+                 1053686.6, 971024.187656, 631193.398765456, 879431.1),
+               digits=3)
+
   testData <- data.frame(num1=c(1:10, NA),
                          num2=c(NA, seq(from=1, to=5.5, by=0.5)),
-                         num3=c(NA, rnorm(n=10, mean=1e6, sd=3e5)),
-                         int1=c(as.integer(1:4), NA, as.integer(5:10)),
-                         fac1=factor(c(NA, letters[1:10])),
+                         num3=c(NA, num),
+                         int1=c(as.integer(1:4), NA, as.integer(4:9)),
+                         fac1=factor(c(NA, letters[1:9], "hjh")),
                          fac2=factor(c(letters[6:15], NA)),
                          cha1=c(letters[17:26], NA),
-                         cha2=c(NA, letters[26:17]),
+                         cha2=c(NA, "longer", letters[25:17]),
                          stringsAsFactors=FALSE)
   levels(testData$fac1) <- c(levels(testData$fac1), "unusedLevel")
   testData$Date <- as.Date("1900-1-1")
@@ -167,15 +195,19 @@ following columns:
   ## Default
   write.fwf(x=testData)
 
-  ## NA should be - or ------------
+  ## NA should be -
   write.fwf(x=testData, na="-")
-  write.fwf(x=testData, na="------------")
+  ## NA should be -NA-
+  write.fwf(x=testData, na="-NA-")
 
   ## Some other separator than space
   write.fwf(x=testData[, 1:4], sep="-mySep-")
 
+  ## Force wider columns
+  write.fwf(x=testData[, 1:5], width=20)
+
   ## Write to file and report format and fixed width information
-  file <- tempfile("test.txt")
+  file <- tempfile()
   formatInfo <- write.fwf(x=testData, file=file, formatInfo=TRUE)
 
   ## Read exported data back to R (note +1 due to separator)
