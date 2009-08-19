@@ -6,12 +6,12 @@
  related objects.
 }
 \usage{
-trim(s, recode.factor=TRUE, \ldots)
+trim(s, recode.factor=TRUE, \dots)
 }
 \arguments{
   \item{s}{object to be processed}
   \item{recode.factor}{should levels of a factor be recoded, see below}
-  \item{\ldots}{arguments passed to other methods, currently only to
+  \item{\dots}{arguments passed to other methods, currently only to
     \code{\link{reorder.factor}} for factors}
 }
 

@@ -44,12 +44,12 @@
 
 \usage{
 
-getYear(x, format, \ldots)
-getMonth(x, format, \ldots)
-getDay(x, format, \ldots)
-getHour(x, format, \ldots)
-getMin(x, format, \ldots)
-getSec(x, format, \ldots)
+getYear(x, format, \dots)
+getMonth(x, format, \dots)
+getDay(x, format, \dots)
+getHour(x, format, \dots)
+getMin(x, format, \dots)
+getSec(x, format, \dots)
 
 }
 
@@ -57,7 +57,7 @@ getSec(x, format, \ldots)
 \arguments{
   \item{x}{generic, date/time object}
   \item{format}{character, format}
-  \item{\ldots}{arguments pased to other methods}
+  \item{\dots}{arguments pased to other methods}
 }
 
 \value{Character}

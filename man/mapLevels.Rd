@@ -56,7 +56,7 @@ should have the same levels and therefore the same internal coding.
 
 \usage{
 
-mapLevels(x, codes=TRUE, sort=TRUE, drop=FALSE, combine=FALSE, \ldots)
+mapLevels(x, codes=TRUE, sort=TRUE, drop=FALSE, combine=FALSE, \dots)
 mapLevels(x) <- value
 
 }
@@ -69,7 +69,7 @@ mapLevels(x) <- value
     details}
   \item{drop}{boolean, drop unused levels}
   \item{combine}{boolean, combine levels, look into details}
-  \item{\ldots}{additional arguments for \code{sort}}
+  \item{\dots}{additional arguments for \code{sort}}
   \item{value}{levelsMap or listLevelsMap, output of \code{mapLevels}
     methods or constructed by user, look into details}
 }

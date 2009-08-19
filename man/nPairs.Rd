@@ -28,7 +28,7 @@ nPairs(x, margin=FALSE, names=TRUE, abbrev=TRUE, ...)
   \item{margin}{logical, calculate the cumulative number of \dQuote{pairs}}
   \item{names}{logical, add row/col-names to the output}
   \item{abbrev}{logical, abbreviate names}
-  \item{\ldots}{other arguments passed to \code{\link{abbreviate}}}
+  \item{\dots}{other arguments passed to \code{\link{abbreviate}}}
 }
 
 \value{

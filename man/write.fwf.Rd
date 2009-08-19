@@ -1,7 +1,7 @@
 % write.fwf.Rd
 %--------------------------------------------------------------------------
 % What: Write fixed width format man page
-% $Id: write.fwf.Rd 1344 2009-07-16 02:52:07Z warnes $
+% $Id: write.fwf.Rd 1357 2009-08-20 14:54:44Z warnes $
 % Time-stamp: <2008-08-05 12:40:32 ggorjan>
 %--------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@
 
 write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
   rownames=FALSE, colnames=TRUE, rowCol=NULL, justify="left",
-  formatInfo=FALSE, quoteInfo=TRUE, width=NULL, \ldots)
+  formatInfo=FALSE, quoteInfo=TRUE, width=NULL, \dots)
 
 }
 
@@ -44,7 +44,7 @@ write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
     widths and format}
   \item{quoteInfo}{logical, should \code{formatInfo} account for quotes}
   \item{width}{numeric, width of the columns in the output}
-  \item{\ldots}{further arguments to \code{\link{format.info}},
+  \item{\dots}{further arguments to \code{\link{format.info}},
     \code{\link{format}} and \code{\link{write.table}}}
 }
 
@@ -59,11 +59,11 @@ Output is similar to \code{print(x)} or \code{format(x)}. Formatting is
 done completely by \code{\link{format}} on a column basis. Columns in
 the output are by default separated with a space i.e. empty column with
 a width of one character, but that can be changed with \code{sep}
-argument as passed to \code{\link{write.table}} via \ldots.
+argument as passed to \code{\link{write.table}} via \dots.
 
 As mentioned formatting is done completely by
 \code{\link{format}}. Arguments can be passed to \code{format} via
-\code{\ldots} to further modify the output. However, note that the
+\code{\dots} to further modify the output. However, note that the
 returned \code{formatInfo} might not properly account for this, since
 \code{\link{format.info}} (which is used to collect information about
 formatting) lacks the arguments of \code{\link{format}}.
@@ -75,13 +75,13 @@ quotes are used, \code{\link{read.table}} can be easily used to read the
 data back into \R. Check examples. Do read the details about
 \code{quoteInfo} argument.
 
-Use only *true* character, i.e., avoid use of "T" or similar separators
-for \code{sep}. Width of the separator is taken as number of characters
-in \code{sep} as evaluated via \code{\link{nchar}}.
+Use only *true* character, i.e., avoid use of tabs, i.e., "\\t", or similar
+separators via argument \code{sep}. Width of the separator is taken as
+the number of characters evaluated via \code{\link{nchar}(sep)}.
 
-Use \code{NA} to convert missing/unknown values. Only single value can
-be specified in \code{na}. Use \code{\link{NAToUnknown}} prior to export
-if you need greater flexibility.
+Use argument \code{na} to convert missing/unknown values. Only single value
+can be specified. Use \code{\link{NAToUnknown}} prior to export if you need
+greater flexibility.
 
 If \code{rowCol} is not \code{NULL} and \code{rownames=TRUE}, rownames
 will also have column name with \code{rowCol} value. This is mainly for

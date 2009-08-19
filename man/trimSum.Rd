@@ -17,14 +17,14 @@
   to specify the desired length of a trimmed vector.
 }
 
-\usage{trimSum(x, n, right=TRUE, na.rm=FALSE, \ldots)}
+\usage{trimSum(x, n, right=TRUE, na.rm=FALSE, \dots)}
 
 \arguments{
   \item{x}{numeric, a vector of numeric values}
   \item{n}{numeric, desired length of the output}
   \item{right}{logical, trim on the right/bottom  or the left/top  side}
   \item{na.rm}{logical, remove \code{NA} values when applying a function}
-  \item{\ldots}{arguments passed to other methods - currently not used}
+  \item{\dots}{arguments passed to other methods - currently not used}
 }
 
 \value{Trimmed vector with a last/first value representing the sum of 

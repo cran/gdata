@@ -1,3 +1,36 @@
+2009-08-19 17:37  warnes
+
+	* inst/unitTests/runit.getDateTimeParts.R: Modify unit tests to
+	  avoid issues related to zime zones.
+
+2009-08-05 01:57  warnes
+
+	* inst/doc/mapLevels.pdf, inst/doc/unknown.pdf: Update vignettes
+	  for 2.6.0 release
+
+2009-08-05 01:57  warnes
+
+	* man/frameApply.Rd: Fix formatting warning in frameApply man page
+
+2009-07-16 10:55  ggorjan
+
+	* man/write.fwf.Rd: Reverting recent change and clarifying the
+	  meaning.
+
+2009-07-16 03:23  warnes
+
+	* inst/doc/mapLevels.pdf, inst/doc/unknown.pdf, man/resample.Rd:
+	  Add contents of \value section for resample() man page
+
+2009-07-16 03:15  warnes
+
+	* tests/tests.write.fwf.Rout.save: Update test output to remove R
+	  CMD check warning
+
+2009-07-16 03:10  warnes
+
+	* inst/NEWS: Update ChangeLog and NEWS for gdata 2.6.0 release
+
 2009-07-16 02:56  warnes
 
 	* DESCRIPTION: Update DESCRIPTION file for gdata 2.6.0

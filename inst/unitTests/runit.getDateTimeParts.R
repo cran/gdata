@@ -19,18 +19,16 @@ fac <- factor(c("A"))
 tYear <- as.character(c(2006, 1995, 1005, 3067))
 tMonth <- c("01", "04", "06", "12")
 tDay <- c("01", "12", "22", "04")
-tDate <- paste(tYear, tMonth, tDay, sep="-")
+tDate <- paste( paste(tYear, tMonth, tDay, sep="-"), "GMT" )
 
 tHour <- c("05", "16", "20", "03")
 tMin <- c("16", "40", "06", "52")
 tSec <- c("56", "34", "05", "15")
 tTime <- paste(tHour, tMin, tSec, sep=":")
 
-# tDateTime <- paste()
-
 cDate <- as.Date(tDate)
-cDatePOSIXct <- as.POSIXct(cDate)
-cDatePOSIXlt <- as.POSIXlt(cDate)
+cDatePOSIXct <- as.POSIXct(tDate)
+cDatePOSIXlt <- as.POSIXlt(tDate)
 
 ### }}}
 ### {{{ --- getYear ---

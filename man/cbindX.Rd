@@ -1,7 +1,7 @@
 % cbindX.Rd
 %--------------------------------------------------------------------------
 % What: Column-bind objects with different number of rows - help
-% $Id: cbindX.Rd 1300 2008-08-05 11:47:18Z ggorjan $
+% $Id: cbindX.Rd 1357 2009-08-20 14:54:44Z warnes $
 % Time-stamp: <2008-08-05 13:38:45 ggorjan>
 %--------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@
 \usage{cbindX(...)}
 
 \arguments{
-  \item{\ldots}{matrix and data.frame objects}
+  \item{\dots}{matrix and data.frame objects}
 }
 
 \details{
