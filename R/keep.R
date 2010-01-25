@@ -21,4 +21,3 @@ keep <- function(..., list=character(0), all=FALSE, sure=FALSE)
   else
     return(ls(1,all.names=all)[-keep.elements])
 }
-

@@ -1,23 +1,23 @@
-ll <- function(pos=1, unit="KB", digits=0, dimensions=FALSE, function.dim="",
-               sort.elements=FALSE, ...)
+ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
+               invert=FALSE, ...)
 {
-  get.object.classname <- function(object.name, pos)
+  get.object.class <- function(object.name, pos)
   {
     object <- get(object.name, pos=pos)
-    classname <- class(object)[1]
-    return(classname)
+    class <- class(object)[1]
+    return(class)
   }
 
-  get.object.dimensions <- function(object.name, pos)
+  get.object.dim <- function(object.name, pos)
   {
     object <- get(object.name, pos=pos)
     if(class(object)[1] == "function")
-      dimensions <- function.dim
+      dim <- ""
     else if(!is.null(dim(object)))
-      dimensions <- paste(dim(object), collapse=" x ")
+      dim <- paste(dim(object), collapse=" x ")
     else
-      dimensions <- length(object)
-    return(dimensions)
+      dim <- length(object)
+    return(dim)
   }
 
   get.object.size <- function(object.name, pos)
@@ -51,37 +51,45 @@ ll <- function(pos=1, unit="KB", digits=0, dimensions=FALSE, function.dim="",
   {
     object.frame <- data.frame()
   }
-  else if(search()[pos] == "Autoloads")  # pos is the autoload environment
+  else if(environmentName(as.environment(pos)) == "Autoloads")
   {
     object.frame <- data.frame(rep("function",length(ls(pos,...))),
-                      rep(0,length(ls(pos,...))), row.names=ls(pos,...))
-    if(dimensions)
+                               rep(0,length(ls(pos,...))),
+                               row.names=ls(pos,...))
+    if(dim)
     {
-      object.frame <- cbind(object.frame, rep(function.dim,nrow(object.frame)))
-      names(object.frame) <- c("Class", unit, "Dimensions")
+      object.frame <- cbind(object.frame, rep("",nrow(object.frame)))
+      names(object.frame) <- c("Class", unit, "Dim")
     }
     else
       names(object.frame) <- c("Class", unit)
   }
   else
   {
-    class.vector <- sapply(ls(pos,...), get.object.classname, pos=pos)
+    class.vector <- sapply(ls(pos,...), get.object.class, pos=pos)
     size.vector <- sapply(ls(pos,...), get.object.size, pos=pos)
     size.vector <- round(size.vector/denominator, digits)
     object.frame <- data.frame(class.vector=class.vector,
-                      size.vector=size.vector, row.names=names(size.vector))
+                               size.vector=size.vector,
+                               row.names=names(size.vector))
     names(object.frame) <- c("Class", unit)
-    if(dimensions)
-      object.frame <- cbind(object.frame, Dim=sapply(ls(pos,...),
-                        get.object.dimensions, pos=pos))
+    if(dim)
+      object.frame <- cbind(object.frame,
+                            Dim=sapply(ls(pos,...),get.object.dim,pos=pos))
   }
   if(was.list)
   {
     detach(pos=2)
-    if(!sort.elements)
+    if(!sort)
       object.frame <- object.frame[original.rank, ]
+  }
+  if(!is.null(class))
+  {
+    include <- object.frame$Class %in% class
+    if(invert)
+      include <- !include
+    object.frame <- object.frame[include,]
   }
 
   return(object.frame)
 }
-

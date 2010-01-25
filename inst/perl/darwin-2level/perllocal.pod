@@ -1,0 +1,286 @@
+=head2 Sun Jan 24 14:16:23 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 14:20:10 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 15:54:04 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 16:54:32 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 17:08:56 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 18:38:55 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 18:39:36 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 18:41:30 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 19:23:30 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 19:28:01 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Sun Jan 24 19:31:16 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Jan 25 23:10:51 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Jan 25 23:13:06 2010: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/warnes/src/r-gregmisc/gdata/src/../inst/perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.024>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

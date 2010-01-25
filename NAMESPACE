@@ -24,6 +24,8 @@ export(
        remove.vars,
        reorder.factor,
        resample,
+       sheetCount,
+       sheetNames,
        trim,
        trimSum,
        unmatrix,
@@ -33,6 +35,7 @@ export(
        write.fwf,
        xls2csv,
        xls2tab,
+       xls2tsv,       
        xls2sep,       
 
        ## Object size stuff

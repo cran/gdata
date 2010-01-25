@@ -35,4 +35,3 @@ env <- function(unit="KB", digits=0)
   print(env.frame, right=FALSE)
   invisible(env.frame)
 }
-

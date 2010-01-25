@@ -2,21 +2,22 @@
 \alias{read.xls}
 \alias{xls2csv}
 \alias{xls2tab}
+\alias{xls2tsv}
 \alias{xls2sep}
 \title{Read Excel files}
-\description{Reads a Microsoft Excel file into a data frame}
+\description{Read a Microsoft Excel file into a data frame}
 \usage{
-read.xls(xls, sheet=1, verbose=FALSE, pattern, ...,
-         method=c("csv","tab"), perl="perl")
-
+read.xls(xls, sheet = 1, verbose=FALSE, pattern, ...,
+         method=c("csv","tsv","tab"), perl="perl")
 xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
 xls2tab(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
+xls2tsv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
+xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
         perl="perl")
 }
 \arguments{
-  \item{xls}{path to the Microsoft Excel file.  To access a file on the
-    internet, start the path with "http://".}
+  \item{xls}{path to the Microsoft Excel file.  Supports "http://",
+    "https://", and "ftp://" URLS.}
   \item{sheet}{number of the sheet within the Excel file from which data
     are to be read}
   \item{verbose}{logical flag indicating whether details should be
@@ -26,8 +27,8 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
   \item{perl}{name of the perl executable to be called.}
   \item{method}{intermediate file format, "csv" for comma-separated and
     "tab" for tab-separated}
-  \item{...}{additional arguments to read.table. The defaults of
-    read.csv are used.}
+  \item{...}{additional arguments to read.table. The defaults for
+    read.csv() are used.}
 }
 \value{
   \code{"read.xls"} returns a data frame.
@@ -53,7 +54,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
 \note{ Either a working version of Perl must be present in the executable
   search path, or the exact path of the perl executable must be provided
   via the \code{perl} argument.  See the examples below for an illustration.}
-\seealso{ \code{\link[base]{read.csv}} }
+\seealso{ \code{\link[utils]{read.csv}} }
 \examples{
 
    # iris.xls is included in the gregmisc package for use as an example
@@ -93,14 +94,34 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tab"),
    crime <- read.xls(crime.url, pattern = "State")
 
    # use of xls2csv - open con, print two lines, close con
-   con <- xls2csv(nba.url)
+   con <- xls2csv(crime.url)
    print(readLines(con, 2)) 
    file.remove(summary(con)$description)
    
    }
+
+   # Examples demonstrating selection of specific 'sheets'
+   # from the example XLS file 'ExampleExcelFile.xls'
+   exampleFile <- file.path(.path.package('gdata'),'xls',
+                            'ExampleExcelFile.xls')
+   exampleFile2007 <- file.path(.path.package('gdata'),'xls',
+                            'ExampleExcelFile.xlsx')
+
+   # see the number and names of sheets:
+   sheetCount(exampleFile)
+   sheetNames(exampleFile2007)
+
+   data <- read.xls(exampleFile)          # default is first worksheet
+   data <- read.xls(exampleFile, sheet=2) # second worksheet by number
+   data <- read.xls(exampleFile, sheet="Sheet Second",v=TRUE) # and by name
+
+   # load the third worksheet, skipping the first two non-data lines...
+   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
+
 }
-\author{Jim Rogers \email{james.a.rogers@pfizer.com}, modified
-  and extended by Gregory R. Warnes \email{greg@random-technologies-llc.com} 
+\author{
+  Gregory R. Warnes \email{greg@random-technologies-llc.com},
+  Jim Rogers \email{james.a.rogers@pfizer.com}, and
   Gabor Grothendiek \email{ggrothendieck@gmail.com}.
 }
 \keyword{file}

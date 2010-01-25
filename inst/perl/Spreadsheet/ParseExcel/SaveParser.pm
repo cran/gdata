@@ -1,765 +1,310 @@
-# Spreadsheet::ParseExcel::SaveParser
-#  by Kawai, Takanori (Hippo2000) 2001.5.1
-# This Program is ALPHA version.
-#//////////////////////////////////////////////////////////////////////////////
-# Spreadsheet::ParseExcel:.SaveParser Objects
-#//////////////////////////////////////////////////////////////////////////////
-#==============================================================================
-# Spreadsheet::ParseExcel::SaveParser::Workbook
-#==============================================================================
-package Spreadsheet::ParseExcel::SaveParser::Workbook;
-use strict;
-use warnings;
-
-use base 'Spreadsheet::ParseExcel::Workbook';
-our $VERSION = '0.06';
-
-sub new {
-    my($sPkg, $oBook) = @_;
-    return undef unless(defined $oBook);
-    my %oThis = %$oBook;
-    bless \%oThis, $sPkg;
-    
-    # re-bless worksheets (and set their _Book properties !!!)
-    my $sWkP = ref($sPkg) || "$sPkg";
-    $sWkP =~ s/Workbook$/Worksheet/;
-    map { bless($_, $sWkP); } @{$oThis{Worksheet}};
-    map { $_->{_Book} = \%oThis; } @{$oThis{Worksheet}};
-    return \%oThis;
-}
-#------------------------------------------------------------------------------
-# Parse (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub Parse {
-    my($sClass, $sFile, $oWkFmt)=@_;
-    my $oBook = Spreadsheet::ParseExcel::Workbook->Parse($sFile, $oWkFmt);
-    bless $oBook, $sClass;
-
-    # re-bless worksheets (and set their _Book properties !!!)
-    my $sWkP = ref($sClass) || "$sClass";
-    $sWkP =~ s/Workbook$/Worksheet/;
-    map { bless($_, $sWkP); } @{$oBook->{Worksheet}};
-    map { $_->{_Book} = $oBook; } @{$oBook->{Worksheet}};
-    return $oBook;
-}
-#------------------------------------------------------------------------------
-# SaveAs (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub SaveAs {
-    my ($oBook, $sName)=@_;
-    # Create a new Excel workbook
-    my $oWrEx = Spreadsheet::WriteExcel->new($sName);
-    my %hFmt;
-
-    my $iNo = 0;
-    my @aAlH = ('left', 'left', 'center', 'right', 'fill', 'justify', 'merge', 'equal_space');
-    my @aAlV = ('top' , 'vcenter', 'bottom', 'vjustify', 'vequal_space');
-
-    foreach my $pFmt (@{$oBook->{Format}}) {
-        my $oFmt = $oWrEx->addformat();    # Add Formats
-        unless($pFmt->{Style}) {
-            $hFmt{$iNo} = $oFmt;
-            my $rFont = $pFmt->{Font};
-
-            $oFmt->set_font($rFont->{Name});
-            $oFmt->set_size($rFont->{Height});
-            $oFmt->set_color($rFont->{Color});
-            $oFmt->set_bold($rFont->{Bold});
-            $oFmt->set_italic($rFont->{Italic});
-            $oFmt->set_underline($rFont->{Underline});
-            $oFmt->set_font_strikeout($rFont->{Strikeout});
-            $oFmt->set_font_script($rFont->{Super});
-
-            $oFmt->set_hidden($rFont->{Hidden});        #Add
-
-            $oFmt->set_locked($pFmt->{Lock});
-
-            $oFmt->set_align($aAlH[$pFmt->{AlignH}]);
-            $oFmt->set_align($aAlV[$pFmt->{AlignV}]);
-            if($pFmt->{Rotate}==0) {
-                $oFmt->set_rotation(0);
-            }
-            elsif($pFmt->{Rotate}> 0) {  # Mainly ==90
-                $oFmt->set_rotation(3);
-            }
-            elsif($pFmt->{Rotate} < 0) {  # Mainly == -90
-                $oFmt->set_rotation(2);
-            }
-            $oFmt->set_num_format($oBook->{FmtClass}->FmtStringDef($pFmt->{FmtIdx}, $oBook));
-
-            $oFmt->set_text_wrap($pFmt->{Wrap});
-
-            $oFmt->set_pattern($pFmt->{Fill}->[0]);
-            $oFmt->set_fg_color($pFmt->{Fill}->[1]) 
-                        if(($pFmt->{Fill}->[1] >= 8) && ($pFmt->{Fill}->[1] <= 63));
-            $oFmt->set_bg_color($pFmt->{Fill}->[2])
-                        if(($pFmt->{Fill}->[2] >= 8) && ($pFmt->{Fill}->[2] <= 63));
-
-            $oFmt->set_left  (($pFmt->{BdrStyle}->[0]>7)? 3: $pFmt->{BdrStyle}->[0]);
-            $oFmt->set_right (($pFmt->{BdrStyle}->[1]>7)? 3: $pFmt->{BdrStyle}->[1]);
-            $oFmt->set_top   (($pFmt->{BdrStyle}->[2]>7)? 3: $pFmt->{BdrStyle}->[2]);
-            $oFmt->set_bottom(($pFmt->{BdrStyle}->[3]>7)? 3: $pFmt->{BdrStyle}->[3]);
-
-            $oFmt->set_left_color  ($pFmt->{BdrColor}->[0])
-                        if(($pFmt->{BdrColor}->[0] >= 8) && ($pFmt->{BdrColor}->[0] <= 63));
-            $oFmt->set_right_color ($pFmt->{BdrColor}->[1])
-                        if(($pFmt->{BdrColor}->[1] >= 8) && ($pFmt->{BdrColor}->[1] <= 63));
-            $oFmt->set_top_color   ($pFmt->{BdrColor}->[2])
-                        if(($pFmt->{BdrColor}->[2] >= 8) && ($pFmt->{BdrColor}->[2] <= 63));
-            $oFmt->set_bottom_color($pFmt->{BdrColor}->[3])
-                        if(($pFmt->{BdrColor}->[3] >= 8) && ($pFmt->{BdrColor}->[3] <= 63));
-        }
-        $iNo++;
-    }
-    for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-        my $oWkS = $oBook->{Worksheet}[$iSheet];
-        my $oWrS = $oWrEx->addworksheet($oWkS->{Name});
-        #Landscape
-        if(!$oWkS->{Landscape}) { # Landscape (0:Horizontal, 1:Vertical)
-            $oWrS->set_landscape();
-        }
-        else {
-            $oWrS->set_portrait();
-        }
-        #Protect
-        if(defined $oWkS->{Protect}) { # Protect ('':NoPassword, Password:Password)
-	    if ($oWkS->{Protect} ne '') {
-		$oWrS->protect($oWkS->{Protect});
-	    }
-	    else {
-		$oWrS->protect();
-	    }
-        }
-        if(($oWkS->{FitWidth}==1) and ($oWkS->{FitHeight}==1)) {
-            # Pages on fit with width and Heigt
-            $oWrS->fit_to_pages($oWkS->{FitWidth}, $oWkS->{FitHeight});
-            #Print Scale
-            $oWrS->set_print_scale($oWkS->{Scale});
-        }
-        else {
-            #Print Scale
-            $oWrS->set_print_scale($oWkS->{Scale});
-            # Pages on fit with width and Heigt
-            $oWrS->fit_to_pages($oWkS->{FitWidth}, $oWkS->{FitHeight});
-        }
-        # Paper Size
-        $oWrS->set_paper($oWkS->{PaperSize});
-        # Margin
-        $oWrS->set_margin_left($oWkS->{LeftMergin}     / 2.55);
-        $oWrS->set_margin_right($oWkS->{RightMergin}   / 2.55);
-        $oWrS->set_margin_top($oWkS->{TopMergin}       / 2.55);
-        $oWrS->set_margin_bottom($oWkS->{BottomMergin} / 2.55);
-        # HCenter
-        $oWrS->center_horizontally() if($oWkS->{HCenter});
-        # VCenter
-        $oWrS->center_vertically() if($oWkS->{VCenter});
-        # Header, Footer
-        $oWrS->set_header($oWkS->{Header}, $oWkS->{HeaderMergin}/2.55);
-        $oWrS->set_footer($oWkS->{Footer}, $oWkS->{FooterMergin}/2.55);
-        # Print Area
-        if(ref($oBook->{PrintArea}[$iSheet]) eq 'ARRAY') {
-            my $raP;
-            for $raP (@{$oBook->{PrintArea}[$iSheet]}) {
-                $oWrS->print_area(@$raP);
-            }
-        }
-            
-        # Print Title
-        my $raW;
-        foreach $raW (@{$oBook->{PrintTitle}[$iSheet]->{Row}}) {
-            $oWrS->repeat_rows(@$raW);
-        }
-        foreach $raW (@{$oBook->{PrintTitle}[$iSheet]->{Column}}) {
-            $oWrS->repeat_columns(@$raW);
-        }
-        # Print Gridlines
-        if($oWkS->{PrintGrid}==1) {
-            $oWrS->hide_gridlines(0);
-        }
-        else {
-            $oWrS->hide_gridlines(1);
-        }
-        # Print Headings
-        if($oWkS->{PrintHeaders}) {
-            $oWrS->print_row_col_headers();
-        }
-        # Horizontal Page Breaks
-        $oWrS->set_h_pagebreaks(@{$oWkS->{HPageBreak}});
-        # Veritical Page Breaks
-        $oWrS->set_v_pagebreaks(@{$oWkS->{VPageBreak}});
-=pod
-
-            PageStart    => $oWkS->{PageStart},            # Page number for start
-            UsePage      => $oWkS->{UsePage},              # Use own start page number
-            NoColor      => $oWkS->{NoColor},               # Print in blcak-white
-            Draft        => $oWkS->{Draft},                 # Print in draft mode
-            Notes        => $oWkS->{Notes},                 # Print notes
-            LeftToRight  => $oWkS->{LeftToRight},           # Left to Right
-=cut
-        for(my $iC = $oWkS->{MinCol} ;
-                            defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {            
-            if(defined $oWkS->{ColWidth}[$iC]) {
-                if($oWkS->{ColWidth}[$iC]>0) {
-                    $oWrS->set_column($iC, $iC, $oWkS->{ColWidth}[$iC]);#, undef, 1) ;
-                }
-                else {
-                    $oWrS->set_column($iC, $iC, 0, undef, 1) ;
-                }
-            }
-        }
-        for(my $iR = $oWkS->{MinRow} ; 
-                defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-            $oWrS->set_row($iR, $oWkS->{RowHeight}[$iR]);
-            for(my $iC = $oWkS->{MinCol} ;
-                            defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-
-                my $oWkC = $oWkS->{Cells}[$iR][$iC];
-                if($oWkC) {
-                    if($oWkC->{Merged}) {
-                        my $oFmtN = $oWrEx->addformat();
-                        $oFmtN->copy($hFmt{$oWkC->{FormatNo}});
-                        $oFmtN->set_merge(1);
-                        $oWrS->write($iR , $iC, $oBook->{FmtClass}->TextFmt($oWkC->{Val}, $oWkC->{Code}), 
-                            $oFmtN);
-                    }
-                    else {
-                        $oWrS->write($iR , $iC, $oBook->{FmtClass}->TextFmt($oWkC->{Val}, $oWkC->{Code}), 
-                            $hFmt{$oWkC->{FormatNo}});
-                    }
-                }
-            }
-        }
-    }
-    return $oWrEx
-}
-#------------------------------------------------------------------------------
-# AddWorksheet (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub AddWorksheet {
-    my($oBook, $sName, %hAttr) = @_;
-    $oBook->AddFormat if($#{$oBook->{Format}}<0);
-    $hAttr{Name} ||= $sName;
-    $hAttr{LeftMergin} ||= 0;
-    $hAttr{RightMergin} ||= 0;
-    $hAttr{TopMergin} ||= 0;
-    $hAttr{BottomMergin} ||= 0;
-    $hAttr{HeaderMergin} ||= 0;
-    $hAttr{FooterMergin} ||= 0;
-    $hAttr{FitWidth} ||= 0;
-    $hAttr{FitHeight} ||= 0;
-    $hAttr{PrintGrid} ||= 0;
-    my $oWkS = Spreadsheet::ParseExcel::SaveParser::Worksheet->new(%hAttr);
-    $oWkS->{_Book} = $oBook;
-    $oWkS->{_SheetNo} = $oBook->{SheetCount};
-    $oBook->{Worksheet}[$oBook->{SheetCount}] = $oWkS;
-    $oBook->{SheetCount}++;
-    return $oWkS; #$oBook->{SheetCount} - 1;
-}
-#------------------------------------------------------------------------------
-# AddFont (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub AddFont {
-    my ($oBook, %hAttr) = @_;
-    $hAttr{Name}     ||= 'Arial';
-    $hAttr{Height}   ||= 10;
-    $hAttr{Bold}     ||= 0;
-    $hAttr{Italic}   ||= 0;
-    $hAttr{Underline}||= 0;
-    $hAttr{Strikeout}||= 0;
-    $hAttr{Super}    ||= 0;
-    push @{$oBook->{Font}}, 
-        Spreadsheet::ParseExcel::Font->new(%hAttr);
-    return $#{$oBook->{Font}};
-}
-#------------------------------------------------------------------------------
-# AddFormat (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub AddFormat {
-    my ($oBook, %hAttr) = @_;
-    $hAttr{Fill}     ||= [0, 0, 0];
-    $hAttr{BdrStyle} ||= [0, 0, 0, 0];
-    $hAttr{BdrColor} ||= [0, 0, 0, 0];
-    $hAttr{AlignH} ||= 0;
-    $hAttr{AlignV} ||= 0;
-    $hAttr{Rotate} ||= 0;
-    $hAttr{Landscape} ||= 0;
-    $hAttr{FmtIdx} ||= 0;
-    if(!defined($hAttr{Font})) {
-        my $oFont;
-        if(defined $hAttr{FontNo}) {
-            $oFont = $oBook->{Font}[$hAttr{FontNo}];
-        }
-        elsif(!defined $oFont) {
-            if($#{$oBook->{Font}}>=0) {
-                $oFont = $oBook->{Font}[0];
-            }
-            else {
-                my $iNo = $oBook->AddFont;
-                $oFont = $oBook->{Font}[$iNo];
-            }
-        }
-        $hAttr{Font} = $oFont;
-    }
-    push @{$oBook->{Format}}, 
-        Spreadsheet::ParseExcel::Format->new(%hAttr);
-    return $#{$oBook->{Format}};
-}
-#------------------------------------------------------------------------------
-# AddCell (for Spreadsheet::ParseExcel::SaveParser::Workbook)
-#------------------------------------------------------------------------------
-sub AddCell {
-    my($oBook, $iSheet, $iR, $iC, $sVal, $oCell, $sCode)=@_;
-    my %rhKey;
-    $oCell ||= 0;
-    my $iFmt = (UNIVERSAL::isa($oCell, 'Spreadsheet::ParseExcel::Cell'))?
-                $oCell->{FormatNo} : (ref($oCell))? 0: $oCell+0;
-    $rhKey{FormatNo} = $iFmt;
-    $rhKey{Format}   = $oBook->{Format}[$iFmt];
-    $rhKey{Val}      = $sVal;
-    $rhKey{Code}     = $sCode || '_native_';
-    $oBook->{_CurSheet} = $iSheet;
-    my $oNewCell = Spreadsheet::ParseExcel::_NewCell($oBook, $iR, $iC, %rhKey);
-    Spreadsheet::ParseExcel::_SetDimension($oBook, $iR, $iC, $iC);
-    return $oNewCell;
-}
-1;
-#==============================================================================
-# Spreadsheet::ParseExcel::SaveParser::Worksheet
-#==============================================================================
-package Spreadsheet::ParseExcel::SaveParser::Worksheet;
-use strict;
-use warnings;
-
-use base 'Spreadsheet::ParseExcel::Worksheet';
-our $VERSION = '0.06';
-
-
-sub new {
-  my ($sClass, %rhIni) = @_;
-  $sClass->SUPER::new(%rhIni);  # returns object
-}
-#------------------------------------------------------------------------------
-# AddCell (for Spreadsheet::ParseExcel::SaveParser::Worksheet)
-#------------------------------------------------------------------------------
-sub AddCell {
-    my($oSelf, $iR, $iC, $sVal, $oCell, $sCode)=@_;
-    $oSelf->{_Book}->AddCell($oSelf->{_SheetNo}, $iR, $iC, $sVal, $oCell, $sCode);
-}
-#------------------------------------------------------------------------------
-# Protect (for Spreadsheet::ParseExcel::SaveParser::Worksheet)
-#  - Password = undef   ->  No protect
-#  - Password = ''      ->  Protected. No password
-#  - Password = $pwd    ->  Protected. Password = $pwd
-#------------------------------------------------------------------------------
-sub Protect {
-    my($oSelf, $sPassword)=@_;
-    $oSelf->{Protect} = $sPassword;
-}
-
-#==============================================================================
-# Spreadsheet::ParseExcel::SaveParser
-#==============================================================================
 package Spreadsheet::ParseExcel::SaveParser;
+
+###############################################################################
+#
+# Spreadsheet::ParseExcel::SaveParser - Rewrite an existing Excel file.
+#
+# Used in conjunction with Spreadsheet::ParseExcel.
+#
+# Copyright (c) 2009      John McNamara
+# Copyright (c) 2006-2008 Gabor Szabo
+# Copyright (c) 2000-2006 Kawai Takanori
+#
+# perltidy with standard settings.
+#
+# Documentation after __END__
+#
+
 use strict;
 use warnings;
 
+use Spreadsheet::ParseExcel;
+use Spreadsheet::ParseExcel::SaveParser::Workbook;
+use Spreadsheet::ParseExcel::SaveParser::Worksheet;
 use Spreadsheet::WriteExcel;
 use base 'Spreadsheet::ParseExcel';
-our $VERSION = '0.06';
 
-use constant MagicCol => 1.14;
-#------------------------------------------------------------------------------
-# new (for Spreadsheet::ParseExcel::SaveParser)
-#------------------------------------------------------------------------------
+our $VERSION = '0.56';
+
+###############################################################################
+#
+# new()
+#
 sub new {
-    my($sPkg, %hKey) = @_;
-    $sPkg->SUPER::new(%hKey);
+
+    my ( $package, %params ) = @_;
+    $package->SUPER::new(%params);
 }
-#------------------------------------------------------------------------------
-# Create
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# Create()
+#
 sub Create {
-    my($oThis, $oWkFmt)=@_;
-#0. New $oBook
-    my $oBook = Spreadsheet::ParseExcel::Workbook->new;
-    $oBook->{SheetCount} = 0;
-#2. Ready for format
-    if ($oWkFmt) {
-        $oBook->{FmtClass} = $oWkFmt;
+
+    my ( $self, $formatter ) = @_;
+
+    #0. New $workbook
+    my $workbook = Spreadsheet::ParseExcel::Workbook->new();
+    $workbook->{SheetCount} = 0;
+
+    # User specified formater class.
+    if ($formatter) {
+        $workbook->{FmtClass} = $formatter;
     }
     else {
-        $oBook->{FmtClass} = Spreadsheet::ParseExcel::FmtDefault->new;
+        $workbook->{FmtClass} = Spreadsheet::ParseExcel::FmtDefault->new();
     }
-    return Spreadsheet::ParseExcel::SaveParser::Workbook->new($oBook);
+
+    return Spreadsheet::ParseExcel::SaveParser::Workbook->new($workbook);
 }
-#------------------------------------------------------------------------------
-# Parse (for Spreadsheet::ParseExcel::SaveParser)
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# Parse()
+#
 sub Parse {
-    my($oThis, $sFile, $oWkFmt)=@_;
-    my $oBook = $oThis->SUPER::Parse($sFile, $oWkFmt);
-    return undef unless(defined $oBook);
-    return Spreadsheet::ParseExcel::SaveParser::Workbook->new($oBook);
+
+    my ( $self, $sFile, $formatter ) = @_;
+
+    my $workbook = $self->SUPER::Parse( $sFile, $formatter );
+
+    return undef unless defined $workbook;
+    return Spreadsheet::ParseExcel::SaveParser::Workbook->new($workbook);
 }
-#------------------------------------------------------------------------------
-# SaveAs (for Spreadsheet::ParseExcel::SaveParser)
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# SaveAs()
+#
 sub SaveAs {
-    my ($oThis, $oBook, $sName)=@_;
-    $oBook->SaveAs($sName);
+
+    my ( $self, $workbook, $filename ) = @_;
+
+    $workbook->SaveAs($filename);
 }
+
 1;
 
 __END__
 
 =head1 NAME
 
-Spreadsheet::ParseExcel::SaveParser - Expand of Spreadsheet::ParseExcel with Spreadsheet::WriteExcel
+Spreadsheet::ParseExcel::SaveParser - Rewrite an existing Excel file.
 
 =head1 SYNOPSIS
 
-    #1. Write an Excel file with previous data
-    use strict;
-    use Spreadsheet::ParseExcel::SaveParser;
-    my $oExcel = new Spreadsheet::ParseExcel::SaveParser;
-    my $oBook = $oExcel->Parse('temp.xls');
-    #1.1.Update and Insert Cells
-    my $iFmt = $oBook->{Worksheet}[0]->{Cells}[0][0]->{FormatNo};
-    $oBook->AddCell(0, 0, 0, 'No(UPD)', 
-        $oBook->{Worksheet}[0]->{Cells}[0][0]->{FormatNo});
-    $oBook->AddCell(0, 1, 0, '304', $oBook->{Worksheet}[0]->{Cells}[0][0]);
-    $oBook->AddCell(0, 1, 1, 'Kawai,Takanori', $iFmt);
-    #1.2.add new worksheet
-    my $iWkN = $oBook->AddWorksheet('Test');
-    #1.3 Save
-    $oExcel->SaveAs($oBook, 'temp.xls');  # as the same name
-    $oExcel->SaveAs($oBook, 'temp1.xls'); # another name
 
-    #2. Create new Excel file (most simple)
-    use strict;
-    use Spreadsheet::ParseExcel::SaveParser;
-    my $oEx = new Spreadsheet::ParseExcel::SaveParser;
-    my $oBook = $oEx->Create();
-    $oBook->AddFormat;
-    $oBook->AddWorksheet('NewWS');
-    $oBook->AddCell(0, 0, 1, 'New Cell');
-    $oEx->SaveAs($oBook, 'new.xls');
 
-    #3. Create new Excel file(more complex)
-    #!/usr/local/bin/perl
-    use strict;
-    use Spreadsheet::ParseExcel::SaveParser;
-    my $oEx = new Spreadsheet::ParseExcel::SaveParser;
-    my $oBook = $oEx->Create();
-    my $iF1 = $oBook->AddFont(
-            Name      => 'Arial',
-            Height    => 11,
-            Bold      => 1, #Bold
-            Italic    => 1, #Italic
-            Underline => 0,
-            Strikeout => 0,
-            Super     => 0,
-        );
-    my $iFmt =
-    $oBook->AddFormat(
-        Font => $oBook->{Font}[$iF1],
-        Fill => [1, 10, 0],         # Filled with Red
-                                    # cf. ParseExcel (@aColor)
-        BdrStyle => [0, 1, 1, 0],   #Border Right, Top
-        BdrColor => [0, 11, 0, 0],  # Right->Green
-    );
-    $oBook->AddWorksheet('NewWS');
-    $oBook->AddCell(0, 0, 1, 'Cell', $iFmt);
-    $oEx->SaveAs($oBook, 'new.xls');
+Say we start with an Excel file that looks like this:
 
-I<new interface...>
+    -----------------------------------------------------
+   |   |      A      |      B      |      C      |
+    -----------------------------------------------------
+   | 1 | Hello       | ...         | ...         |  ...
+   | 2 | World       | ...         | ...         |  ...
+   | 3 | *Bold text* | ...         | ...         |  ...
+   | 4 | ...         | ...         | ...         |  ...
+   | 5 | ...         | ...         | ...         |  ...
+
+
+Then we process it with the following program:
+
+    #!/usr/bin/perl
 
     use strict;
+    use warnings;
+
+    use Spreadsheet::ParseExcel;
     use Spreadsheet::ParseExcel::SaveParser;
-    $oBook = 
-        Spreadsheet::ParseExcel::SaveParser::Workbook->Parse('Excel/Test97.xls');
-    my $oWs = $oBook->AddWorksheet('TEST1');
-    $oWs->AddCell(10, 1, 'New Cell');
-    $oBook->SaveAs('iftest.xls');
+
+
+    # Open an existing file with SaveParser
+    my $parser   = Spreadsheet::ParseExcel::SaveParser->new();
+    my $template = $parser->Parse('template.xls');
+
+
+    # Get the first worksheet.
+    my $worksheet = $template->worksheet(0);
+    my $row  = 0;
+    my $col  = 0;
+
+
+    # Overwrite the string in cell A1
+    $worksheet->AddCell( $row, $col, 'New string' );
+
+
+    # Add a new string in cell B1
+    $worksheet->AddCell( $row, $col + 1, 'Newer' );
+
+
+    # Add a new string in cell C1 with the format from cell A3.
+    my $cell = $worksheet->get_cell( $row + 2, $col );
+    my $format_number = $cell->{FormatNo};
+
+    $worksheet->AddCell( $row, $col + 2, 'Newest', $format_number );
+
+
+    # Write over the existing file or write a new file.
+    $template->SaveAs('newfile.xls');
+
+
+We should now have an Excel file that looks like this:
+
+    -----------------------------------------------------
+   |   |      A      |      B      |      C      |
+    -----------------------------------------------------
+   | 1 | New string  | Newer       | *Newest*    |  ...
+   | 2 | World       | ...         | ...         |  ...
+   | 3 | *Bold text* | ...         | ...         |  ...
+   | 4 | ...         | ...         | ...         |  ...
+   | 5 | ...         | ...         | ...         |  ...
+
+
 
 =head1 DESCRIPTION
 
-Spreadsheet::ParseExcel::SaveParser : Expand of Spreadsheet::ParseExcel with Spreadsheet::WriteExcel
+The C<Spreadsheet::ParseExcel::SaveParser> module rewrite an existing Excel file by reading it with C<Spreadsheet::ParseExcel> and rewriting it with C<Spreadsheet::WriteExcel>.
 
-=head2 Functions
+=head1 METHODS
 
-=over 4
+=head1 Parser
 
-=item new
+=head2 new()
 
-I<$oExcel> = new Spreadsheet::ParseExcel::SaveParser();
+    $parse = new Spreadsheet::ParseExcel::SaveParser();
 
 Constructor.
 
-=item Parse
+=head2 Parse()
 
-I<$oWorkbook> = $oParse->Parse(I<$sFileName> [, I<$oFmt>]);
+    $workbook = $parse->Parse($sFileName);
 
-return L<"Workbook"> object.
-if error occurs, returns undef.
+    $workbook = $parse->Parse($sFileName , $formatter);
 
-=over 4
+Returns a L</Workbook> object. If an error occurs, returns undef.
 
-=item I<$sFileName>
+The optional C<$formatter> is a Formatter Class to format the value of cells.
 
-name of the file to parse (Same as Spreadsheet::ParseExcel)
 
-From 0.12 (with OLE::Storage_Lite v.0.06), 
-scalar reference of file contents (ex. \$sBuff) or 
-IO::Handle object (inclucdng IO::File etc.) are also available.
+=head1 Workbook
 
-=item I<$oFmt>
+The C<Parse()> method returns a C<Spreadsheet::ParseExcel::SaveParser::Workbook> object.
 
-Formatter Class to format the value of cells.
+This is a subclass of the L<Spreadsheet::ParseExcel::Workbook> and has the following methods:
 
-=back
+=head2 worksheets()
 
-=item Create
+Returns an array of L</Worksheet> objects. This was most commonly used to iterate over the worksheets in a workbook:
 
-I<$oWorkbook> = $oParse->Create([I<$oFmt>]);
+    for my $worksheet ( $workbook->worksheets() ) {
+        ...
+    }
 
-return new L<"Workbook"> object.
-if error occurs, returns undef.
+=head2 worksheet()
 
-=over 4
+The C<worksheet()> method returns a single C<Worksheet> object using either its name or index:
 
-=item I<$oFmt>
+    $worksheet = $workbook->worksheet('Sheet1');
+    $worksheet = $workbook->worksheet(0);
 
-Formatter Class to format the value of cells.
+Returns C<undef> if the sheet name or index doesn't exist.
 
-=back
 
-=item SaveAs
+=head2 AddWorksheet()
 
-I<$oWorkbook> = $oParse->SaveAs( $oBook, $sName);
+    $workbook = $workbook->AddWorksheet($name, %properties);
 
-save $oBook image as an Excel file named $sName.
+Create a new Worksheet object of type C<Spreadsheet::ParseExcel::Worksheet>.
 
-=over 4
+The C<%properties> hash contains the properties of new Worksheet.
 
-=item I<$oBook>
 
-An Excel Workbook object to save.
+=head2 AddFont
 
-=back
+    $workbook = $workbook->AddFont(%properties);
 
-=item I<$sName>
+Create new Font object of type C<Spreadsheet::ParseExcel::Font>.
 
-Name of new Excel file.
+The C<%properties> hash contains the properties of new Font.
 
-=back
 
-=head2 Workbook
+=head2 AddFormat
 
-I<Spreadsheet::ParseExcel::SaveParser::Workbook>
+    $workbook = $workbook->AddFormat(%properties);
 
-Workbook is a subclass of Spreadsheet::ParseExcel::Workbook.
-And has these methods :
+The C<%properties> hash contains the properties of new Font.
 
-=over 4
 
-=item AddWorksheet
+=head1 Worksheet
 
-I<$oWorksheet> = $oBook->AddWorksheet($sName, %hProperty);
-
-Create new Worksheet(Spreadsheet::ParseExcel::Worksheet).
-
-=over 4
-
-=item I<$sName>
-
-Name of new Worksheet
-
-=item I<$hProperty>
-
-Property of new Worksheet.
-
-=back
-
-=item AddFont
-
-I<$oWorksheet> = $oBook->AddFont(%hProperty);
-
-Create new Font(Spreadsheet::ParseExcel::Font).
-
-=over 4
-
-=item I<$hProperty>
-
-Property of new Worksheet.
-
-=back
-
-=item AddFormat
-
-I<$oWorksheet> = $oBook->AddFormat(%hProperty);
-
-Create new Format(Spreadsheet::ParseExcel::Format).
-
-=over 4
-
-=item I<$hProperty>
-
-Property of new Format.
-
-=back
-
-=item AddCell
-
-I<$oWorksheet> = $oBook->AddCell($iWorksheet, $iRow, $iCol, $sVal, $iFormat [, $sCode]);
-
-Create new Cell(Spreadsheet::ParseExcel::Cell).
-
-=over 4
-
-=item I<$iWorksheet>
-
-Number of Worksheet
-
-=back
-
-=over 4
-
-=item I<$iRow>
-
-Number of row
-
-=back
-
-=over 4
-
-=item I<$sVal>
-
-Value of the cell.
-
-=back
-
-=over 4
-
-=item I<$iFormat>
-
-Number of format for use. To specify just same as another cell,
-you can set it like below:
-
-ex.
-
-  $oCell=$oWorksheet->{Cells}[0][0]; #Just a sample
-  $oBook->AddCell(0, 1, 0, 'New One', $oCell->{FormatNo});
-    #or 
-  $oBook->AddCell(0, 1, 0, 'New One', $oCell);
-
-=back
-
-=over 4
-
-=item I<$sCode>
-
-  Character code
-
-=back
-
-=back
-
-=head2 Worksheet
-
-I<Spreadsheet::ParseExcel::SaveParser::Worksheet>
+Spreadsheet::ParseExcel::SaveParser::Worksheet
 
 Worksheet is a subclass of Spreadsheet::ParseExcel::Worksheet.
 And has these methods :
 
-=over 4
 
-=item AddCell
+The C<Worksbook::worksheet()> method returns a C<Spreadsheet::ParseExcel::SaveParser::Worksheet> object.
 
-I<$oWorksheet> = $oWkSheet->AddCell($iRow, $iCol, $sVal, $iFormat [, $sCode]);
+This is a subclass of the L<Spreadsheet::ParseExcel::Worksheet> and has the following methods:
 
-Create new Cell(Spreadsheet::ParseExcel::Cell).
 
-=over 4
+=head1 AddCell
 
-=item I<$iRow>
+    $workbook = $worksheet->AddCell($row, $col, $value, $format [$encoding]);
 
-Number of row
+Create new Cell object of type C<Spreadsheet::ParseExcel::Cell>.
 
-=back
+The C<$format> parameter is the format number rather than a full format object.
 
-=over 4
-
-=item I<$sVal>
-
-Value of the cell.
-
-=back
-
-=over 4
-
-=item I<$iFormat>
-
-Number of format for use. To specify just same as another cell,
+To specify just same as another cell,
 you can set it like below:
 
-ex.
+    $row            = 0;
+    $col            = 0;
+    $worksheet      = $template->worksheet(0);
+    $cell           = $worksheet->get_cell( $row, $col );
+    $format_number  = $cell->{FormatNo};
 
-  $oCell=$oWorksheet->{Cells}[0][0]; #Just a sample
-  $oWorksheet->AddCell(1, 0, 'New One', $oCell->{FormatNo});
-    #or 
-  $oWorksheet->AddCell(1, 0, 'New One', $oCell);
+    $worksheet->AddCell($row +1, $coll, 'New data', $format_number);
 
-=back
 
-=over 4
 
-=item I<$sCode>
 
-  Character code
+=head1 TODO
 
-=back
+Please note that this module is currently (versions 0.50-0.60) undergoing a major
+restructuring and rewriting.
 
-=back
+=head1 Known Problems
 
-=head1 MORE INFORMATION
 
-Please visit my Wiki page.
- I'll add sample at :
-    http://www.hippo2000.info/cgi-bin/KbWikiE/KbWiki.pl
+You can only rewrite the features that Spreadsheet::WriteExcel supports so
+macros, graphs and some other features in the original Excel file will be lost.
+Also, formulas aren't rewritten, only the result of a formula is written.
 
-=head1 Known Problem
+Only last print area will remain. (Others will be removed)
 
--Only last print area will remain. (Others will be removed)
 
 =head1 AUTHOR
 
-Kawai Takanori (Hippo2000) kwitknr@cpan.org
+Maintainer 0.40+: John McNamara jmcnamara@cpan.org
 
-    http://member.nifty.ne.jp/hippo2000/            (Japanese)
-    http://member.nifty.ne.jp/hippo2000/index_e.htm (English)
+Maintainer 0.27-0.33: Gabor Szabo szabgab@cpan.org
 
-=head1 SEE ALSO
-
-XLHTML, OLE::Storage, Spreadsheet::WriteExcel, OLE::Storage_Lite
-
-This module is based on herbert within OLE::Storage and XLHTML.
+Original author: Kawai Takanori kwitknr@cpan.org
 
 =head1 COPYRIGHT
 
+Copyright (c) 2009 John McNamara
+
+Copyright (c) 2006-2008 Gabor Szabo
+
 Copyright (c) 2000-2002 Kawai Takanori and Nippon-RAD Co. OP Division
+
 All rights reserved.
 
-You may distribute under the terms of either the GNU General Public
-License or the Artistic License, as specified in the Perl README file.
+You may distribute under the terms of either the GNU General Public License or the Artistic License, as specified in the Perl README file.
 
-=head1 ACKNOWLEDGEMENTS
-
-First of all, I would like to acknowledge valuable program and modules :
-XHTML, OLE::Storage and Spreadsheet::WriteExcel.
-
-In no particular order: Yamaji Haruna, Simamoto Takesi, Noguchi Harumi, 
-Ikezawa Kazuhiro, Suwazono Shugo, Hirofumi Morisada, Michael Edwards, Kim Namusk 
-and many many people + Kawai Mikako.
 
 =cut

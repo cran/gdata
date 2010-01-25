@@ -24,4 +24,3 @@ is.what <- function(object, verbose=FALSE)
 
   return(output)
 }
-

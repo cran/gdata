@@ -1,1748 +1,1847 @@
-# Spreadsheet::ParseExcel
-#  by Kawai, Takanori (Hippo2000) 2000.10.2
-#                                 2001. 2.2 (Ver. 0.15)
-# This Program is ALPHA version.
-#//////////////////////////////////////////////////////////////////////////////
-# Spreadsheet::ParseExcel Objects
-#//////////////////////////////////////////////////////////////////////////////
-use Spreadsheet::ParseExcel::FmtDefault;
-#==============================================================================
-# Spreadsheet::ParseExcel::Workbook
-#==============================================================================
-package Spreadsheet::ParseExcel::Workbook;
-use strict;
-use warnings;
-
-sub new {
-    my ($class) = @_;
-    my $self = {};
-    bless $self, $class;
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Workbook->ParseAbort
-#------------------------------------------------------------------------------
-sub ParseAbort {
-    my($self, $val) =@_;
-    $self->{_ParseAbort} = $val;
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Workbook->Parse
-#------------------------------------------------------------------------------
-sub Parse {
-    my($class, $source, $oFmt) =@_;
-    my $excel = Spreadsheet::ParseExcel->new;
-    my $workbook = $excel->Parse($source, $oFmt);
-    $workbook->{_Excel} = $excel;
-    return $workbook;
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Workbook Worksheet
-#------------------------------------------------------------------------------
-sub Worksheet {
-    my($oBook, $sName) =@_;
-    my $oWkS;
-    foreach $oWkS (@{$oBook->{Worksheet}}) {
-        return $oWkS if($oWkS->{Name} eq $sName);
-    }
-    if($sName =~ /^\d+$/) {
-        return $oBook->{Worksheet}->[$sName];
-    }
-    return undef;
-}
-
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
-#==============================================================================
-# Spreadsheet::ParseExcel::Worksheet
-#==============================================================================
-package Spreadsheet::ParseExcel::Worksheet;
-use strict;
-use warnings;
-use overload 
-    '0+'        => \&sheetNo,
-    'fallback'  => 1,
-;
-use Scalar::Util qw(weaken);
-
-sub new {
-    my ($class, %rhIni) = @_;
-    my $self = \%rhIni;
-    weaken $self->{_Book};
-
-    $self->{Cells}=undef;
-    $self->{DefColWidth}=8.38;
-    bless $self, $class;
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Worksheet->sheetNo
-#------------------------------------------------------------------------------
-sub sheetNo {
-    my($oSelf) = @_;
-    return $oSelf->{_SheetNo};
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Worksheet->Cell
-#------------------------------------------------------------------------------
-sub Cell {
-    my($oSelf, $iR, $iC) = @_;
-
-    # return undef if no arguments are given or if no cells are defined
-    return  if ((!defined($iR)) || (!defined($iC)) ||
-                (!defined($oSelf->{MaxRow})) || (!defined($oSelf->{MaxCol})));
-    
-    # return undef if outside defined rectangle
-    return  if (($iR < $oSelf->{MinRow}) || ($iR > $oSelf->{MaxRow}) ||
-                ($iC < $oSelf->{MinCol}) || ($iC > $oSelf->{MaxCol}));
-    
-    # return the Cell object
-    return $oSelf->{Cells}[$iR][$iC];
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Worksheet->RowRange
-#------------------------------------------------------------------------------
-sub RowRange {
-    my($oSelf) = @_;
-    my $iMin = $oSelf->{MinRow} || 0;
-    my $iMax = defined($oSelf->{MaxRow}) ? $oSelf->{MaxRow} : ($iMin-1);
-
-    # return the range
-    return($iMin, $iMax);
-}
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel::Worksheet->ColRange
-#------------------------------------------------------------------------------
-sub ColRange {
-    my($oSelf) = @_;
-    my $iMin = $oSelf->{MinCol} || 0;
-    my $iMax = defined($oSelf->{MaxCol}) ? $oSelf->{MaxCol} : ($iMin-1);
-
-    # return the range
-    return($iMin, $iMax);
-}
-
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
-#==============================================================================
-# Spreadsheet::ParseExcel::Font
-#==============================================================================
-package Spreadsheet::ParseExcel::Font;
-use strict;
-use warnings;
-
-sub new {
-    my($class, %rhIni) = @_;
-    my $self = \%rhIni;
-
-    bless $self, $class;
-}
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
-
-#==============================================================================
-# Spreadsheet::ParseExcel::Format
-#==============================================================================
-package Spreadsheet::ParseExcel::Format;
-use strict;
-use warnings;
-
-sub new {
-    my($class, %rhIni) = @_;
-    my $self = \%rhIni;
-
-    bless $self, $class;
-}
-
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
-
-#==============================================================================
-# Spreadsheet::ParseExcel::Cell
-#==============================================================================
-package Spreadsheet::ParseExcel::Cell;
-use strict;
-use warnings;
-
-sub new {
-    my($sPkg, %rhKey)=@_;
-    my($sWk, $iLen);
-    my $self = \%rhKey;
-
-    bless $self, $sPkg;
-}
-
-sub Value {
-    my($self)=@_;
-    return $self->{_Value};
-}
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
-
-#==============================================================================
-# Spreadsheet::ParseExcel
-#==============================================================================
 package Spreadsheet::ParseExcel;
+
+##############################################################################
+#
+# Spreadsheet::ParseExcel - Extract information from an Excel file.
+#
+# Copyright 2000-2008, Takanori Kawai
+#
+# perltidy with standard settings.
+#
+# Documentation after __END__
+#
+
 use strict;
 use warnings;
+use 5.008;
 
 use OLE::Storage_Lite;
 use IO::File;
 use Config;
-our $VERSION = '0.32';
+our $VERSION = '0.56';
 
-my @aColor =
-(
-    '000000',   # 0x00
+use Spreadsheet::ParseExcel::Workbook;
+use Spreadsheet::ParseExcel::Worksheet;
+use Spreadsheet::ParseExcel::Font;
+use Spreadsheet::ParseExcel::Format;
+use Spreadsheet::ParseExcel::Cell;
+use Spreadsheet::ParseExcel::FmtDefault;
+
+my @aColor = (
+    '000000',    # 0x00
     'FFFFFF', 'FFFFFF', 'FFFFFF', 'FFFFFF',
-    'FFFFFF', 'FFFFFF', 'FFFFFF', 'FFFFFF', #0x08 - This one's Black, too ???
+    'FFFFFF', 'FFFFFF', 'FFFFFF', 'FFFFFF',    # 0x08
     'FFFFFF', 'FF0000', '00FF00', '0000FF',
-    'FFFF00', 'FF00FF', '00FFFF', '800000', # 0x10
+    'FFFF00', 'FF00FF', '00FFFF', '800000',    # 0x10
     '008000', '000080', '808000', '800080',
-    '008080', 'C0C0C0', '808080', '9999FF', # 0x18
+    '008080', 'C0C0C0', '808080', '9999FF',    # 0x18
     '993366', 'FFFFCC', 'CCFFFF', '660066',
-    'FF8080', '0066CC', 'CCCCFF', '000080', # 0x20
+    'FF8080', '0066CC', 'CCCCFF', '000080',    # 0x20
     'FF00FF', 'FFFF00', '00FFFF', '800080',
-    '800000', '008080', '0000FF', '00CCFF', # 0x28
+    '800000', '008080', '0000FF', '00CCFF',    # 0x28
     'CCFFFF', 'CCFFCC', 'FFFF99', '99CCFF',
-    'FF99CC', 'CC99FF', 'FFCC99', '3366FF', # 0x30
+    'FF99CC', 'CC99FF', 'FFCC99', '3366FF',    # 0x30
     '33CCCC', '99CC00', 'FFCC00', 'FF9900',
-    'FF6600', '666699', '969696', '003366', # 0x38
+    'FF6600', '666699', '969696', '003366',    # 0x38
     '339966', '003300', '333300', '993300',
-    '993366', '333399', '333333', 'FFFFFF'  # 0x40
+    '993366', '333399', '333333', 'FFFFFF'     # 0x40
 );
 use constant verExcel95 => 0x500;
-use constant verExcel97 =>0x600;
-use constant verBIFF2 =>0x00;
-use constant verBIFF3 =>0x02;
-use constant verBIFF4 =>0x04;
-use constant verBIFF5 =>0x08;
-use constant verBIFF8 =>0x18;   #Added (Not in BOOK)
-
-my %ProcTbl =(
-#Develpers' Kit P291
-    0x14    => \&_subHeader,            # Header
-    0x15    => \&_subFooter,            # Footer
-    0x18    => \&_subName,              # NAME(?)
-    0x1A    => \&_subVPageBreak,        # Veritical Page Break
-    0x1B    => \&_subHPageBreak,        # Horizontal Page Break
-    0x22    => \&_subFlg1904,           # 1904 Flag
-    0x26    => \&_subMergin,            # Left Mergin
-    0x27    => \&_subMergin,            # Right Mergin
-    0x28    => \&_subMergin,            # Top Mergin
-    0x29    => \&_subMergin,            # Bottom Mergin
-    0x2A    => \&_subPrintHeaders,      # Print Headers
-    0x2B    => \&_subPrintGridlines,    # Print Gridlines
-    0x3C    => \&_subContinue,          # Continue
-    0x43    => \&_subXF,                # ExTended Format(?)
-#Develpers' Kit P292
-    0x55    => \&_subDefColWidth,       # Consider
-    0x5C    => \&_subWriteAccess,       # WRITEACCESS
-    0x7D    => \&_subColInfo,           # Colinfo
-    0x7E    => \&_subRK,                # RK
-    0x81    => \&_subWSBOOL,            # WSBOOL
-    0x83    => \&_subHcenter,           # HCENTER
-    0x84    => \&_subVcenter,           # VCENTER
-    0x85    => \&_subBoundSheet,        # BoundSheet
-
-    0x92    => \&_subPalette,           # Palette, fgp
-
-    0x99    => \&_subStandardWidth,     # Standard Col
-#Develpers' Kit P293
-    0xA1    => \&_subSETUP,             # SETUP
-    0xBD    => \&_subMulRK,             # MULRK
-    0xBE    => \&_subMulBlank,          # MULBLANK
-    0xD6    => \&_subRString,           # RString
-#Develpers' Kit P294
-    0xE0    => \&_subXF,                # ExTended Format
-    0xE5    => \&_subMergeArea,         # MergeArea (Not Documented)
-    0xFC    => \&_subSST,               # Shared String Table
-    0xFD    => \&_subLabelSST,          # Label SST
-#Develpers' Kit P295
-    0x201   => \&_subBlank,             # Blank
-
-    0x202   => \&_subInteger,           # Integer(Not Documented)
-    0x203   => \&_subNumber,            # Number
-    0x204   => \&_subLabel ,            # Label
-    0x205   => \&_subBoolErr,           # BoolErr
-    0x207   => \&_subString,            # STRING
-    0x208   => \&_subRow,               # RowData
-    0x221   => \&_subArray,             #Array (Consider)
-    0x225   => \&_subDefaultRowHeight,  # Consider
+use constant verExcel97 => 0x600;
+use constant verBIFF2   => 0x00;
+use constant verBIFF3   => 0x02;
+use constant verBIFF4   => 0x04;
+use constant verBIFF5   => 0x08;
+use constant verBIFF8   => 0x18;
 
 
-    0x31    => \&_subFont,              # Font
-    0x231   => \&_subFont,              # Font
+# Error code for some of the common parsing errors.
+use constant ErrorNone          => 0;
+use constant ErrorNoFile        => 1;
+use constant ErrorNoExcelData   => 2;
+use constant ErrorFileEncrypted => 3;
 
-    0x27E   => \&_subRK,                # RK
-    0x41E   => \&_subFormat,            # Format
+our %error_strings = (
+    ErrorNone,          '',                              # 0
+    ErrorNoFile,        'File not found',                # 1
+    ErrorNoExcelData,   'No Excel data found in file',   # 2
+    ErrorFileEncrypted, 'File is encrypted',             # 3
 
-    0x06    => \&_subFormula,           # Formula
-    0x406   => \&_subFormula,           # Formula
+);
 
-    0x09    => \&_subBOF,               # BOF(BIFF2)
-    0x209   => \&_subBOF,               # BOF(BIFF3)
-    0x409   => \&_subBOF,               # BOF(BIFF4)
-    0x809   => \&_subBOF,               # BOF(BIFF5-8)
-    );
 
-my $BIGENDIAN;
-my $PREFUNC;
-my $_CellHandler;
-my $_NotSetCell;
-my $_Object;
-my $_use_perlio;
+our %ProcTbl = (
+
+    #Develpers' Kit P291
+    0x14 => \&_subHeader,            # Header
+    0x15 => \&_subFooter,            # Footer
+    0x18 => \&_subName,              # NAME(?)
+    0x1A => \&_subVPageBreak,        # Vertical Page Break
+    0x1B => \&_subHPageBreak,        # Horizontal Page Break
+    0x22 => \&_subFlg1904,           # 1904 Flag
+    0x26 => \&_subMargin,            # Left Margin
+    0x27 => \&_subMargin,            # Right Margin
+    0x28 => \&_subMargin,            # Top Margin
+    0x29 => \&_subMargin,            # Bottom Margin
+    0x2A => \&_subPrintHeaders,      # Print Headers
+    0x2B => \&_subPrintGridlines,    # Print Gridlines
+    0x3C => \&_subContinue,          # Continue
+    0x43 => \&_subXF,                # Extended Format(?)
+
+    #Develpers' Kit P292
+    0x55 => \&_subDefColWidth,       # Consider
+    0x5C => \&_subWriteAccess,       # WRITEACCESS
+    0x7D => \&_subColInfo,           # Colinfo
+    0x7E => \&_subRK,                # RK
+    0x81 => \&_subWSBOOL,            # WSBOOL
+    0x83 => \&_subHcenter,           # HCENTER
+    0x84 => \&_subVcenter,           # VCENTER
+    0x85 => \&_subBoundSheet,        # BoundSheet
+
+    0x92 => \&_subPalette,           # Palette, fgp
+
+    0x99 => \&_subStandardWidth,     # Standard Col
+
+    #Develpers' Kit P293
+    0xA1 => \&_subSETUP,             # SETUP
+    0xBD => \&_subMulRK,             # MULRK
+    0xBE => \&_subMulBlank,          # MULBLANK
+    0xD6 => \&_subRString,           # RString
+
+    #Develpers' Kit P294
+    0xE0 => \&_subXF,                # ExTended Format
+    0xE5 => \&_subMergeArea,         # MergeArea (Not Documented)
+    0xFC => \&_subSST,               # Shared String Table
+    0xFD => \&_subLabelSST,          # Label SST
+
+    #Develpers' Kit P295
+    0x201 => \&_subBlank,            # Blank
+
+    0x202 => \&_subInteger,          # Integer(Not Documented)
+    0x203 => \&_subNumber,           # Number
+    0x204 => \&_subLabel,            # Label
+    0x205 => \&_subBoolErr,          # BoolErr
+    0x207 => \&_subString,           # STRING
+    0x208 => \&_subRow,              # RowData
+    0x221 => \&_subArray,            # Array (Consider)
+    0x225 => \&_subDefaultRowHeight, # Consider
+
+    0x31  => \&_subFont,             # Font
+    0x231 => \&_subFont,             # Font
+
+    0x27E => \&_subRK,               # RK
+    0x41E => \&_subFormat,           # Format
+
+    0x06  => \&_subFormula,          # Formula
+    0x406 => \&_subFormula,          # Formula
+
+    0x009 => \&_subBOF,              # BOF(BIFF2)
+    0x209 => \&_subBOF,              # BOF(BIFF3)
+    0x409 => \&_subBOF,              # BOF(BIFF4)
+    0x809 => \&_subBOF,              # BOF(BIFF5-8)
+);
+
+our $BIGENDIAN;
+our $PREFUNC;
+our $_CellHandler;
+our $_NotSetCell;
+our $_Object;
+our $_use_perlio;
+
 #------------------------------------------------------------------------------
 # Spreadsheet::ParseExcel->new
 #------------------------------------------------------------------------------
 sub new {
-    my ($class, %hParam) =@_;
+    my ( $class, %hParam ) = @_;
 
-    if (not defined $_use_perlio) {
-       if (exists $Config{useperlio} && $Config{useperlio} eq "define") {
-           $_use_perlio = 1;
-       } else {
-           $_use_perlio = 0;
-           require IO::Scalar;
-           import  IO::Scalar;
-       }
+    if ( not defined $_use_perlio ) {
+        if (   exists $Config{useperlio}
+            && defined $Config{useperlio}
+            && $Config{useperlio} eq "define" )
+        {
+            $_use_perlio = 1;
+        }
+        else {
+            $_use_perlio = 0;
+            require IO::Scalar;
+            import IO::Scalar;
+        }
     }
 
     # Check ENDIAN(Little: Interl etc. BIG: Sparc etc)
-    $BIGENDIAN = (defined $hParam{Endian})? $hParam{Endian} :
-                    (unpack("H08", pack("L", 2)) eq '02000000')? 0: 1;
+    $BIGENDIAN =
+        ( defined $hParam{Endian} ) ? $hParam{Endian}
+      : ( unpack( "H08", pack( "L", 2 ) ) eq '02000000' ) ? 0
+      :                                                     1;
     my $self = {};
     bless $self, $class;
 
     $self->{GetContent} = \&_subGetContent;
 
-    if ($hParam{EventHandlers}) {
-        $self->SetEventHandlers($hParam{EventHandlers});
-    } else {
-        $self->SetEventHandlers(\%ProcTbl);
+    if ( $hParam{EventHandlers} ) {
+        $self->SetEventHandlers( $hParam{EventHandlers} );
     }
-    if($hParam{AddHandlers}) {
-        foreach my $sKey (keys(%{$hParam{AddHandlers}})) {
-            $self->SetEventHandler($sKey, $hParam{AddHandlers}->{$sKey});
+    else {
+        $self->SetEventHandlers( \%ProcTbl );
+    }
+    if ( $hParam{AddHandlers} ) {
+        foreach my $sKey ( keys( %{ $hParam{AddHandlers} } ) ) {
+            $self->SetEventHandler( $sKey, $hParam{AddHandlers}->{$sKey} );
         }
     }
-    $_CellHandler = $hParam{CellHandler} if($hParam{CellHandler});
+    $_CellHandler = $hParam{CellHandler} if ( $hParam{CellHandler} );
     $_NotSetCell  = $hParam{NotSetCell};
     $_Object      = $hParam{Object};
 
+    $self->{_error_status} = ErrorNone;
     return $self;
 }
+
 #------------------------------------------------------------------------------
 # Spreadsheet::ParseExcel->SetEventHandler
 #------------------------------------------------------------------------------
 sub SetEventHandler {
-    my($self, $key, $sub_ref) = @_;
+    my ( $self, $key, $sub_ref ) = @_;
     $self->{FuncTbl}->{$key} = $sub_ref;
 }
+
 #------------------------------------------------------------------------------
 # Spreadsheet::ParseExcel->SetEventHandlers
 #------------------------------------------------------------------------------
 sub SetEventHandlers {
-    my($self, $rhTbl) = @_;
+    my ( $self, $rhTbl ) = @_;
     $self->{FuncTbl} = undef;
-    foreach my $sKey (keys %$rhTbl) {
+    foreach my $sKey ( keys %$rhTbl ) {
         $self->{FuncTbl}->{$sKey} = $rhTbl->{$sKey};
     }
 }
-#------------------------------------------------------------------------------
-# Spreadsheet::ParseExcel->Parse
-#------------------------------------------------------------------------------
-sub Parse {
-    my($self, $source, $oWkFmt)=@_;
 
-    my $oBook = Spreadsheet::ParseExcel::Workbook->new;
-    $oBook->{SheetCount} = 0;
+###############################################################################
+#
+# Parse()
+#
+# Parse the Excel file and convert it into a tree of objects..
+#
+sub parse {
 
-    my ($sBIFF, $iLen) = $self->_get_content($source, $oBook);
-    return undef if not $sBIFF;
+    my ( $self, $source, $formatter ) = @_;
 
-    if ($oWkFmt) {
-        $oBook->{FmtClass} = $oWkFmt;
-    } else {
-        $oBook->{FmtClass} = Spreadsheet::ParseExcel::FmtDefault->new;
+    my $workbook = Spreadsheet::ParseExcel::Workbook->new();
+    $workbook->{SheetCount} = 0;
+
+    my ( $biff_data, $data_length ) = $self->_get_content( $source, $workbook );
+    return undef if not $biff_data;
+
+    if ($formatter) {
+        $workbook->{FmtClass} = $formatter;
+    }
+    else {
+        $workbook->{FmtClass} = Spreadsheet::ParseExcel::FmtDefault->new();
     }
 
-    #3. Parse content
-    my $lPos = 0;
-    my $sWk = substr($sBIFF, $lPos, 4);
-    $lPos += 4;
-    my $iEfFlg = 0;
-    while($lPos<=$iLen) {
-        my($bOp, $bLen) = unpack("v2", $sWk);
-        if($bLen) {
-            $sWk = substr($sBIFF, $lPos, $bLen);
-            $lPos += $bLen;
+    # Parse the BIFF data.
+    my $pos = 0;
+    my $record_header = substr( $biff_data, $pos, 4 );
+    $pos += 4;
+
+    while ( $pos <= $data_length ) {
+        my ( $record, $record_length ) = unpack( "v2", $record_header );
+
+        if ($record_length) {
+            $record_header = substr( $biff_data, $pos, $record_length );
+            $pos += $record_length;
         }
-        #printf STDERR "%4X:%s\n", $bOp, 'UNDEFIND---:' . unpack("H*", $sWk) unless($NameTbl{$bOp});
-        #Check EF, EOF
-        if($bOp == 0xEF) {    #EF
-            $iEfFlg = $bOp;
-        } elsif($bOp == 0x0A) { #EOF
-            undef $iEfFlg;
+
+
+        # If the file contains a FILEPASS record we assume that it is encrypted
+        # and cannot be parsed.
+        if ( $record == 0x002F ) {
+            $self->{_error_status} = ErrorFileEncrypted;
+            return undef;
         }
-        #1. Formula String with No String 
-        if (not $iEfFlg) {
-            if($oBook->{_PrevPos} && (defined $self->{FuncTbl}->{$bOp}) && ($bOp != 0x207)) {
-                my $iPos = $oBook->{_PrevPos};
-                $oBook->{_PrevPos} = undef;
-                my ($iR, $iC, $iF) = @$iPos; 
-                _NewCell (
-                    $oBook, $iR, $iC,
-                    Kind    => 'Formula String',
-                    Val     => '',
-                    FormatNo=> $iF,
-                    Format  => $oBook->{Format}[$iF],
-                    Numeric => 0,
-                    Code    => undef,
-                    Book    => $oBook,
-                );                         
-            }
-            if(defined $self->{FuncTbl}->{$bOp}) {
-                $self->{FuncTbl}->{$bOp}->($oBook, $bOp, $bLen, $sWk);
-            }
-            $PREFUNC = $bOp if ($bOp != 0x3C); #Not Continue 
+
+
+        # Special case of a formula String with no string.
+        if (   $workbook->{_PrevPos}
+            && ( defined $self->{FuncTbl}->{$record} )
+            && ( $record != 0x207 ) )
+        {
+            my $iPos = $workbook->{_PrevPos};
+            $workbook->{_PrevPos} = undef;
+
+            my ( $row, $col, $format_index ) = @$iPos;
+            _NewCell(
+                $workbook, $row, $col,
+                Kind     => 'Formula String',
+                Val      => '',
+                FormatNo => $format_index,
+                Format   => $workbook->{Format}[$format_index],
+                Numeric  => 0,
+                Code     => undef,
+                Book     => $workbook,
+            );
         }
-        if (($lPos+4) <= $iLen) {
-            $sWk = substr($sBIFF, $lPos, 4);
+
+        # If the BIFF record matches 0x0*09 then it is a BOF record.
+        # We reset the _skip_chart flag to ensure we check the sheet type.
+        if ( ( $record & 0xF0FF ) == 0x09 ) {
+            $workbook->{_skip_chart} = 0;
         }
-        $lPos += 4;
-        return $oBook if defined $oBook->{_ParseAbort};
+
+        if ( defined $self->{FuncTbl}->{$record} && !$workbook->{_skip_chart} ) {
+            $self->{FuncTbl}->{$record}->( $workbook, $record, $record_length, $record_header );
+        }
+
+        $PREFUNC = $record if ( $record != 0x3C );    #Not Continue
+
+        if ( ( $pos + 4 ) <= $data_length ) {
+            $record_header = substr( $biff_data, $pos, 4 );
+        }
+
+        $pos += 4;
+        return $workbook if defined $workbook->{_ParseAbort};
     }
-    return $oBook;
+
+    return $workbook;
 }
 
-# $source is either filename or open filehandle or array of string or scalar
-# referernce
-# $oBook is passed to be updated
+###############################################################################
+#
+# _get_content()
+#
+# Get the Excel BIFF content from the file or filehandle.
+#
 sub _get_content {
-    my ($self, $source, $oBook) = @_;
 
-    if(ref($source) eq "SCALAR") {
-        #1.1 Specified by Buffer
-        my ($sBIFF, $iLen) = $self->{GetContent}->($source);
-        return $sBIFF ? ($sBIFF, $iLen) : (undef);
+    my ( $self, $source, $workbook ) = @_;
+    my ( $biff_data, $data_length );
+
+    # Reset the error status in case method is called more than once.
+    $self->{_error_status} = ErrorNone;
+
+    if ( ref($source) eq "SCALAR" ) {
+
+        # Specified by a scalar buffer.
+        ( $biff_data, $data_length ) = $self->{GetContent}->($source);
+
     }
-        #1.2 Specified by Other Things(HASH reference etc)
-        #    elsif(ref($source)) {
-        #        return undef;
-        #    }
-        #1.2 Specified by GLOB reference
-     elsif((ref($source) =~ /GLOB/) or
-           (ref($source) eq 'Fh')) { #For CGI.pm (Light FileHandle)
+    elsif (( ref($source) =~ /GLOB/ ) || ( ref($source) eq 'Fh' ) ) {
+
+        # For CGI.pm (Light FileHandle)
         binmode($source);
         my $sWk;
-        my $sBuff='';
-        while(read($source, $sWk, 4096)) {
-            $sBuff .= $sWk;
-        }                
-        my ($sBIFF, $iLen) = $self->{GetContent}->(\$sBuff);
-        return $sBIFF ? ($sBIFF, $iLen) : (undef);
-     } elsif(ref($source) eq 'ARRAY') {
-        #1.3 Specified by File content
-        $oBook->{File} = undef;
-        my $sData = join('', @$source);
-        my ($sBIFF, $iLen) = $self->{GetContent}->(\$sData);
-        return $sBIFF ? ($sBIFF, $iLen) : (undef);
-    } else {
-        #1.4 Specified by File name
-        $oBook->{File} = $source;
-        return undef unless (-e $source);
-        my ($sBIFF, $iLen) = $self->{GetContent}->($source);
-        return $sBIFF ? ($sBIFF, $iLen) : (undef);
-    }
-}
+        my $sBuff = '';
 
+        while ( read( $source, $sWk, 4096 ) ) {
+            $sBuff .= $sWk;
+        }
+
+        ( $biff_data, $data_length ) = $self->{GetContent}->( \$sBuff );
+
+    }
+    elsif ( ref($source) eq 'ARRAY' ) {
+
+        # Specified by file content
+        $workbook->{File} = undef;
+        my $sData = join( '', @$source );
+        ( $biff_data, $data_length ) = $self->{GetContent}->( \$sData );
+    }
+    else {
+
+        # Specified by filename .
+        $workbook->{File} = $source;
+
+        if ( ! -e $source ) {
+            $self->{_error_status} = ErrorNoFile;
+            return undef;
+    }
+
+        ( $biff_data, $data_length ) = $self->{GetContent}->($source);
+    }
+
+    # If the read was successful return the data.
+    if ($data_length) {
+        return ($biff_data, $data_length );
+    }
+    else {
+        $self->{_error_status} = ErrorNoExcelData;
+        return undef;
+    }
+
+}
 
 #------------------------------------------------------------------------------
 # _subGetContent (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _subGetContent {
     my ($sFile) = @_;
-    
+
     my $oOl = OLE::Storage_Lite->new($sFile);
-    return (undef, undef) unless($oOl);
+    return ( undef, undef ) unless ($oOl);
     my @aRes = $oOl->getPpsSearch(
-            [OLE::Storage_Lite::Asc2Ucs('Book'), 
-             OLE::Storage_Lite::Asc2Ucs('Workbook')], 1, 1);
-    return (undef, undef) if($#aRes < 0);
-#Hack from Herbert
-    if ($aRes[0]->{Data}) {
-        return ($aRes[0]->{Data}, length($aRes[0]->{Data}));
-    } 
+        [
+            OLE::Storage_Lite::Asc2Ucs('Book'),
+            OLE::Storage_Lite::Asc2Ucs('Workbook')
+        ],
+        1, 1
+    );
+    return ( undef, undef ) if ( $#aRes < 0 );
+
+    #Hack from Herbert
+    if ( $aRes[0]->{Data} ) {
+        return ( $aRes[0]->{Data}, length( $aRes[0]->{Data} ) );
+    }
 
     #Same as OLE::Storage_Lite
     my $oIo;
+
     #1. $sFile is Ref of scalar
-    if(ref($sFile) eq 'SCALAR') {
+    if ( ref($sFile) eq 'SCALAR' ) {
         if ($_use_perlio) {
             open $oIo, "<", \$sFile;
-        } else {
+        }
+        else {
             $oIo = IO::Scalar->new;
             $oIo->open($sFile);
         }
     }
+
     #2. $sFile is a IO::Handle object
-    elsif(UNIVERSAL::isa($sFile, 'IO::Handle')) {
+    elsif ( UNIVERSAL::isa( $sFile, 'IO::Handle' ) ) {
         $oIo = $sFile;
         binmode($oIo);
     }
+
     #3. $sFile is a simple filename string
-    elsif(!ref($sFile)) {
+    elsif ( !ref($sFile) ) {
         $oIo = IO::File->new;
         $oIo->open("<$sFile") || return undef;
         binmode($oIo);
     }
     my $sWk;
-    my $sBuff ='';
+    my $sBuff = '';
 
-    while($oIo->read($sWk, 4096)) { #4_096 has no special meanings
+    while ( $oIo->read( $sWk, 4096 ) ) {    #4_096 has no special meanings
         $sBuff .= $sWk;
     }
     $oIo->close();
+
     #Not Excel file (simple method)
-    return (undef, undef) if (substr($sBuff, 0, 1) ne "\x09");
-    return ($sBuff, length($sBuff));
+    return ( undef, undef ) if ( substr( $sBuff, 0, 1 ) ne "\x09" );
+    return ( $sBuff, length($sBuff) );
 }
+
 #------------------------------------------------------------------------------
 # _subBOF (for Spreadsheet::ParseExcel) Developers' Kit : P303
 #------------------------------------------------------------------------------
 sub _subBOF {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iVer, $iDt) = unpack("v2", $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iVer, $iDt ) = unpack( "v2", $sWk );
 
     #Workbook Global
-    if($iDt==0x0005) {
-        $oBook->{Version} = unpack("v", $sWk);
-        $oBook->{BIFFVersion} = 
-                ($oBook->{Version}==verExcel95)? verBIFF5:verBIFF8;
-        $oBook->{_CurSheet} = undef;
-        $oBook->{_CurSheet_} = -1; 
+    if ( $iDt == 0x0005 ) {
+        $oBook->{Version} = unpack( "v", $sWk );
+        $oBook->{BIFFVersion} =
+          ( $oBook->{Version} == verExcel95 ) ? verBIFF5 : verBIFF8;
+        $oBook->{_CurSheet}  = undef;
+        $oBook->{_CurSheet_} = -1;
     }
-    #Worksheeet or Dialogsheet
-    elsif($iDt != 0x0020) {  #if($iDt == 0x0010) 
-        if(defined $oBook->{_CurSheet_}) {
-            $oBook->{_CurSheet} = $oBook->{_CurSheet_} + 1;
-            $oBook->{_CurSheet_}++; 
 
-            ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{SheetVersion},
-             $oBook->{Worksheet}[$oBook->{_CurSheet}]->{SheetType},) 
-                    = unpack("v2", $sWk) if(length($sWk) > 4);
+    #Worksheet or Dialogsheet
+    elsif ( $iDt != 0x0020 ) {    #if($iDt == 0x0010)
+        if ( defined $oBook->{_CurSheet_} ) {
+            $oBook->{_CurSheet} = $oBook->{_CurSheet_} + 1;
+            $oBook->{_CurSheet_}++;
+
+            (
+                $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{SheetVersion},
+                $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{SheetType},
+              )
+              = unpack( "v2", $sWk )
+              if ( length($sWk) > 4 );
         }
         else {
-            $oBook->{BIFFVersion} = int($bOp / 0x100);
-            if (($oBook->{BIFFVersion} == verBIFF2) ||
-                ($oBook->{BIFFVersion} == verBIFF3) ||
-                ($oBook->{BIFFVersion} == verBIFF4)) {
-                $oBook->{Version} = $oBook->{BIFFVersion};
+            $oBook->{BIFFVersion} = int( $bOp / 0x100 );
+            if (   ( $oBook->{BIFFVersion} == verBIFF2 )
+                || ( $oBook->{BIFFVersion} == verBIFF3 )
+                || ( $oBook->{BIFFVersion} == verBIFF4 ) )
+            {
+                $oBook->{Version}   = $oBook->{BIFFVersion};
                 $oBook->{_CurSheet} = 0;
-                $oBook->{Worksheet}[$oBook->{SheetCount}] =
-                    Spreadsheet::ParseExcel::Worksheet->new(
-                             _Name => '',
-                              Name => '',
-                             _Book => $oBook,
-                            _SheetNo => $oBook->{SheetCount},
-                        );
+                $oBook->{Worksheet}[ $oBook->{SheetCount} ] =
+                  Spreadsheet::ParseExcel::Worksheet->new(
+                    _Name    => '',
+                    Name     => '',
+                    _Book    => $oBook,
+                    _SheetNo => $oBook->{SheetCount},
+                  );
                 $oBook->{SheetCount}++;
             }
         }
     }
     else {
-        ($oBook->{_CurSheet_}, $oBook->{_CurSheet}) =
-            (((defined $oBook->{_CurSheet})? $oBook->{_CurSheet}: -1), 
-                undef);
+
+        # Set flag to ignore all chart records until we reach another BOF.
+        $oBook->{_skip_chart} = 1;
     }
 }
+
 #------------------------------------------------------------------------------
 # _subBlank (for Spreadsheet::ParseExcel) DK:P303
 #------------------------------------------------------------------------------
 sub _subBlank {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iR, $iC, $iF) = unpack("v3", $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF ) = unpack( "v3", $sWk );
     _NewCell(
-            $oBook, $iR, $iC,
-            Kind    => 'BLANK',
-            Val     => '',
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => undef,
-            Book    => $oBook,
-        );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+        $oBook, $iR, $iC,
+        Kind     => 'BLANK',
+        Val      => '',
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => undef,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subInteger (for Spreadsheet::ParseExcel) Not in DK
 #------------------------------------------------------------------------------
 sub _subInteger {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iR, $iC, $iF, $sTxt, $sDum);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF, $sTxt, $sDum );
 
-    ($iR, $iC, $iF, $sDum, $sTxt) = unpack("v3cv", $sWk);
-    _NewCell (  
-            $oBook, $iR, $iC,
-                Kind    => 'INTEGER',
-                Val     => $sTxt,
-                FormatNo=> $iF,
-                Format  => $oBook->{Format}[$iF],
-                Numeric => 0,
-                Code    => undef,
-                Book    => $oBook,
-            );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    ( $iR, $iC, $iF, $sDum, $sTxt ) = unpack( "v3cv", $sWk );
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'INTEGER',
+        Val      => $sTxt,
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => undef,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subNumber (for Spreadsheet::ParseExcel)  : DK: P354
 #------------------------------------------------------------------------------
 sub _subNumber {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
 
-    my ($iR, $iC, $iF) = unpack("v3", $sWk);
-    my $dVal = _convDval(substr($sWk, 6, 8));
-    _NewCell (
-                $oBook, $iR, $iC,
-                Kind    => 'Number',
-                Val     => $dVal,
-                FormatNo=> $iF,
-                Format  => $oBook->{Format}[$iF],
-                Numeric => 1,
-                Code    => undef,
-                Book    => $oBook,
-            );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    my ( $iR, $iC, $iF ) = unpack( "v3", $sWk );
+    my $dVal = _convDval( substr( $sWk, 6, 8 ) );
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'Number',
+        Val      => $dVal,
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 1,
+        Code     => undef,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _convDval (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _convDval {
-    my($sWk)=@_;
-    return  unpack("d", ($BIGENDIAN)? 
-                    pack("c8", reverse(unpack("c8", $sWk))) : $sWk);
+    my ($sWk) = @_;
+    return
+      unpack( "d",
+        ($BIGENDIAN) ? pack( "c8", reverse( unpack( "c8", $sWk ) ) ) : $sWk );
 }
+
 #------------------------------------------------------------------------------
 # _subRString (for Spreadsheet::ParseExcel) DK:P405
 #------------------------------------------------------------------------------
 sub _subRString {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iR, $iC, $iF, $iL, $sTxt);
-    ($iR, $iC, $iF, $iL) = unpack("v4", $sWk);
-    $sTxt = substr($sWk, 8, $iL);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF, $iL, $sTxt );
+    ( $iR, $iC, $iF, $iL ) = unpack( "v4", $sWk );
+    $sTxt = substr( $sWk, 8, $iL );
 
     #Has STRUN
-    if(length($sWk) > (8+$iL)) {
-        _NewCell (
+    if ( length($sWk) > ( 8 + $iL ) ) {
+        _NewCell(
             $oBook, $iR, $iC,
-            Kind    => 'RString',
-            Val     => $sTxt,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => '_native_', #undef,
-            Book    => $oBook,
-            Rich    => substr($sWk, (8+$iL)+1),
+            Kind     => 'RString',
+            Val      => $sTxt,
+            FormatNo => $iF,
+            Format   => $oBook->{Format}[$iF],
+            Numeric  => 0,
+            Code     => '_native_',                        #undef,
+            Book     => $oBook,
+            Rich     => substr( $sWk, ( 8 + $iL ) + 1 ),
         );
     }
     else {
-        _NewCell (
+        _NewCell(
             $oBook, $iR, $iC,
-            Kind    => 'RString',
-            Val     => $sTxt,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => '_native_',
-            Book    => $oBook,
+            Kind     => 'RString',
+            Val      => $sTxt,
+            FormatNo => $iF,
+            Format   => $oBook->{Format}[$iF],
+            Numeric  => 0,
+            Code     => '_native_',
+            Book     => $oBook,
         );
     }
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subBoolErr (for Spreadsheet::ParseExcel) DK:P306
 #------------------------------------------------------------------------------
 sub _subBoolErr {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iR, $iC, $iF) = unpack("v3", $sWk);
-    my ($iVal, $iFlg) = unpack("cc", substr($sWk, 6, 2));
-    my $sTxt = DecodeBoolErr($iVal, $iFlg);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF ) = unpack( "v3", $sWk );
+    my ( $iVal, $iFlg ) = unpack( "cc", substr( $sWk, 6, 2 ) );
+    my $sTxt = DecodeBoolErr( $iVal, $iFlg );
 
-    _NewCell (
-            $oBook, $iR, $iC,
-            Kind    => 'BoolError',
-            Val     => $sTxt,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => undef,
-            Book    => $oBook,
-        );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'BoolError',
+        Val      => $sTxt,
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => undef,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
-#------------------------------------------------------------------------------
-# _subRK (for Spreadsheet::ParseExcel)  DK:P401
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# _subRK()
+#
+# Decode the RK BIFF record.
+#
 sub _subRK {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iR, $iC) = unpack("v3", $sWk);
 
-    my($iF, $sTxt)= _UnpackRKRec(substr($sWk, 4, 6));
-    _NewCell (
-            $oBook, $iR, $iC,
-            Kind    => 'RK',
-            Val     => $sTxt,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 1,
-            Code    => undef,
-            Book    => $oBook,
-        );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    my ( $workbook, $biff_number, $length, $data ) = @_;
+
+    my ( $row, $col, $format_index, $rk_number ) = unpack( 'vvvV', $data );
+
+    my $number = _decode_rk_number($rk_number);
+
+    _NewCell(
+        $workbook, $row, $col,
+        Kind     => 'RK',
+        Val      => $number,
+        FormatNo => $format_index,
+        Format   => $workbook->{Format}->[$format_index],
+        Numeric  => 1,
+        Code     => undef,
+        Book     => $workbook,
+    );
+
+    # Store the max and min row/col values.
+    _SetDimension( $workbook, $row, $col, $col );
 }
+
 #------------------------------------------------------------------------------
 # _subArray (for Spreadsheet::ParseExcel)   DK:P297
 #------------------------------------------------------------------------------
 sub _subArray {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iBR, $iER, $iBC, $iEC) = unpack("v2c2", $sWk);
-    
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iBR, $iER, $iBC, $iEC ) = unpack( "v2c2", $sWk );
+
 }
+
 #------------------------------------------------------------------------------
 # _subFormula (for Spreadsheet::ParseExcel) DK:P336
 #------------------------------------------------------------------------------
 sub _subFormula {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iR, $iC, $iF) = unpack("v3", $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF ) = unpack( "v3", $sWk );
 
-    my ($iFlg) = unpack("v", substr($sWk,12,2));
-    if($iFlg == 0xFFFF) {
-        my($iKind) = unpack("c", substr($sWk, 6, 1));
-        my($iVal)  = unpack("c", substr($sWk, 8, 1));
+    my ($iFlg) = unpack( "v", substr( $sWk, 12, 2 ) );
+    if ( $iFlg == 0xFFFF ) {
+        my ($iKind) = unpack( "c", substr( $sWk, 6, 1 ) );
+        my ($iVal)  = unpack( "c", substr( $sWk, 8, 1 ) );
 
-        if(($iKind==1) or ($iKind==2)) {
-            my $sTxt = ($iKind == 1)? DecodeBoolErr($iVal, 0):DecodeBoolErr($iVal, 1);
-            _NewCell (
-                    $oBook, $iR, $iC,
-                    Kind    => 'Formulra Bool',
-                    Val     => $sTxt,
-                    FormatNo=> $iF,
-                    Format  => $oBook->{Format}[$iF],
-                    Numeric => 0,
-                    Code    => undef,
-                    Book    => $oBook,
-                );
+        if ( ( $iKind == 1 ) or ( $iKind == 2 ) ) {
+            my $sTxt =
+              ( $iKind == 1 )
+              ? DecodeBoolErr( $iVal, 0 )
+              : DecodeBoolErr( $iVal, 1 );
+            _NewCell(
+                $oBook, $iR, $iC,
+                Kind     => 'Formula Bool',
+                Val      => $sTxt,
+                FormatNo => $iF,
+                Format   => $oBook->{Format}[$iF],
+                Numeric  => 0,
+                Code     => undef,
+                Book     => $oBook,
+            );
         }
-        else { # Result (Reserve Only)
-            $oBook->{_PrevPos} = [$iR, $iC, $iF];
+        else {    # Result (Reserve Only)
+            $oBook->{_PrevPos} = [ $iR, $iC, $iF ];
         }
     }
     else {
-        my $dVal = _convDval(substr($sWk, 6, 8));
-        _NewCell (
-                $oBook, $iR, $iC,
-                Kind    => 'Formula Number',
-                Val     => $dVal,
-                FormatNo=> $iF,
-                Format  => $oBook->{Format}[$iF],
-                Numeric => 1,
-                Code    => undef,
-                Book    => $oBook,
-            );
+        my $dVal = _convDval( substr( $sWk, 6, 8 ) );
+        _NewCell(
+            $oBook, $iR, $iC,
+            Kind     => 'Formula Number',
+            Val      => $dVal,
+            FormatNo => $iF,
+            Format   => $oBook->{Format}[$iF],
+            Numeric  => 1,
+            Code     => undef,
+            Book     => $oBook,
+        );
     }
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subString (for Spreadsheet::ParseExcel)  DK:P414
 #------------------------------------------------------------------------------
 sub _subString {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-#Position (not enough for ARRAY)
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+
+    #Position (not enough for ARRAY)
 
     my $iPos = $oBook->{_PrevPos};
-    return undef unless($iPos);
+    return undef unless ($iPos);
     $oBook->{_PrevPos} = undef;
-    my ($iR, $iC, $iF) = @$iPos;
+    my ( $iR, $iC, $iF ) = @$iPos;
 
-    my ($iLen, $sTxt, $sCode);
-    if($oBook->{BIFFVersion} == verBIFF8) {
-        my( $raBuff, $iLen) = _convBIFF8String($oBook, $sWk, 1);
-        $sTxt  = $raBuff->[0];
-        $sCode = ($raBuff->[1])? 'ucs2': undef;
+    my ( $iLen, $sTxt, $sCode );
+    if ( $oBook->{BIFFVersion} == verBIFF8 ) {
+        my ( $raBuff, $iLen ) = _convBIFF8String( $oBook, $sWk, 1 );
+        $sTxt = $raBuff->[0];
+        $sCode = ( $raBuff->[1] ) ? 'ucs2' : undef;
     }
-    elsif($oBook->{BIFFVersion} == verBIFF5) {
+    elsif ( $oBook->{BIFFVersion} == verBIFF5 ) {
         $sCode = '_native_';
-        $iLen = unpack("v", $sWk);
-        $sTxt = substr($sWk, 2, $iLen);
+        $iLen  = unpack( "v", $sWk );
+        $sTxt  = substr( $sWk, 2, $iLen );
     }
     else {
         $sCode = '_native_';
-        $iLen = unpack("c", $sWk);
-        $sTxt = substr($sWk, 1, $iLen);
+        $iLen  = unpack( "c", $sWk );
+        $sTxt  = substr( $sWk, 1, $iLen );
     }
-    _NewCell (
-            $oBook, $iR, $iC,
-            Kind    => 'String',
-            Val     => $sTxt,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => $sCode,
-            Book    => $oBook,
-        );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'String',
+        Val      => $sTxt,
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => $sCode,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subLabel (for Spreadsheet::ParseExcel)   DK:P344
 #------------------------------------------------------------------------------
 sub _subLabel {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iR, $iC, $iF) = unpack("v3", $sWk);
-    my ($sLbl, $sCode);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF ) = unpack( "v3", $sWk );
+    my ( $sLbl, $sCode );
+
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-        my ( $raBuff, $iLen, $iStPos, $iLenS) = 
-                _convBIFF8String($oBook, substr($sWk,6), 1);
-        $sLbl  = $raBuff->[0];
-        $sCode = ($raBuff->[1])? 'ucs2': undef;
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        my ( $raBuff, $iLen, $iStPos, $iLenS ) =
+          _convBIFF8String( $oBook, substr( $sWk, 6 ), 1 );
+        $sLbl = $raBuff->[0];
+        $sCode = ( $raBuff->[1] ) ? 'ucs2' : undef;
     }
+
     #Before BIFF8
     else {
-        $sLbl  = substr($sWk,8);
+        $sLbl = substr( $sWk, 8 );
         $sCode = '_native_';
     }
-    _NewCell ( 
-            $oBook, $iR, $iC,
-            Kind    => 'Label',
-            Val     => $sLbl,
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => $sCode,
-            Book    => $oBook,
-        );
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'Label',
+        Val      => $sLbl,
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => $sCode,
+        Book     => $oBook,
+    );
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
-#------------------------------------------------------------------------------
-# _subMulRK (for Spreadsheet::ParseExcel)   DK:P349
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# _subMulRK()
+#
+# Decode the Multiple RK BIFF record.
+#
 sub _subMulRK {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return if ($oBook->{SheetCount}<=0);
 
-    my ($iR, $iSc) = unpack("v2", $sWk);
-    my $iEc = unpack("v", substr($sWk, length($sWk) -2, 2));
+    my ( $workbook, $biff_number, $length, $data ) = @_;
 
-    my $iPos = 4;
-    for(my $iC=$iSc; $iC<=$iEc; $iC++) {
-        my($iF, $lVal) = _UnpackRKRec(substr($sWk, $iPos, 6), $iR, $iC);
-        _NewCell (
-                $oBook, $iR, $iC,
-                Kind    => 'MulRK',
-                Val     => $lVal,
-                FormatNo=> $iF,
-                Format  => $oBook->{Format}[$iF],
-                Numeric => 1,
-                Code => undef,
-                Book    => $oBook,
-                );
-        $iPos += 6;
+    # JMN: I don't know why this is here.
+    return if $workbook->{SheetCount} <= 0;
+
+    my ( $row, $first_col ) = unpack( "v2", $data );
+    my $last_col = unpack( "v", substr( $data, length($data) - 2, 2 ) );
+
+    # Iterate over the RK array and decode the data.
+    my $pos = 4;
+    for my $col ( $first_col .. $last_col ) {
+
+        my $data = substr( $data, $pos, 6 );
+        my ( $format_index, $rk_number ) = unpack 'vV', $data;
+        my $number = _decode_rk_number($rk_number);
+
+        _NewCell(
+            $workbook, $row, $col,
+            Kind     => 'MulRK',
+            Val      => $number,
+            FormatNo => $format_index,
+            Format   => $workbook->{Format}->[$format_index],
+            Numeric  => 1,
+            Code     => undef,
+            Book     => $workbook,
+        );
+        $pos += 6;
     }
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iSc, $iEc);
+
+    # Store the max and min row/col values.
+    _SetDimension( $workbook, $row, $first_col, $last_col );
 }
+
 #------------------------------------------------------------------------------
 # _subMulBlank (for Spreadsheet::ParseExcel) DK:P349
 #------------------------------------------------------------------------------
 sub _subMulBlank {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iR, $iSc) = unpack("v2", $sWk);
-    my $iEc = unpack("v", substr($sWk, length($sWk)-2, 2));
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iSc ) = unpack( "v2", $sWk );
+    my $iEc = unpack( "v", substr( $sWk, length($sWk) - 2, 2 ) );
     my $iPos = 4;
-    for(my $iC=$iSc; $iC<=$iEc; $iC++) {
-        my $iF = unpack('v', substr($sWk, $iPos, 2));
-        _NewCell (
-                $oBook, $iR, $iC,
-                Kind    => 'MulBlank',
-                Val     => '',
-                FormatNo=> $iF,
-                Format  => $oBook->{Format}[$iF],
-                Numeric => 0,
-                Code    => undef,
-                Book    => $oBook,
-            );
-        $iPos+=2;
+    for ( my $iC = $iSc ; $iC <= $iEc ; $iC++ ) {
+        my $iF = unpack( 'v', substr( $sWk, $iPos, 2 ) );
+        _NewCell(
+            $oBook, $iR, $iC,
+            Kind     => 'MulBlank',
+            Val      => '',
+            FormatNo => $iF,
+            Format   => $oBook->{Format}[$iF],
+            Numeric  => 0,
+            Code     => undef,
+            Book     => $oBook,
+        );
+        $iPos += 2;
     }
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iSc, $iEc);
+
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iSc, $iEc );
 }
+
 #------------------------------------------------------------------------------
 # _subLabelSST (for Spreadsheet::ParseExcel) DK: P345
 #------------------------------------------------------------------------------
 sub _subLabelSST {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my ($iR, $iC, $iF, $iIdx) = unpack('v3V', $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iR, $iC, $iF, $iIdx ) = unpack( 'v3V', $sWk );
 
-    _NewCell (
-            $oBook, $iR, $iC,
-            Kind    => 'PackedIdx',
-            Val     => $oBook->{PkgStr}[$iIdx]->{Text},
-            FormatNo=> $iF,
-            Format  => $oBook->{Format}[$iF],
-            Numeric => 0,
-            Code    => ($oBook->{PkgStr}[$iIdx]->{Unicode})? 'ucs2': undef,
-            Book    => $oBook,
-            Rich   => $oBook->{PkgStr}[$iIdx]->{Rich},
-        );
+    _NewCell(
+        $oBook, $iR, $iC,
+        Kind     => 'PackedIdx',
+        Val      => $oBook->{PkgStr}[$iIdx]->{Text},
+        FormatNo => $iF,
+        Format   => $oBook->{Format}[$iF],
+        Numeric  => 0,
+        Code     => ( $oBook->{PkgStr}[$iIdx]->{Unicode} ) ? 'ucs2' : undef,
+        Book     => $oBook,
+        Rich     => $oBook->{PkgStr}[$iIdx]->{Rich},
+    );
 
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iC, $iC);
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iC, $iC );
 }
+
 #------------------------------------------------------------------------------
 # _subFlg1904 (for Spreadsheet::ParseExcel) DK:P296
 #------------------------------------------------------------------------------
 sub _subFlg1904 {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    $oBook->{Flg1904} = unpack("v", $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    $oBook->{Flg1904} = unpack( "v", $sWk );
 }
+
 #------------------------------------------------------------------------------
 # _subRow (for Spreadsheet::ParseExcel) DK:P403
 #------------------------------------------------------------------------------
 sub _subRow {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-#0. Get Worksheet info (MaxRow, MaxCol, MinRow, MinCol)
-    my($iR, $iSc, $iEc, $iHght, $undef1, $undef2, $iGr, $iXf) = unpack("v8", $sWk);
+    #0. Get Worksheet info (MaxRow, MaxCol, MinRow, MinCol)
+    my ( $iR, $iSc, $iEc, $iHght, $undef1, $undef2, $iGr, $iXf ) =
+      unpack( "v8", $sWk );
     $iEc--;
 
-#1. RowHeight
-    if($iGr & 0x20) {   #Height = 0
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{RowHeight}[$iR] = 0;
-    }
-    else {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{RowHeight}[$iR] = $iHght/20.0;
-    }
+    # TODO. we need to handle hidden rows:
+    # $iGr & 0x20
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{RowHeight}[$iR] = $iHght / 20;
 
-#2.MaxRow, MaxCol, MinRow, MinCol
-    _SetDimension($oBook, $iR, $iSc, $iEc);
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    _SetDimension( $oBook, $iR, $iSc, $iEc );
 }
+
 #------------------------------------------------------------------------------
 # _SetDimension (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _SetDimension {
-    my($oBook, $iR, $iSc, $iEc)=@_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $iR, $iSc, $iEc ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-#2.MaxRow, MaxCol, MinRow, MinCol
-#2.1 MinRow
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinRow} = $iR 
-        unless (defined $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinRow}) and 
-               ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinRow} <= $iR);
+    #2.MaxRow, MaxCol, MinRow, MinCol
+    #2.1 MinRow
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinRow} = $iR
+      unless ( defined $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinRow} )
+      and ( $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinRow} <= $iR );
 
-#2.2 MaxRow
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxRow} = $iR 
-        unless (defined $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxRow}) and
-               ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxRow} > $iR);
-#2.3 MinCol
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinCol} = $iSc
-            unless (defined $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinCol}) and
-               ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{MinCol} <= $iSc);
-#2.4 MaxCol
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxCol} = $iEc 
-            unless (defined $oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxCol}) and
-               ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{MaxCol} > $iEc);
+    #2.2 MaxRow
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxRow} = $iR
+      unless ( defined $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxRow} )
+      and ( $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxRow} > $iR );
+
+    #2.3 MinCol
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinCol} = $iSc
+      unless ( defined $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinCol} )
+      and ( $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MinCol} <= $iSc );
+
+    #2.4 MaxCol
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxCol} = $iEc
+      unless ( defined $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxCol} )
+      and ( $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{MaxCol} > $iEc );
 
 }
+
 #------------------------------------------------------------------------------
 # _subDefaultRowHeight (for Spreadsheet::ParseExcel)    DK: P318
 #------------------------------------------------------------------------------
 sub _subDefaultRowHeight {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
-#1. RowHeight
-    my($iDum, $iHght) = unpack("v2", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{DefRowHeight} = $iHght/20;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
+
+    #1. RowHeight
+    my ( $iDum, $iHght ) = unpack( "v2", $sWk );
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{DefRowHeight} = $iHght / 20;
 
 }
+
 #------------------------------------------------------------------------------
 # _subStandardWidth(for Spreadsheet::ParseExcel)    DK:P413
 #------------------------------------------------------------------------------
 sub _subStandardWidth {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my $iW = unpack("v", $sWk);
-    $oBook->{StandardWidth}= _adjustColWidth($oBook, $iW);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my $iW = unpack( "v", $sWk );
+    $oBook->{StandardWidth} = _convert_col_width( $oBook, $iW );
 }
-#------------------------------------------------------------------------------
-# _subDefColWidth(for Spreadsheet::ParseExcel)      DK:P319
-#------------------------------------------------------------------------------
+
+###############################################################################
+#
+# _subDefColWidth()
+#
+# Read the DEFCOLWIDTH Biff record. This gives the width in terms of chars
+# and is different from the width in the COLINFO record.
+#
 sub _subDefColWidth {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
-    my $iW = unpack("v", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{DefColWidth}= _adjustColWidth($oBook, $iW);
+
+    my ( $self, $record, $length, $data ) = @_;
+
+    my $width = unpack 'v', $data;
+
+    # Adjustment for default Arial 10 width.
+    $width = 8.43 if $width == 8;
+
+    $self->{Worksheet}->[ $self->{_CurSheet} ]->{DefColWidth} = $width;
 }
-#------------------------------------------------------------------------------
-# _adjustColWidth (for Spreadsheet::ParseExcel)
-#------------------------------------------------------------------------------
-sub _adjustColWidth {
-    my($oBook, $iW)=@_;
-    return (($iW -0xA0)/256);
-#    ($oBook->{Worksheet}[$oBook->{_CurSheet}]->{SheetVersion} == verExcel97)?
-#        (($iW -0xA0)/256) : $iW;
+
+###############################################################################
+#
+# _convert_col_width()
+#
+# Converts from the internal Excel column width units to user units seen in the
+# interface. It is first necessary to convert the internal width to pixels and
+# then to user units. The conversion is specific to a default font of Arial 10.
+# TODO, the conversion should be extended to other fonts and sizes.
+#
+sub _convert_col_width {
+
+    my $self        = shift;
+    my $excel_width = shift;
+
+    # Convert from Excel units to pixels (rounded up).
+    my $pixels = int( 0.5 + $excel_width * 7 / 256 );
+
+    # Convert from pixels to user units.
+    # The conversion is different for columns <= 1 user unit (12 pixels).
+    my $user_width;
+    if ( $pixels <= 12 ) {
+        $user_width = $pixels / 12;
+    }
+    else {
+        $user_width = ( $pixels - 5 ) / 7;
+    }
+
+    # Round up to 2 decimal places.
+    $user_width = int( $user_width * 100 + 0.5 ) / 100;
+
+    return $user_width;
 }
+
 #------------------------------------------------------------------------------
 # _subColInfo (for Spreadsheet::ParseExcel) DK:P309
 #------------------------------------------------------------------------------
 sub _subColInfo {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
-    my($iSc, $iEc, $iW, $iXF, $iGr) = unpack("v5", $sWk);
-    for(my $i= $iSc; $i<=$iEc; $i++) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{ColWidth}[$i] = 
-                        ($iGr & 0x01)? 0: _adjustColWidth($oBook, $iW);
-                    #0x01 means HIDDEN
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{ColFmtNo}[$i] = $iXF;
-        # $oBook->{Worksheet}[$oBook->{_CurSheet}]->{ColCr}[$i]    = $iGr; #Not Implemented
+
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+
+    return undef unless defined $oBook->{_CurSheet};
+
+    my ( $iSc, $iEc, $iW, $iXF, $iGr ) = unpack( "v5", $sWk );
+
+    for ( my $i = $iSc ; $i <= $iEc ; $i++ ) {
+
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{ColWidth}[$i] =
+          _convert_col_width( $oBook, $iW );
+
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{ColFmtNo}[$i] = $iXF;
+
+        # TODO. we need to handle hidden cols: $iGr & 0x01.
     }
 }
+
 #------------------------------------------------------------------------------
 # _subSST (for Spreadsheet::ParseExcel) DK:P413
 #------------------------------------------------------------------------------
 sub _subSST {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    _subStrWk($oBook, substr($sWk, 8));
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    _subStrWk( $oBook, substr( $sWk, 8 ) );
 }
+
 #------------------------------------------------------------------------------
 # _subContinue (for Spreadsheet::ParseExcel)    DK:P311
 #------------------------------------------------------------------------------
 sub _subContinue {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+
     #if(defined $self->{FuncTbl}->{$bOp}) {
     #    $self->{FuncTbl}->{$PREFUNC}->($oBook, $bOp, $bLen, $sWk);
     #}
 
-    _subStrWk($oBook, $sWk, 1) if($PREFUNC == 0xFC);
+    _subStrWk( $oBook, $sWk, 1 ) if ( $PREFUNC == 0xFC );
 }
+
 #------------------------------------------------------------------------------
 # _subWriteAccess (for Spreadsheet::ParseExcel) DK:P451
 #------------------------------------------------------------------------------
 sub _subWriteAccess {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return if (defined $oBook->{_Author});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return if ( defined $oBook->{_Author} );
 
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-        $oBook->{Author} = _convBIFF8String($oBook, $sWk);
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        $oBook->{Author} = _convBIFF8String( $oBook, $sWk );
     }
+
     #Before BIFF8
     else {
-        my($iLen) = unpack("c", $sWk);
-        $oBook->{Author} = $oBook->{FmtClass}->TextFmt(substr($sWk, 1, $iLen), '_native_');
+        my ($iLen) = unpack( "c", $sWk );
+        $oBook->{Author} =
+          $oBook->{FmtClass}->TextFmt( substr( $sWk, 1, $iLen ), '_native_' );
     }
 }
+
 #------------------------------------------------------------------------------
 # _convBIFF8String (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _convBIFF8String {
-    my($oBook, $sWk, $iCnvFlg) = @_;
-    my($iLen, $iFlg) = unpack("vc", $sWk);
-    my($iHigh, $iExt, $iRich) = ($iFlg & 0x01, $iFlg & 0x04, $iFlg & 0x08);
-    my($iStPos, $iExtCnt, $iRichCnt, $sStr);
-#2. Rich and Ext
-    if($iRich && $iExt) {
-        $iStPos   = 9;
-        ($iRichCnt, $iExtCnt) = unpack('vV', substr($sWk, 3, 6));
+    my ( $oBook, $sWk, $iCnvFlg ) = @_;
+    my ( $iLen, $iFlg ) = unpack( "vc", $sWk );
+    my ( $iHigh, $iExt, $iRich ) = ( $iFlg & 0x01, $iFlg & 0x04, $iFlg & 0x08 );
+    my ( $iStPos, $iExtCnt, $iRichCnt, $sStr );
+
+    #2. Rich and Ext
+    if ( $iRich && $iExt ) {
+        $iStPos = 9;
+        ( $iRichCnt, $iExtCnt ) = unpack( 'vV', substr( $sWk, 3, 6 ) );
     }
-    elsif($iRich) { #Only Rich
+    elsif ($iRich) {    #Only Rich
         $iStPos   = 5;
-        $iRichCnt = unpack('v', substr($sWk, 3, 2));
+        $iRichCnt = unpack( 'v', substr( $sWk, 3, 2 ) );
         $iExtCnt  = 0;
     }
-    elsif($iExt)  { #Only Ext
+    elsif ($iExt) {     #Only Ext
         $iStPos   = 7;
         $iRichCnt = 0;
-        $iExtCnt  = unpack('V', substr($sWk, 3, 4));
+        $iExtCnt  = unpack( 'V', substr( $sWk, 3, 4 ) );
     }
-    else {          #Nothing Special
+    else {              #Nothing Special
         $iStPos   = 3;
         $iExtCnt  = 0;
         $iRichCnt = 0;
     }
-#3.Get String
-    if($iHigh) {    #Compressed
+
+    #3.Get String
+    if ($iHigh) {       #Compressed
         $iLen *= 2;
-        $sStr = substr($sWk,    $iStPos, $iLen);
-        _SwapForUnicode(\$sStr);
-        $sStr = $oBook->{FmtClass}->TextFmt($sStr, 'ucs2') unless($iCnvFlg);
+        $sStr = substr( $sWk, $iStPos, $iLen );
+        _SwapForUnicode( \$sStr );
+        $sStr = $oBook->{FmtClass}->TextFmt( $sStr, 'ucs2' ) unless ($iCnvFlg);
     }
     else {              #Not Compressed
-        $sStr = substr($sWk, $iStPos, $iLen);
-        $sStr = $oBook->{FmtClass}->TextFmt($sStr, undef) unless($iCnvFlg);
+        $sStr = substr( $sWk, $iStPos, $iLen );
+        $sStr = $oBook->{FmtClass}->TextFmt( $sStr, undef ) unless ($iCnvFlg);
     }
 
-#4. return 
-    if(wantarray) {
+    #4. return
+    if (wantarray) {
+
         #4.1 Get Rich and Ext
-        if(length($sWk) < $iStPos + $iLen+ $iRichCnt*4+$iExtCnt) {
-            return ([undef, $iHigh, undef, undef], 
-                $iStPos + $iLen+ $iRichCnt*4+$iExtCnt, $iStPos, $iLen);
+        if ( length($sWk) < $iStPos + $iLen + $iRichCnt * 4 + $iExtCnt ) {
+            return (
+                [ undef, $iHigh, undef, undef ],
+                $iStPos + $iLen + $iRichCnt * 4 + $iExtCnt,
+                $iStPos, $iLen
+            );
         }
         else {
-            return ([$sStr, $iHigh,
-                    substr($sWk, $iStPos + $iLen, $iRichCnt*4),
-                    substr($sWk, $iStPos + $iLen+ $iRichCnt*4, $iExtCnt)], 
-                $iStPos + $iLen+ $iRichCnt*4+$iExtCnt,  $iStPos, $iLen);
+            return (
+                [
+                    $sStr,
+                    $iHigh,
+                    substr( $sWk, $iStPos + $iLen, $iRichCnt * 4 ),
+                    substr( $sWk, $iStPos + $iLen + $iRichCnt * 4, $iExtCnt )
+                ],
+                $iStPos + $iLen + $iRichCnt * 4 + $iExtCnt,
+                $iStPos, $iLen
+            );
         }
     }
     else {
         return $sStr;
     }
 }
+
 #------------------------------------------------------------------------------
 # _subXF (for Spreadsheet::ParseExcel)     DK:P453
 #------------------------------------------------------------------------------
 sub _subXF {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
 
-    my ($iFnt, $iIdx);
-    my($iLock, $iHidden, $iStyle, $i123, $iAlH, $iWrap, $iAlV, $iJustL, $iRotate,
-        $iInd, $iShrink, $iMerge, $iReadDir, $iBdrD,
-        $iBdrSL, $iBdrSR, $iBdrST, $iBdrSB, $iBdrSD,
-        $iBdrCL, $iBdrCR, $iBdrCT, $iBdrCB, $iBdrCD,
-        $iFillP, $iFillCF, $iFillCB);
+    my ( $iFnt, $iIdx );
+    my (
+        $iLock,    $iHidden, $iStyle,  $i123,   $iAlH,    $iWrap,
+        $iAlV,     $iJustL,  $iRotate, $iInd,   $iShrink, $iMerge,
+        $iReadDir, $iBdrD,   $iBdrSL,  $iBdrSR, $iBdrST,  $iBdrSB,
+        $iBdrSD,   $iBdrCL,  $iBdrCR,  $iBdrCT, $iBdrCB,  $iBdrCD,
+        $iFillP,   $iFillCF, $iFillCB
+    );
 
-    if($oBook->{BIFFVersion} == verBIFF8) {
-        my ($iGen, $iAlign, $iGen2, $iBdr1,  $iBdr2, $iBdr3, $iPtn );
+    if ( $oBook->{BIFFVersion} == verBIFF8 ) {
+        my ( $iGen, $iAlign, $iGen2, $iBdr1, $iBdr2, $iBdr3, $iPtn );
 
-        ($iFnt, $iIdx, $iGen, $iAlign, $iGen2, $iBdr1,  $iBdr2, $iBdr3, $iPtn )
-            = unpack("v7Vv", $sWk);
-        $iLock   = ($iGen & 0x01)? 1:0;
-        $iHidden = ($iGen & 0x02)? 1:0;
-        $iStyle  = ($iGen & 0x04)? 1:0;
-        $i123    = ($iGen & 0x08)? 1:0;
-        $iAlH    = ($iAlign & 0x07);
-        $iWrap   = ($iAlign & 0x08)? 1:0;
-        $iAlV    = ($iAlign & 0x70) / 0x10;
-        $iJustL  = ($iAlign & 0x80)? 1:0;
+        ( $iFnt, $iIdx, $iGen, $iAlign, $iGen2, $iBdr1, $iBdr2, $iBdr3, $iPtn )
+          = unpack( "v7Vv", $sWk );
+        $iLock   = ( $iGen & 0x01 )   ? 1 : 0;
+        $iHidden = ( $iGen & 0x02 )   ? 1 : 0;
+        $iStyle  = ( $iGen & 0x04 )   ? 1 : 0;
+        $i123    = ( $iGen & 0x08 )   ? 1 : 0;
+        $iAlH    = ( $iAlign & 0x07 );
+        $iWrap   = ( $iAlign & 0x08 ) ? 1 : 0;
+        $iAlV    = ( $iAlign & 0x70 ) / 0x10;
+        $iJustL  = ( $iAlign & 0x80 ) ? 1 : 0;
 
-        $iRotate  = (($iAlign & 0xFF00) / 0x100) & 0x00FF;
-        $iRotate = 90 if($iRotate == 255);
-        $iRotate = 90 - $iRotate if($iRotate > 90);
+        $iRotate = ( ( $iAlign & 0xFF00 ) / 0x100 ) & 0x00FF;
+        $iRotate = 90            if ( $iRotate == 255 );
+        $iRotate = 90 - $iRotate if ( $iRotate > 90 );
 
-        $iInd     = ($iGen2 & 0x0F);
-        $iShrink  = ($iGen2 & 0x10)? 1:0;
-        $iMerge   = ($iGen2 & 0x20)? 1:0;
-        $iReadDir = (($iGen2 & 0xC0) / 0x40) & 0x03;
-        $iBdrSL = $iBdr1 & 0x0F;
-        $iBdrSR = (($iBdr1 & 0xF0)   / 0x10)   & 0x0F;
-        $iBdrST = (($iBdr1 & 0xF00)  / 0x100)  & 0x0F;
-        $iBdrSB = (($iBdr1 & 0xF000) / 0x1000) & 0x0F;
+        $iInd     = ( $iGen2 & 0x0F );
+        $iShrink  = ( $iGen2 & 0x10 ) ? 1 : 0;
+        $iMerge   = ( $iGen2 & 0x20 ) ? 1 : 0;
+        $iReadDir = ( ( $iGen2 & 0xC0 ) / 0x40 ) & 0x03;
+        $iBdrSL   = $iBdr1 & 0x0F;
+        $iBdrSR   = ( ( $iBdr1 & 0xF0 ) / 0x10 ) & 0x0F;
+        $iBdrST   = ( ( $iBdr1 & 0xF00 ) / 0x100 ) & 0x0F;
+        $iBdrSB   = ( ( $iBdr1 & 0xF000 ) / 0x1000 ) & 0x0F;
 
-        $iBdrCL = (($iBdr2 & 0x7F)) & 0x7F;
-        $iBdrCR = (($iBdr2 & 0x3F80) / 0x80) & 0x7F;
-        $iBdrD  = (($iBdr2 & 0xC000) / 0x4000) & 0x3;
+        $iBdrCL = ( ( $iBdr2 & 0x7F ) ) & 0x7F;
+        $iBdrCR = ( ( $iBdr2 & 0x3F80 ) / 0x80 ) & 0x7F;
+        $iBdrD  = ( ( $iBdr2 & 0xC000 ) / 0x4000 ) & 0x3;
 
-        $iBdrCT = (($iBdr3 & 0x7F)) & 0x7F;
-        $iBdrCB = (($iBdr3 & 0x3F80) / 0x80) & 0x7F;
-        $iBdrCD = (($iBdr3 & 0x1FC000) / 0x4000) & 0x7F;
-        $iBdrSD = (($iBdr3 & 0x1E00000) / 0x200000) & 0xF;
-        $iFillP = (($iBdr3 & 0xFC000000) / 0x4000000) & 0x3F;
+        $iBdrCT = ( ( $iBdr3 & 0x7F ) ) & 0x7F;
+        $iBdrCB = ( ( $iBdr3 & 0x3F80 ) / 0x80 ) & 0x7F;
+        $iBdrCD = ( ( $iBdr3 & 0x1FC000 ) / 0x4000 ) & 0x7F;
+        $iBdrSD = ( ( $iBdr3 & 0x1E00000 ) / 0x200000 ) & 0xF;
+        $iFillP = ( ( $iBdr3 & 0xFC000000 ) / 0x4000000 ) & 0x3F;
 
-        $iFillCF = ($iPtn & 0x7F);
-        $iFillCB = (($iPtn & 0x3F80) / 0x80) & 0x7F;
+        $iFillCF = ( $iPtn & 0x7F );
+        $iFillCB = ( ( $iPtn & 0x3F80 ) / 0x80 ) & 0x7F;
     }
     else {
-        my ($iGen, $iAlign, $iPtn,  $iPtn2, $iBdr1, $iBdr2);
+        my ( $iGen, $iAlign, $iPtn, $iPtn2, $iBdr1, $iBdr2 );
 
-        ($iFnt, $iIdx, $iGen, $iAlign, $iPtn,  $iPtn2, $iBdr1, $iBdr2)
-            = unpack("v8", $sWk);
-        $iLock   = ($iGen & 0x01)? 1:0;
-        $iHidden = ($iGen & 0x02)? 1:0;
-        $iStyle  = ($iGen & 0x04)? 1:0;
-        $i123    = ($iGen & 0x08)? 1:0;
+        ( $iFnt, $iIdx, $iGen, $iAlign, $iPtn, $iPtn2, $iBdr1, $iBdr2 ) =
+          unpack( "v8", $sWk );
+        $iLock   = ( $iGen & 0x01 ) ? 1 : 0;
+        $iHidden = ( $iGen & 0x02 ) ? 1 : 0;
+        $iStyle  = ( $iGen & 0x04 ) ? 1 : 0;
+        $i123    = ( $iGen & 0x08 ) ? 1 : 0;
 
-        $iAlH    = ($iAlign & 0x07);
-        $iWrap  = ($iAlign & 0x08)? 1:0;
-        $iAlV    = ($iAlign & 0x70) / 0x10;
-        $iJustL  = ($iAlign & 0x80)? 1:0;
+        $iAlH   = ( $iAlign & 0x07 );
+        $iWrap  = ( $iAlign & 0x08 ) ? 1 : 0;
+        $iAlV   = ( $iAlign & 0x70 ) / 0x10;
+        $iJustL = ( $iAlign & 0x80 ) ? 1 : 0;
 
-        $iRotate  = (($iAlign & 0x300) / 0x100) & 0x3;
+        $iRotate = ( ( $iAlign & 0x300 ) / 0x100 ) & 0x3;
 
-        $iFillCF = ($iPtn & 0x7F);
-        $iFillCB = (($iPtn & 0x1F80) / 0x80) & 0x7F;
+        $iFillCF = ( $iPtn & 0x7F );
+        $iFillCB = ( ( $iPtn & 0x1F80 ) / 0x80 ) & 0x7F;
 
-        $iFillP = ($iPtn2 & 0x3F);
-        $iBdrSB  = (($iPtn2 & 0x1C0) /  0x40) & 0x7;
-        $iBdrCB = (($iPtn2 & 0xFE00) / 0x200) & 0x7F;
+        $iFillP = ( $iPtn2 & 0x3F );
+        $iBdrSB = ( ( $iPtn2 & 0x1C0 ) / 0x40 ) & 0x7;
+        $iBdrCB = ( ( $iPtn2 & 0xFE00 ) / 0x200 ) & 0x7F;
 
-        $iBdrST = ($iBdr1 & 0x07);
-        $iBdrSL = (($iBdr1 & 0x38)   / 0x8)   & 0x07;
-        $iBdrSR = (($iBdr1 & 0x1C0)  / 0x40)  & 0x07;
-        $iBdrCT = (($iBdr1 & 0xFE00) / 0x200)  & 0x7F;
+        $iBdrST = ( $iBdr1 & 0x07 );
+        $iBdrSL = ( ( $iBdr1 & 0x38 ) / 0x8 ) & 0x07;
+        $iBdrSR = ( ( $iBdr1 & 0x1C0 ) / 0x40 ) & 0x07;
+        $iBdrCT = ( ( $iBdr1 & 0xFE00 ) / 0x200 ) & 0x7F;
 
-        $iBdrCL = ($iBdr2  & 0x7F)  & 0x7F;
-        $iBdrCR = (($iBdr2 & 0x3F80) / 0x80) & 0x7F;
+        $iBdrCL = ( $iBdr2 & 0x7F ) & 0x7F;
+        $iBdrCR = ( ( $iBdr2 & 0x3F80 ) / 0x80 ) & 0x7F;
     }
 
-   push @{$oBook->{Format}} , 
-         Spreadsheet::ParseExcel::Format->new (
-            FontNo   => $iFnt,
-            Font     => $oBook->{Font}[$iFnt], 
-            FmtIdx   => $iIdx,
+    push @{ $oBook->{Format} }, Spreadsheet::ParseExcel::Format->new(
+        FontNo => $iFnt,
+        Font   => $oBook->{Font}[$iFnt],
+        FmtIdx => $iIdx,
 
-            Lock     => $iLock,
-            Hidden   => $iHidden,
-            Style    => $iStyle,
-            Key123   => $i123,
-            AlignH   => $iAlH,
-            Wrap     => $iWrap,
-            AlignV   => $iAlV,
-            JustLast => $iJustL,
-            Rotate   => $iRotate,
+        Lock     => $iLock,
+        Hidden   => $iHidden,
+        Style    => $iStyle,
+        Key123   => $i123,
+        AlignH   => $iAlH,
+        Wrap     => $iWrap,
+        AlignV   => $iAlV,
+        JustLast => $iJustL,
+        Rotate   => $iRotate,
 
-            Indent   => $iInd,
-            Shrink   => $iShrink,
-            Merge    => $iMerge,
-            ReadDir  => $iReadDir,
+        Indent  => $iInd,
+        Shrink  => $iShrink,
+        Merge   => $iMerge,
+        ReadDir => $iReadDir,
 
-            BdrStyle => [$iBdrSL, $iBdrSR, $iBdrST, $iBdrSB],
-            BdrColor => [$iBdrCL, $iBdrCR, $iBdrCT, $iBdrCB],
-            BdrDiag  => [$iBdrD, $iBdrSD, $iBdrCD],
-            Fill     => [$iFillP, $iFillCF, $iFillCB],
-        );
+        BdrStyle => [ $iBdrSL, $iBdrSR,  $iBdrST, $iBdrSB ],
+        BdrColor => [ $iBdrCL, $iBdrCR,  $iBdrCT, $iBdrCB ],
+        BdrDiag  => [ $iBdrD,  $iBdrSD,  $iBdrCD ],
+        Fill     => [ $iFillP, $iFillCF, $iFillCB ],
+    );
 }
+
 #------------------------------------------------------------------------------
 # _subFormat (for Spreadsheet::ParseExcel)  DK: P336
 #------------------------------------------------------------------------------
 sub _subFormat {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
     my $sFmt;
-    if (($oBook->{BIFFVersion} == verBIFF2) ||
-        ($oBook->{BIFFVersion} == verBIFF3) ||
-        ($oBook->{BIFFVersion} == verBIFF4) ||
-        ($oBook->{BIFFVersion} == verBIFF5) ) {
-        $sFmt = substr($sWk, 3, unpack('c', substr($sWk, 2, 1)));
-        $sFmt = $oBook->{FmtClass}->TextFmt($sFmt, '_native_');
+    if (   ( $oBook->{BIFFVersion} == verBIFF2 )
+        || ( $oBook->{BIFFVersion} == verBIFF3 )
+        || ( $oBook->{BIFFVersion} == verBIFF4 )
+        || ( $oBook->{BIFFVersion} == verBIFF5 ) )
+    {
+        $sFmt = substr( $sWk, 3, unpack( 'c', substr( $sWk, 2, 1 ) ) );
+        $sFmt = $oBook->{FmtClass}->TextFmt( $sFmt, '_native_' );
     }
     else {
-        $sFmt = _convBIFF8String($oBook, substr($sWk, 2));
+        $sFmt = _convBIFF8String( $oBook, substr( $sWk, 2 ) );
     }
-    $oBook->{FormatStr}->{unpack('v', substr($sWk, 0, 2))} = $sFmt;
+    $oBook->{FormatStr}->{ unpack( 'v', substr( $sWk, 0, 2 ) ) } = $sFmt;
 }
+
 #------------------------------------------------------------------------------
 # _subPalette (for Spreadsheet::ParseExcel) DK: P393
 #------------------------------------------------------------------------------
 sub _subPalette {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    for(my $i=0;$i<unpack('v', $sWk);$i++) {
-#        push @aColor, unpack('H6', substr($sWk, $i*4+2));
-        $aColor[$i+8] = unpack('H6', substr($sWk, $i*4+2));
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    for ( my $i = 0 ; $i < unpack( 'v', $sWk ) ; $i++ ) {
+
+        #        push @aColor, unpack('H6', substr($sWk, $i*4+2));
+        $aColor[ $i + 8 ] = unpack( 'H6', substr( $sWk, $i * 4 + 2 ) );
     }
 }
+
 #------------------------------------------------------------------------------
 # _subFont (for Spreadsheet::ParseExcel) DK:P333
 #------------------------------------------------------------------------------
 sub _subFont {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline, $sFntName);
-    my($bBold, $bItalic, $bUnderline, $bStrikeout);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline, $sFntName );
+    my ( $bBold, $bItalic, $bUnderline, $bStrikeout );
 
-    if($oBook->{BIFFVersion} == verBIFF8) {
-        ($iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline) = 
-            unpack("v5c", $sWk);
-        my($iSize, $iHigh) = unpack('cc', substr($sWk, 14, 2));
-        if($iHigh) {
-            $sFntName = substr($sWk, 16, $iSize*2);
-            _SwapForUnicode(\$sFntName);
-            $sFntName = $oBook->{FmtClass}->TextFmt($sFntName, 'ucs2');
+    if ( $oBook->{BIFFVersion} == verBIFF8 ) {
+        ( $iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline ) =
+          unpack( "v5c", $sWk );
+        my ( $iSize, $iHigh ) = unpack( 'cc', substr( $sWk, 14, 2 ) );
+        if ($iHigh) {
+            $sFntName = substr( $sWk, 16, $iSize * 2 );
+            _SwapForUnicode( \$sFntName );
+            $sFntName = $oBook->{FmtClass}->TextFmt( $sFntName, 'ucs2' );
         }
         else {
-            $sFntName = substr($sWk, 16, $iSize);
-            $sFntName = $oBook->{FmtClass}->TextFmt($sFntName, '_native_');
+            $sFntName = substr( $sWk, 16, $iSize );
+            $sFntName = $oBook->{FmtClass}->TextFmt( $sFntName, '_native_' );
         }
-        $bBold       = ($iBold >= 0x2BC)? 1: 0;
-        $bItalic     = ($iAttr & 0x02)? 1: 0;
-        $bStrikeout  = ($iAttr & 0x08)? 1: 0;
-        $bUnderline  = ($iUnderline)? 1: 0;
+        $bBold      = ( $iBold >= 0x2BC ) ? 1 : 0;
+        $bItalic    = ( $iAttr & 0x02 )   ? 1 : 0;
+        $bStrikeout = ( $iAttr & 0x08 )   ? 1 : 0;
+        $bUnderline = ($iUnderline)       ? 1 : 0;
     }
-    elsif($oBook->{BIFFVersion} == verBIFF5) {
-        ($iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline) = 
-            unpack("v5c", $sWk);
-        $sFntName = $oBook->{FmtClass}->TextFmt(
-                    substr($sWk, 15, unpack("c", substr($sWk, 14, 1))), 
-                    '_native_');
-        $bBold       = ($iBold >= 0x2BC)? 1: 0;
-        $bItalic     = ($iAttr & 0x02)? 1: 0;
-        $bStrikeout  = ($iAttr & 0x08)? 1: 0;
-        $bUnderline  = ($iUnderline)? 1: 0;
+    elsif ( $oBook->{BIFFVersion} == verBIFF5 ) {
+        ( $iHeight, $iAttr, $iCIdx, $iBold, $iSuper, $iUnderline ) =
+          unpack( "v5c", $sWk );
+        $sFntName =
+          $oBook->{FmtClass}
+          ->TextFmt( substr( $sWk, 15, unpack( "c", substr( $sWk, 14, 1 ) ) ),
+            '_native_' );
+        $bBold      = ( $iBold >= 0x2BC ) ? 1 : 0;
+        $bItalic    = ( $iAttr & 0x02 )   ? 1 : 0;
+        $bStrikeout = ( $iAttr & 0x08 )   ? 1 : 0;
+        $bUnderline = ($iUnderline)       ? 1 : 0;
     }
     else {
-        ($iHeight, $iAttr) = unpack("v2", $sWk);
-        $iCIdx       = undef;
-        $iSuper      = 0;
+        ( $iHeight, $iAttr ) = unpack( "v2", $sWk );
+        $iCIdx  = undef;
+        $iSuper = 0;
 
-        $bBold       = ($iAttr & 0x01)? 1: 0;
-        $bItalic     = ($iAttr & 0x02)? 1: 0;
-        $bUnderline  = ($iAttr & 0x04)? 1: 0;
-        $bStrikeout  = ($iAttr & 0x08)? 1: 0;
+        $bBold      = ( $iAttr & 0x01 ) ? 1 : 0;
+        $bItalic    = ( $iAttr & 0x02 ) ? 1 : 0;
+        $bUnderline = ( $iAttr & 0x04 ) ? 1 : 0;
+        $bStrikeout = ( $iAttr & 0x08 ) ? 1 : 0;
 
-        $sFntName = substr($sWk, 5, unpack("c", substr($sWk, 4, 1)));
+        $sFntName = substr( $sWk, 5, unpack( "c", substr( $sWk, 4, 1 ) ) );
     }
-    push @{$oBook->{Font}}, 
-        Spreadsheet::ParseExcel::Font->new(
-            Height          => $iHeight / 20.0,
-            Attr            => $iAttr,
-            Color           => $iCIdx,
-            Super           => $iSuper,
-            UnderlineStyle  => $iUnderline,
-            Name            => $sFntName,
+    push @{ $oBook->{Font} }, Spreadsheet::ParseExcel::Font->new(
+        Height         => $iHeight / 20.0,
+        Attr           => $iAttr,
+        Color          => $iCIdx,
+        Super          => $iSuper,
+        UnderlineStyle => $iUnderline,
+        Name           => $sFntName,
 
-            Bold            => $bBold,
-            Italic          => $bItalic,
-            Underline       => $bUnderline,
-            Strikeout       => $bStrikeout,
+        Bold      => $bBold,
+        Italic    => $bItalic,
+        Underline => $bUnderline,
+        Strikeout => $bStrikeout,
     );
+
     #Skip Font[4]
-    push @{$oBook->{Font}}, {} if(scalar(@{$oBook->{Font}}) == 4);
+    push @{ $oBook->{Font} }, {} if ( scalar( @{ $oBook->{Font} } ) == 4 );
 
 }
+
 #------------------------------------------------------------------------------
 # _subBoundSheet (for Spreadsheet::ParseExcel): DK: P307
 #------------------------------------------------------------------------------
 sub _subBoundSheet {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iPos, $iGr, $iKind) = unpack("Lc2", $sWk);
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my ( $iPos, $iGr, $iKind ) = unpack( "Lc2", $sWk );
     $iKind &= 0x0F;
-    return if(($iKind != 0x00) && ($iKind != 0x01));
+    return if ( ( $iKind != 0x00 ) && ( $iKind != 0x01 ) );
 
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-        my($iSize, $iUni) = unpack("cc", substr($sWk, 6, 2));
-        my $sWsName = substr($sWk, 8);
-        if($iUni & 0x01) {
-            _SwapForUnicode(\$sWsName);
-            $sWsName = $oBook->{FmtClass}->TextFmt($sWsName, 'ucs2');
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        my ( $iSize, $iUni ) = unpack( "cc", substr( $sWk, 6, 2 ) );
+        my $sWsName = substr( $sWk, 8 );
+        if ( $iUni & 0x01 ) {
+            _SwapForUnicode( \$sWsName );
+            $sWsName = $oBook->{FmtClass}->TextFmt( $sWsName, 'ucs2' );
         }
-        $oBook->{Worksheet}[$oBook->{SheetCount}] = 
-            Spreadsheet::ParseExcel::Worksheet->new(
-                    Name => $sWsName,
-                    Kind => $iKind,
-                    _Pos => $iPos,
-                    _Book => $oBook,
-                    _SheetNo => $oBook->{SheetCount},
-                );
+        $oBook->{Worksheet}[ $oBook->{SheetCount} ] =
+          Spreadsheet::ParseExcel::Worksheet->new(
+            Name     => $sWsName,
+            Kind     => $iKind,
+            _Pos     => $iPos,
+            _Book    => $oBook,
+            _SheetNo => $oBook->{SheetCount},
+          );
     }
     else {
-        $oBook->{Worksheet}[$oBook->{SheetCount}] = 
-            Spreadsheet::ParseExcel::Worksheet->new(
-                    Name => $oBook->{FmtClass}->TextFmt(substr($sWk, 7), '_native_'),
-                    Kind => $iKind,
-                    _Pos => $iPos,
-                    _Book => $oBook,
-                    _SheetNo => $oBook->{SheetCount},
-                );
+        $oBook->{Worksheet}[ $oBook->{SheetCount} ] =
+          Spreadsheet::ParseExcel::Worksheet->new(
+            Name =>
+              $oBook->{FmtClass}->TextFmt( substr( $sWk, 7 ), '_native_' ),
+            Kind     => $iKind,
+            _Pos     => $iPos,
+            _Book    => $oBook,
+            _SheetNo => $oBook->{SheetCount},
+          );
     }
     $oBook->{SheetCount}++;
 }
+
 #------------------------------------------------------------------------------
 # _subHeader (for Spreadsheet::ParseExcel) DK: P340
 #------------------------------------------------------------------------------
 sub _subHeader {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
     my $sW;
+
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-    $sW = _convBIFF8String($oBook, $sWk);
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{Header} = 
-        ($sW eq "\x00")? undef : $sW;
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        $sW = _convBIFF8String( $oBook, $sWk );
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{Header} =
+          ( $sW eq "\x00" ) ? undef : $sW;
     }
+
     #Before BIFF8
     else {
-        my($iLen) = unpack("c", $sWk);
-    $sW = $oBook->{FmtClass}->TextFmt(substr($sWk, 1, $iLen), '_native_');
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{Header} =
-        ($sW eq "\x00\x00\x00")? undef : $sW;
+        my ($iLen) = unpack( "c", $sWk );
+        $sW =
+          $oBook->{FmtClass}->TextFmt( substr( $sWk, 1, $iLen ), '_native_' );
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{Header} =
+          ( $sW eq "\x00\x00\x00" ) ? undef : $sW;
     }
 }
+
 #------------------------------------------------------------------------------
 # _subFooter (for Spreadsheet::ParseExcel) DK: P335
 #------------------------------------------------------------------------------
 sub _subFooter {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
     my $sW;
+
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-    $sW = _convBIFF8String($oBook, $sWk);
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{Footer} = 
-        ($sW eq "\x00")? undef : $sW;
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        $sW = _convBIFF8String( $oBook, $sWk );
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{Footer} =
+          ( $sW eq "\x00" ) ? undef : $sW;
     }
+
     #Before BIFF8
     else {
-        my($iLen) = unpack("c", $sWk);
-    $sW = $oBook->{FmtClass}->TextFmt(substr($sWk, 1, $iLen), '_native_');
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{Footer} = 
-        ($sW eq "\x00\x00\x00")? undef : $sW;
+        my ($iLen) = unpack( "c", $sWk );
+        $sW =
+          $oBook->{FmtClass}->TextFmt( substr( $sWk, 1, $iLen ), '_native_' );
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{Footer} =
+          ( $sW eq "\x00\x00\x00" ) ? undef : $sW;
     }
 }
+
 #------------------------------------------------------------------------------
 # _subHPageBreak (for Spreadsheet::ParseExcel) DK: P341
 #------------------------------------------------------------------------------
 sub _subHPageBreak {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
     my @aBreak;
-    my $iCnt = unpack("v", $sWk);
+    my $iCnt = unpack( "v", $sWk );
 
-    return undef unless(defined $oBook->{_CurSheet});
+    return undef unless ( defined $oBook->{_CurSheet} );
+
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-        for(my $i=0;$i<$iCnt;$i++) {
-            my($iRow, $iColB, $iColE) = 
-                    unpack('v3', substr($sWk, 2 + $i*6, 6));
-#            push @aBreak, [$iRow, $iColB, $iColE];
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        for ( my $i = 0 ; $i < $iCnt ; $i++ ) {
+            my ( $iRow, $iColB, $iColE ) =
+              unpack( 'v3', substr( $sWk, 2 + $i * 6, 6 ) );
+
+            #            push @aBreak, [$iRow, $iColB, $iColE];
             push @aBreak, $iRow;
         }
     }
+
     #Before BIFF8
     else {
-        for(my $i=0;$i<$iCnt;$i++) {
-            my($iRow) = 
-                    unpack('v', substr($sWk, 2 + $i*2, 2));
+        for ( my $i = 0 ; $i < $iCnt ; $i++ ) {
+            my ($iRow) = unpack( 'v', substr( $sWk, 2 + $i * 2, 2 ) );
             push @aBreak, $iRow;
-#            push @aBreak, [$iRow, 0, 255];
+
+            #            push @aBreak, [$iRow, 0, 255];
         }
     }
-    @aBreak = sort {$a <=> $b} @aBreak;
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{HPageBreak} = \@aBreak;
+    @aBreak = sort { $a <=> $b } @aBreak;
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{HPageBreak} = \@aBreak;
 }
+
 #------------------------------------------------------------------------------
 # _subVPageBreak (for Spreadsheet::ParseExcel) DK: P447
 #------------------------------------------------------------------------------
 sub _subVPageBreak {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
     my @aBreak;
-    my $iCnt = unpack("v", $sWk);
+    my $iCnt = unpack( "v", $sWk );
+
     #BIFF8
-    if($oBook->{BIFFVersion} >= verBIFF8) {
-        for(my $i=0;$i<$iCnt;$i++) {
-            my($iCol, $iRowB, $iRowE) = 
-                    unpack('v3', substr($sWk, 2 + $i*6, 6));
+    if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+        for ( my $i = 0 ; $i < $iCnt ; $i++ ) {
+            my ( $iCol, $iRowB, $iRowE ) =
+              unpack( 'v3', substr( $sWk, 2 + $i * 6, 6 ) );
             push @aBreak, $iCol;
-#            push @aBreak, [$iCol, $iRowB, $iRowE];
+
+            #            push @aBreak, [$iCol, $iRowB, $iRowE];
         }
     }
+
     #Before BIFF8
     else {
-        for(my $i=0;$i<$iCnt;$i++) {
-            my($iCol) = 
-                    unpack('v', substr($sWk, 2 + $i*2, 2));
+        for ( my $i = 0 ; $i < $iCnt ; $i++ ) {
+            my ($iCol) = unpack( 'v', substr( $sWk, 2 + $i * 2, 2 ) );
             push @aBreak, $iCol;
-#            push @aBreak, [$iCol, 0, 65535];
+
+            #            push @aBreak, [$iCol, 0, 65535];
         }
     }
-    @aBreak = sort {$a <=> $b} @aBreak;
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{VPageBreak} = \@aBreak;
+    @aBreak = sort { $a <=> $b } @aBreak;
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{VPageBreak} = \@aBreak;
 }
-#------------------------------------------------------------------------------
-# _subMergin (for Spreadsheet::ParseExcel) DK: P306, 345, 400, 440
-#------------------------------------------------------------------------------
-sub _subMergin {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
 
-    my $dWk = _convDval(substr($sWk, 0, 8)) * 127 / 50;
-    if($bOp == 0x26) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{LeftMergin} = $dWk;
+#------------------------------------------------------------------------------
+# _subMargin (for Spreadsheet::ParseExcel) DK: P306, 345, 400, 440
+#------------------------------------------------------------------------------
+sub _subMargin {
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
+
+    # The "Mergin" options are a workaround for a backward compatible typo.
+
+    my $dWk = _convDval( substr( $sWk, 0, 8 ) );
+    if ( $bOp == 0x26 ) {
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{LeftMergin} = $dWk;
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{LeftMargin} = $dWk;
     }
-    elsif($bOp == 0x27) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{RightMergin} = $dWk;
+    elsif ( $bOp == 0x27 ) {
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{RightMergin} = $dWk;
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{RightMargin} = $dWk;
     }
-    elsif($bOp == 0x28) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{TopMergin} = $dWk;
+    elsif ( $bOp == 0x28 ) {
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{TopMergin} = $dWk;
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{TopMargin} = $dWk;
     }
-    elsif($bOp == 0x29) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{BottomMergin} = $dWk;
+    elsif ( $bOp == 0x29 ) {
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{BottomMergin} = $dWk;
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{BottomMargin} = $dWk;
     }
 }
+
 #------------------------------------------------------------------------------
 # _subHcenter (for Spreadsheet::ParseExcel) DK: P340
 #------------------------------------------------------------------------------
 sub _subHcenter {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $iWk = unpack("v", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{HCenter} = $iWk;
+    my $iWk = unpack( "v", $sWk );
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{HCenter} = $iWk;
 
 }
+
 #------------------------------------------------------------------------------
 # _subVcenter (for Spreadsheet::ParseExcel) DK: P447
 #------------------------------------------------------------------------------
 sub _subVcenter {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $iWk = unpack("v", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{VCenter} = $iWk;
+    my $iWk = unpack( "v", $sWk );
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{VCenter} = $iWk;
 }
+
 #------------------------------------------------------------------------------
 # _subPrintGridlines (for Spreadsheet::ParseExcel) DK: P397
 #------------------------------------------------------------------------------
 sub _subPrintGridlines {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $iWk = unpack("v", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{PrintGrid} = $iWk;
+    my $iWk = unpack( "v", $sWk );
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{PrintGrid} = $iWk;
 
 }
+
 #------------------------------------------------------------------------------
 # _subPrintHeaders (for Spreadsheet::ParseExcel) DK: P397
 #------------------------------------------------------------------------------
 sub _subPrintHeaders {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $iWk = unpack("v", $sWk);
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{PrintHeaders} = $iWk;
+    my $iWk = unpack( "v", $sWk );
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{PrintHeaders} = $iWk;
 }
+
 #------------------------------------------------------------------------------
 # _subSETUP (for Spreadsheet::ParseExcel) DK: P409
 #------------------------------------------------------------------------------
 sub _subSETUP {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $oWkS = $oBook->{Worksheet}[$oBook->{_CurSheet}];
+    my $oWkS = $oBook->{Worksheet}[ $oBook->{_CurSheet} ];
     my $iGrBit;
 
-    ($oWkS->{PaperSize},
-     $oWkS->{Scale}    ,
-     $oWkS->{PageStart},
-     $oWkS->{FitWidth} ,
-     $oWkS->{FitHeight},
-     $iGrBit,
-     $oWkS->{Res},
-     $oWkS->{VRes},) = unpack('v8', $sWk);
+    (
+        $oWkS->{PaperSize}, $oWkS->{Scale},     $oWkS->{PageStart},
+        $oWkS->{FitWidth},  $oWkS->{FitHeight}, $iGrBit,
+        $oWkS->{Res},       $oWkS->{VRes},
+    ) = unpack( 'v8', $sWk );
 
-    $oWkS->{HeaderMergin} = _convDval(substr($sWk, 16, 8)) * 127 / 50;
-    $oWkS->{FooterMergin} = _convDval(substr($sWk, 24, 8)) * 127 / 50;
-    $oWkS->{Copis}= unpack('v2', substr($sWk, 32, 2));
-    $oWkS->{LeftToRight}= (($iGrBit & 0x01)? 1: 0);
-    $oWkS->{Landscape}  = (($iGrBit & 0x02)? 1: 0);
-    $oWkS->{NoPls}      = (($iGrBit & 0x04)? 1: 0);
-    $oWkS->{NoColor}    = (($iGrBit & 0x08)? 1: 0);
-    $oWkS->{Draft}      = (($iGrBit & 0x10)? 1: 0);
-    $oWkS->{Notes}      = (($iGrBit & 0x20)? 1: 0);
-    $oWkS->{NoOrient}   = (($iGrBit & 0x40)? 1: 0);
-    $oWkS->{UsePage}    = (($iGrBit & 0x80)? 1: 0);
+    $oWkS->{HeaderMargin} = _convDval( substr( $sWk, 16, 8 ) );
+    $oWkS->{FooterMargin} = _convDval( substr( $sWk, 24, 8 ) );
+    $oWkS->{Copis} = unpack( 'v2', substr( $sWk, 32, 2 ) );
+    $oWkS->{LeftToRight} = ( ( $iGrBit & 0x01 ) ? 1 : 0 );
+    $oWkS->{Landscape}   = ( ( $iGrBit & 0x02 ) ? 1 : 0 );
+    $oWkS->{NoPls}       = ( ( $iGrBit & 0x04 ) ? 1 : 0 );
+    $oWkS->{NoColor}     = ( ( $iGrBit & 0x08 ) ? 1 : 0 );
+    $oWkS->{Draft}       = ( ( $iGrBit & 0x10 ) ? 1 : 0 );
+    $oWkS->{Notes}       = ( ( $iGrBit & 0x20 ) ? 1 : 0 );
+    $oWkS->{NoOrient}    = ( ( $iGrBit & 0x40 ) ? 1 : 0 );
+    $oWkS->{UsePage}     = ( ( $iGrBit & 0x80 ) ? 1 : 0 );
+
+    # The NoPls flag indicates that the values have not been taken from an
+    # actual printer and thus may not be accurate.
+
+    # Set default scale if NoPls otherwise it may be an invalid value of 0XFF.
+    $oWkS->{Scale} = 100 if $oWkS->{NoPls};
+
+    # Workaround for a backward compatible typo.
+    $oWkS->{HeaderMergin} = $oWkS->{HeaderMargin};
+    $oWkS->{FooterMergin} = $oWkS->{FooterMargin};
+
 }
+
 #------------------------------------------------------------------------------
 # _subName (for Spreadsheet::ParseExcel) DK: P350
 #------------------------------------------------------------------------------
 sub _subName {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    my($iGrBit, 
-        $cKey, $cCh, 
-        $iCce, $ixAls, $iTab,
-        $cchCust, $cchDsc, $cchHep, $cchStatus) = unpack('vc2v3c4', $sWk);
-#Builtin Name + Length == 1
-    if(($iGrBit & 0x20) && ($cCh == 1)) {
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    my (
+        $iGrBit, $cKey,    $cCh,    $iCce,   $ixAls,
+        $iTab,   $cchCust, $cchDsc, $cchHep, $cchStatus
+    ) = unpack( 'vc2v3c4', $sWk );
+
+    #Builtin Name + Length == 1
+    if ( ( $iGrBit & 0x20 ) && ( $cCh == 1 ) ) {
+
         #BIFF8
-        if($oBook->{BIFFVersion} >= verBIFF8) {
-            my $iName  = unpack('n', substr($sWk, 14 ));
-            my $iSheet = unpack('v', substr($sWk, 8 )) - 1;
-            if($iName == 6) {       #PrintArea
-                my($iSheetW, $raArea) = _ParseNameArea(substr($sWk, 16));
-                $oBook->{PrintArea}[$iSheet] =  $raArea;
+        if ( $oBook->{BIFFVersion} >= verBIFF8 ) {
+            my $iName  = unpack( 'n', substr( $sWk, 14 ) );
+            my $iSheet = unpack( 'v', substr( $sWk, 8 ) ) - 1;
+
+            # Workaround for mal-formed Excel workbooks where Print_Title is
+            # set as Global (i.e. itab = 0). Note, this will have to be
+            # treated differently when we get around to handling global names.
+            return undef if $iSheet == -1;
+
+            if ( $iName == 6 ) {    #PrintArea
+                my ( $iSheetW, $raArea ) = _ParseNameArea( substr( $sWk, 16 ) );
+                $oBook->{PrintArea}[$iSheet] = $raArea;
             }
-            elsif($iName == 7) {    #Title
-                my($iSheetW, $raArea) = _ParseNameArea(substr($sWk, 16));
+            elsif ( $iName == 7 ) {    #Title
+                my ( $iSheetW, $raArea ) = _ParseNameArea( substr( $sWk, 16 ) );
                 my @aTtlR = ();
                 my @aTtlC = ();
                 foreach my $raI (@$raArea) {
-                    if($raI->[3] == 0xFF) { #Row Title
-                        push @aTtlR, [$raI->[0], $raI->[2] ];
+                    if ( $raI->[3] == 0xFF ) {    #Row Title
+                        push @aTtlR, [ $raI->[0], $raI->[2] ];
                     }
-                    else {                  #Col Title
-                        push @aTtlC, [$raI->[1], $raI->[3] ];
+                    else {                        #Col Title
+                        push @aTtlC, [ $raI->[1], $raI->[3] ];
                     }
                 }
-                $oBook->{PrintTitle}[$iSheet] =  {Row => \@aTtlR, Column => \@aTtlC};
+                $oBook->{PrintTitle}[$iSheet] =
+                  { Row => \@aTtlR, Column => \@aTtlC };
             }
         }
         else {
-            my $iName = unpack('c', substr($sWk, 14 ));
-            if($iName == 6) {       #PrintArea
-                my($iSheet, $raArea) = _ParseNameArea95(substr($sWk, 15));
-                $oBook->{PrintArea}[$iSheet] =  $raArea;
+            my $iName = unpack( 'c', substr( $sWk, 14 ) );
+            if ( $iName == 6 ) {                  #PrintArea
+                my ( $iSheet, $raArea ) =
+                  _ParseNameArea95( substr( $sWk, 15 ) );
+                $oBook->{PrintArea}[$iSheet] = $raArea;
             }
-            elsif($iName == 7) {    #Title
-                my($iSheet, $raArea) = _ParseNameArea95(substr($sWk, 15));
+            elsif ( $iName == 7 ) {               #Title
+                my ( $iSheet, $raArea ) =
+                  _ParseNameArea95( substr( $sWk, 15 ) );
                 my @aTtlR = ();
                 my @aTtlC = ();
                 foreach my $raI (@$raArea) {
-                    if($raI->[3] == 0xFF) { #Row Title
-                        push @aTtlR, [$raI->[0], $raI->[2] ];
+                    if ( $raI->[3] == 0xFF ) {    #Row Title
+                        push @aTtlR, [ $raI->[0], $raI->[2] ];
                     }
-                    else {                  #Col Title
-                        push @aTtlC, [$raI->[1], $raI->[3] ];
+                    else {                        #Col Title
+                        push @aTtlC, [ $raI->[1], $raI->[3] ];
                     }
                 }
-                $oBook->{PrintTitle}[$iSheet] =  {Row => \@aTtlR, Column => \@aTtlC};
+                $oBook->{PrintTitle}[$iSheet] =
+                  { Row => \@aTtlR, Column => \@aTtlC };
             }
         }
     }
 }
+
 #------------------------------------------------------------------------------
 # ParseNameArea (for Spreadsheet::ParseExcel) DK: 494 (ptgAread3d)
 #------------------------------------------------------------------------------
 sub _ParseNameArea {
-    my ($sObj) =@_;
+    my ($sObj) = @_;
     my ($iOp);
     my @aRes = ();
-    $iOp = unpack('C', $sObj);
+    $iOp = unpack( 'C', $sObj );
     my $iSheet;
-    if($iOp == 0x3b) {
-        my($iWkS, $iRs, $iRe, $iCs, $iCe) = 
-            unpack('v5', substr($sObj, 1));
+    if ( $iOp == 0x3b ) {
+        my ( $iWkS, $iRs, $iRe, $iCs, $iCe ) =
+          unpack( 'v5', substr( $sObj, 1 ) );
         $iSheet = $iWkS;
-        push @aRes, [$iRs, $iCs, $iRe, $iCe];
+        push @aRes, [ $iRs, $iCs, $iRe, $iCe ];
     }
-    elsif($iOp == 0x29) {
-        my $iLen = unpack('v', substr($sObj, 1, 2));
+    elsif ( $iOp == 0x29 ) {
+        my $iLen = unpack( 'v', substr( $sObj, 1, 2 ) );
         my $iSt = 0;
-        while($iSt < $iLen) {
-            my($iOpW, $iWkS, $iRs, $iRe, $iCs, $iCe) = 
-                unpack('cv5', substr($sObj, $iSt+3, 11));
+        while ( $iSt < $iLen ) {
+            my ( $iOpW, $iWkS, $iRs, $iRe, $iCs, $iCe ) =
+              unpack( 'cv5', substr( $sObj, $iSt + 3, 11 ) );
 
-            if($iOpW == 0x3b) {
+            if ( $iOpW == 0x3b ) {
                 $iSheet = $iWkS;
-                push @aRes, [$iRs, $iCs, $iRe, $iCe];
+                push @aRes, [ $iRs, $iCs, $iRe, $iCe ];
             }
 
-            if($iSt==0) {
+            if ( $iSt == 0 ) {
                 $iSt += 11;
             }
             else {
-                $iSt += 12; #Skip 1 byte;
+                $iSt += 12;    #Skip 1 byte;
             }
         }
     }
-    return ($iSheet, \@aRes);
+    return ( $iSheet, \@aRes );
 }
+
 #------------------------------------------------------------------------------
 # ParseNameArea95 (for Spreadsheet::ParseExcel) DK: 494 (ptgAread3d)
 #------------------------------------------------------------------------------
 sub _ParseNameArea95 {
-    my ($sObj) =@_;
+    my ($sObj) = @_;
     my ($iOp);
     my @aRes = ();
-    $iOp = unpack('C', $sObj);
+    $iOp = unpack( 'C', $sObj );
     my $iSheet;
-    if($iOp == 0x3b) {
-        $iSheet = unpack('v', substr($sObj, 11, 2));
-        my($iRs, $iRe, $iCs, $iCe) = 
-                unpack('v2C2', substr($sObj, 15, 6));
-        push @aRes, [$iRs, $iCs, $iRe, $iCe];
+    if ( $iOp == 0x3b ) {
+        $iSheet = unpack( 'v', substr( $sObj, 11, 2 ) );
+        my ( $iRs, $iRe, $iCs, $iCe ) =
+          unpack( 'v2C2', substr( $sObj, 15, 6 ) );
+        push @aRes, [ $iRs, $iCs, $iRe, $iCe ];
     }
-    elsif($iOp == 0x29) {
-        my $iLen = unpack('v', substr($sObj, 1, 2));
+    elsif ( $iOp == 0x29 ) {
+        my $iLen = unpack( 'v', substr( $sObj, 1, 2 ) );
         my $iSt = 0;
-        while($iSt < $iLen) {
-            my $iOpW = unpack('c', substr($sObj, $iSt+3, 6));
-            $iSheet = unpack('v', substr($sObj, $iSt+14, 2));
-            my($iRs, $iRe, $iCs, $iCe) = 
-                unpack('v2C2', substr($sObj, $iSt+18, 6));
-            push @aRes, [$iRs, $iCs, $iRe, $iCe] if($iOpW == 0x3b);
+        while ( $iSt < $iLen ) {
+            my $iOpW = unpack( 'c', substr( $sObj, $iSt + 3, 6 ) );
+            $iSheet = unpack( 'v', substr( $sObj, $iSt + 14, 2 ) );
+            my ( $iRs, $iRe, $iCs, $iCe ) =
+              unpack( 'v2C2', substr( $sObj, $iSt + 18, 6 ) );
+            push @aRes, [ $iRs, $iCs, $iRe, $iCe ] if ( $iOpW == 0x3b );
 
-            if($iSt==0) {
+            if ( $iSt == 0 ) {
                 $iSt += 21;
             }
             else {
-                $iSt += 22; #Skip 1 byte;
+                $iSt += 22;    #Skip 1 byte;
             }
         }
     }
-    return ($iSheet, \@aRes);
+    return ( $iSheet, \@aRes );
 }
+
 #------------------------------------------------------------------------------
 # _subBOOL (for Spreadsheet::ParseExcel) DK: P452
 #------------------------------------------------------------------------------
 sub _subWSBOOL {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    $oBook->{Worksheet}[$oBook->{_CurSheet}]->{PageFit} = 
-                                ((unpack('v', $sWk) & 0x100)? 1: 0);
+    $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{PageFit} =
+      ( ( unpack( 'v', $sWk ) & 0x100 ) ? 1 : 0 );
 }
+
 #------------------------------------------------------------------------------
 # _subMergeArea (for Spreadsheet::ParseExcel) DK: (Not)
 #------------------------------------------------------------------------------
 sub _subMergeArea {
-    my($oBook, $bOp, $bLen, $sWk) = @_;
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $bOp, $bLen, $sWk ) = @_;
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $iCnt = unpack("v", $sWk);
-    my $oWkS = $oBook->{Worksheet}[$oBook->{_CurSheet}];
-    $oWkS->{MergedArea} = [] unless(defined $oWkS->{MergedArea});
-    for(my $i=0; $i < $iCnt; $i++) {
-        my($iRs, $iRe, $iCs, $iCe) = unpack('v4', substr($sWk, $i*8 + 2, 8));
-        for(my $iR=$iRs;$iR<=$iRe;$iR++) {
-            for(my $iC=$iCs;$iC<=$iCe;$iC++) {
-                $oWkS->{Cells}[$iR][$iC] ->{Merged} = 1 
-                        if(defined $oWkS->{Cells}[$iR][$iC] );
+    my $iCnt = unpack( "v", $sWk );
+    my $oWkS = $oBook->{Worksheet}[ $oBook->{_CurSheet} ];
+    $oWkS->{MergedArea} = [] unless ( defined $oWkS->{MergedArea} );
+    for ( my $i = 0 ; $i < $iCnt ; $i++ ) {
+        my ( $iRs, $iRe, $iCs, $iCe ) =
+          unpack( 'v4', substr( $sWk, $i * 8 + 2, 8 ) );
+        for ( my $iR = $iRs ; $iR <= $iRe ; $iR++ ) {
+            for ( my $iC = $iCs ; $iC <= $iCe ; $iC++ ) {
+                $oWkS->{Cells}[$iR][$iC]->{Merged} = 1
+                  if ( defined $oWkS->{Cells}[$iR][$iC] );
             }
         }
-        push @{$oWkS->{MergedArea}}, [$iRs, $iCs, $iRe, $iCe];
+        push @{ $oWkS->{MergedArea} }, [ $iRs, $iCs, $iRe, $iCe ];
     }
 }
+
 #------------------------------------------------------------------------------
 # DecodeBoolErr (for Spreadsheet::ParseExcel) DK: P306
 #------------------------------------------------------------------------------
 sub DecodeBoolErr {
-    my($iVal, $iFlg) = @_;
-    if($iFlg) {     # ERROR
-        if($iVal == 0x00) {
+    my ( $iVal, $iFlg ) = @_;
+    if ($iFlg) {    # ERROR
+        if ( $iVal == 0x00 ) {
             return "#NULL!";
         }
-        elsif($iVal == 0x07) {
+        elsif ( $iVal == 0x07 ) {
             return "#DIV/0!";
         }
-        elsif($iVal == 0x0F) {
+        elsif ( $iVal == 0x0F ) {
             return "#VALUE!";
         }
-        elsif($iVal == 0x17) {
+        elsif ( $iVal == 0x17 ) {
             return "#REF!";
         }
-        elsif($iVal == 0x1D) {
+        elsif ( $iVal == 0x1D ) {
             return "#NAME?";
         }
-        elsif($iVal == 0x24) {
+        elsif ( $iVal == 0x24 ) {
             return "#NUM!";
         }
-        elsif($iVal == 0x2A) {
+        elsif ( $iVal == 0x2A ) {
             return "#N/A!";
         }
         else {
@@ -1750,744 +1849,801 @@ sub DecodeBoolErr {
         }
     }
     else {
-        return ($iVal)? "TRUE" : "FALSE";
+        return ($iVal) ? "TRUE" : "FALSE";
     }
 }
-#------------------------------------------------------------------------------
-# _UnpackRKRec (for Spreadsheet::ParseExcel)    DK:P 401
-#------------------------------------------------------------------------------
-sub _UnpackRKRec {
-    my($sArg) = @_;
 
-    my $iF  = unpack('v', substr($sArg, 0, 2));
+###############################################################################
+#
+# _decode_rk_number()
+#
+# Convert an encoded RK number into a real number. The RK encoding is
+# explained in some detail in the MS docs. It is a way of storing applicable
+# ints and doubles in 32bits (30 data + 2 info bits) in order to save space.
+#
+sub _decode_rk_number {
 
-    my $lWk = substr($sArg, 2, 4);
-    my $sWk = pack("c4", reverse(unpack("c4", $lWk)));
-    my $iPtn = unpack("c",substr($sWk, 3, 1)) & 0x03;
-    if($iPtn == 0) {
-        return ($iF, unpack("d", ($BIGENDIAN)? $sWk . "\0\0\0\0": "\0\0\0\0". $lWk));
-    }
-    elsif($iPtn == 1) {
-        # http://rt.cpan.org/Ticket/Display.html?id=18063
-        my $u31 = unpack("c",substr($sWk, 3, 1)) & 0xFC;
-        $u31 |= 0xFFFFFF00 if ($u31 & 0x80); # raise neg bits for neg 1-byte value
-        substr($sWk, 3, 1) &= pack('c', $u31);
+    my $rk_number = shift;
+    my $number;
 
-        my $u01 = unpack("c",substr($lWk, 0, 1)) & 0xFC;
-        $u01 |= 0xFFFFFF00 if ($u01 & 0x80); # raise neg bits for neg 1-byte value
-        substr($lWk, 0, 1) &= pack('c', $u01);
+    # Check the main RK type.
+    if ( $rk_number & 0x02 ) {
 
-        return ($iF, unpack("d", ($BIGENDIAN)? $sWk . "\0\0\0\0": "\0\0\0\0". $lWk)/ 100);
-    }
-    elsif($iPtn == 2) {
-    my $sUB = unpack("B32", $sWk);
-        my $sWkLB = pack("B32", (substr($sUB, 0, 1) x 2) .
-                                substr($sUB, 0, 30));
-        my $sWkL  = ($BIGENDIAN)? $sWkLB: pack("c4", reverse(unpack("c4", $sWkLB)));
-        return ($iF, unpack("i", $sWkL));
+        # RK Type 2 and 4, a packed integer.
+
+        # Shift off the info bits.
+        $number = $rk_number >> 2;
+
+        # Convert from unsigned to signed if required.
+        $number -= 0x40000000 if $number & 0x20000000;
     }
     else {
-    my $sUB = unpack("B32", $sWk);
-        my $sWkLB = pack("B32", (substr($sUB, 0, 1) x 2) .
-                                substr($sUB, 0, 30));
-        my $sWkL  = ($BIGENDIAN)? $sWkLB: pack("c4", reverse(unpack("c4", $sWkLB)));
-        return ($iF, unpack("i", $sWkL) / 100);
-    }
-}
-#------------------------------------------------------------------------------
-# _subStrWk (for Spreadsheet::ParseExcel)     DK:P280 ..
-#------------------------------------------------------------------------------
-sub _subStrWk {
-    my($oBook, $sWk, $fCnt) = @_;
 
-    #1. Continue
-    if(defined($fCnt)) {
-    #1.1 Before No Data No
-        if($oBook->{StrBuff} eq '') { #
-#print "CONT NO DATA\n";
-#print "DATA:", unpack('H30', $oBook->{StrBuff}), " PRE:$oBook->{_PrevCond}\n";
-            $oBook->{StrBuff} .= $sWk;
+        # RK Type 1 and 3, a truncated IEEE Double.
+
+        # Pack the RK number into the high 30 bits of an IEEE double.
+        $number = pack "VV", 0x0000, $rk_number & 0xFFFFFFFC;
+
+        # Reverse the packed IEEE double on big-endian machines.
+        $number = reverse $number if $BIGENDIAN;
+
+        # Unpack the number.
+        $number = unpack "d", $number;
+    }
+
+    # RK Types 3 and 4 were multiplied by 100 prior to encoding.
+    $number /= 100 if $rk_number & 0x01;
+
+    return $number;
+}
+
+###############################################################################
+#
+# _subStrWk()
+#
+# Extract the workbook strings from the SST (Shared String Table) record and
+# any following CONTINUE records.
+#
+# The workbook strings are initially contained in the SST block but may also
+# occupy one or more CONTINUE blocks. Reading the CONTINUE blocks is made a
+# little tricky by the fact that they can contain an additional initial byte
+# if a string is continued from a previous block.
+#
+# Parsing is further complicated by the fact that the continued section of the
+# string may have a different encoding (ASCII or UTF-8) from the previous
+# section. Excel does this to save space.
+#
+sub _subStrWk {
+
+    my ( $self, $biff_data, $is_continue ) = @_;
+
+    if ($is_continue) {
+
+        # We are reading a CONTINUE record.
+
+        if ( $self->{_buffer} eq '' ) {
+
+            # A CONTINUE block with no previous SST.
+            $self->{_buffer} .= $biff_data;
         }
-        #1.1 No PrevCond 
-        elsif(!(defined($oBook->{_PrevCond}))) {
-#print "NO PREVCOND\n";
-                $oBook->{StrBuff} .= substr($sWk, 1);
+        elsif ( !defined $self->{_string_continued} ) {
+
+            # The CONTINUE block starts with a new (non-continued) string.
+
+            # Strip the Grbit byte and store the string data.
+            $self->{_buffer} .= substr $biff_data, 1;
         }
         else {
-#print "CONT\n";
-            my $iCnt1st = ord($sWk); # 1st byte of Continue may be a GR byte
-            my($iStP, $iLenS) = @{$oBook->{_PrevInfo}};
-            my $iLenB = length($oBook->{StrBuff});
 
-        #1.1 Not in String
-            if($iLenB >= ($iStP + $iLenS)) {
-#print "NOT STR\n";
-                $oBook->{StrBuff} .= $sWk;
-#                $oBook->{StrBuff} .= substr($sWk, 1);
+            # A CONTINUE block that starts with a continued string.
+
+            # The first byte (Grbit) of the CONTINUE record indicates if (0)
+            # the continued string section is single bytes or (1) double bytes.
+            my $grbit = ord $biff_data;
+
+            my ( $str_position, $str_length ) = @{ $self->{_previous_info} };
+            my $buff_length = length $self->{_buffer};
+
+            if ( $buff_length >= ( $str_position + $str_length ) ) {
+
+                # Not in a string.
+                $self->{_buffer} .= $biff_data;
             }
-        #1.2 Same code (Unicode or ASCII)
-            elsif(($oBook->{_PrevCond} & 0x01) == ($iCnt1st & 0x01)) {
-#print "SAME\n";
-                $oBook->{StrBuff} .= substr($sWk, 1);
+            elsif ( ( $self->{_string_continued} & 0x01 ) == ( $grbit & 0x01 ) )
+            {
+
+                # Same encoding as the previous block of the string.
+                $self->{_buffer} .= substr( $biff_data, 1 );
             }
             else {
-        #1.3 Diff code (Unicode or ASCII)
-                my $iDiff = ($iStP + $iLenS) - $iLenB;
-                if($iCnt1st & 0x01) {
-#print "DIFF ASC $iStP $iLenS $iLenB DIFF:$iDiff\n";
-#print "BEF:", unpack("H6", $oBook->{StrBuff}), "\n";
-                  my ($iDum, $iGr) =unpack('vc', $oBook->{StrBuff});
-                  substr($oBook->{StrBuff}, 2, 1) = pack('c', $iGr | 0x01);
-#print "AFT:", unpack("H6", $oBook->{StrBuff}), "\n";
-                    for(my $i = ($iLenB-$iStP); $i >=1; $i--) {
-                        substr($oBook->{StrBuff}, $iStP+$i, 0) =  "\x00"; 
+
+                # Different encoding to the previous block of the string.
+                if ( $grbit & 0x01 ) {
+
+                    # Current block is UTF-16, previous was ASCII.
+                    my ( undef, $cch ) = unpack 'vc', $self->{_buffer};
+                    substr( $self->{_buffer}, 2, 1 ) = pack( 'C', $cch | 0x01 );
+
+                    # Convert the previous ASCII, single character, portion of
+                    # the string into a double character UTF-16 string by
+                    # inserting zero bytes.
+                    for (
+                        my $i = ( $buff_length - $str_position ) ;
+                        $i >= 1 ;
+                        $i--
+                      )
+                    {
+                        substr( $self->{_buffer}, $str_position + $i, 0 ) =
+                          "\x00";
                     }
+
                 }
                 else {
-#print "DIFF UNI:", $oBook->{_PrevCond}, ":", $iCnt1st, " DIFF:$iDiff\n";
-                    for(my $i = ($iDiff/2); $i>=1;$i--) {
-                        substr($sWk, $i+1, 0) =  "\x00";
+
+                    # Current block is ASCII, previous was UTF-16.
+
+                    # Convert the current ASCII, single character, portion of
+                    # the string into a double character UTF-16 string by
+                    # inserting null bytes.
+                    my $change_length =
+                      ( $str_position + $str_length ) - $buff_length;
+
+                    # Length of the current CONTINUE record data.
+                    my $biff_length = length $biff_data;
+
+                    # Restrict the portion to be changed to the current block
+                    # if the string extends over more than one block.
+                    if ( $change_length > ( $biff_length - 1 ) * 2 ) {
+                        $change_length = ( $biff_length - 1 ) * 2;
                     }
+
+                    # Insert the null bytes.
+                    for ( my $i = ( $change_length / 2 ) ; $i >= 1 ; $i-- ) {
+                        substr( $biff_data, $i + 1, 0 ) = "\x00";
+                    }
+
                 }
-                $oBook->{StrBuff} .= substr($sWk, 1);
-           }
+
+                # Strip the Grbit byte and store the string data.
+                $self->{_buffer} .= substr $biff_data, 1;
+            }
         }
     }
     else {
-    #2. Saisho
-        $oBook->{StrBuff} .= $sWk;
+
+        # Not a CONTINUE block therefore an SST block.
+        $self->{_buffer} .= $biff_data;
     }
-#print " AFT2:", unpack("H60", $oBook->{StrBuff}), "\n";
 
-    $oBook->{_PrevCond} = undef;
-    $oBook->{_PrevInfo} = undef;
+    # Reset the state variables.
+    $self->{_string_continued} = undef;
+    $self->{_previous_info}    = undef;
 
-    while(length($oBook->{StrBuff}) >= 4) {
-        my ( $raBuff, $iLen, $iStPos, $iLenS) = _convBIFF8String($oBook, $oBook->{StrBuff}, 1);
-                                                    #No Code Convert
-        if(defined($raBuff->[0])) {
-            push @{$oBook->{PkgStr}}, 
-                {
-                    Text    => $raBuff->[0],
-                    Unicode => $raBuff->[1],
-                    Rich    => $raBuff->[2],
-                    Ext     => $raBuff->[3],
-            };
-            $oBook->{StrBuff} = substr($oBook->{StrBuff}, $iLen);
+    # Extract out any full strings from the current buffer leaving behind a
+    # partial string that is continued into the next block, or an empty
+    # buffer is no string is continued.
+    while ( length $self->{_buffer} >= 4 ) {
+        my ( $str_info, $length, $str_position, $str_length ) =
+          _convBIFF8String( $self, $self->{_buffer}, 1 );
+
+        if ( defined $str_info->[0] ) {
+            push @{ $self->{PkgStr} },
+              {
+                Text    => $str_info->[0],
+                Unicode => $str_info->[1],
+                Rich    => $str_info->[2],
+                Ext     => $str_info->[3],
+              };
+            $self->{_buffer} = substr( $self->{_buffer}, $length );
         }
         else {
-            $oBook->{_PrevCond} = $raBuff->[1];
-            $oBook->{_PrevInfo} = [$iStPos, $iLenS];
+            $self->{_string_continued} = $str_info->[1];
+            $self->{_previous_info} = [ $str_position, $str_length ];
             last;
         }
     }
 }
+
 #------------------------------------------------------------------------------
 # _SwapForUnicode (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _SwapForUnicode {
-    my($sObj) = @_;
-#    for(my $i = 0; $i<length($$sObj); $i+=2){
-    for(my $i = 0; $i<(int (length($$sObj) / 2) * 2); $i+=2) {
-            my $sIt = substr($$sObj, $i, 1);
-            substr($$sObj, $i, 1) = substr($$sObj, $i+1, 1);
-            substr($$sObj, $i+1, 1) = $sIt;
+    my ($sObj) = @_;
+
+    #    for(my $i = 0; $i<length($$sObj); $i+=2){
+    for ( my $i = 0 ; $i < ( int( length($$sObj) / 2 ) * 2 ) ; $i += 2 ) {
+        my $sIt = substr( $$sObj, $i, 1 );
+        substr( $$sObj, $i, 1 ) = substr( $$sObj, $i + 1, 1 );
+        substr( $$sObj, $i + 1, 1 ) = $sIt;
     }
 }
+
 #------------------------------------------------------------------------------
 # _NewCell (for Spreadsheet::ParseExcel)
 #------------------------------------------------------------------------------
 sub _NewCell {
-    my($oBook, $iR, $iC, %rhKey)=@_;
-    my($sWk, $iLen);
-    return undef unless(defined $oBook->{_CurSheet});
+    my ( $oBook, $iR, $iC, %rhKey ) = @_;
+    my ( $sWk, $iLen );
+    return undef unless ( defined $oBook->{_CurSheet} );
 
-    my $oCell = 
-        Spreadsheet::ParseExcel::Cell->new(
-            Val     => $rhKey{Val},
-            FormatNo=> $rhKey{FormatNo},
-            Format  => $rhKey{Format},
-            Code    => $rhKey{Code},
-            Type    => $oBook->{FmtClass}->ChkType(
-                            $rhKey{Numeric}, 
-                            $rhKey{Format}->{FmtIdx}),
-        );
-    $oCell->{_Kind}  = $rhKey{Kind};
-    $oCell->{_Value} = $oBook->{FmtClass}->ValFmt($oCell, $oBook);
-    if($rhKey{Rich}) {
+    my $FmtClass = $oBook->{FmtClass};
+    $rhKey{Type} =
+      $FmtClass->ChkType( $rhKey{Numeric}, $rhKey{Format}{FmtIdx} );
+    my $FmtStr = $oBook->{FormatStr}{ $rhKey{Format}{FmtIdx} };
+
+    # Set "Date" type if required for numbers in a MulRK BIFF block.
+    if ( defined $FmtStr && $rhKey{Type} eq "Numeric" ) {
+
+        # Match a range of possible date formats. Note: this isn't important
+        # except for reporting. The number will still be converted to a date
+        # by ExcelFmt() even if 'Type' isn't set to 'Date'.
+        if ( $FmtStr =~ m{^[dmy][-\\/dmy]*$}i ) {
+            $rhKey{Type} = "Date";
+        }
+    }
+
+    my $oCell = Spreadsheet::ParseExcel::Cell->new(
+        Val      => $rhKey{Val},
+        FormatNo => $rhKey{FormatNo},
+        Format   => $rhKey{Format},
+        Code     => $rhKey{Code},
+        Type     => $rhKey{Type},
+    );
+    $oCell->{_Kind} = $rhKey{Kind};
+    $oCell->{_Value} = $FmtClass->ValFmt( $oCell, $oBook );
+    if ( $rhKey{Rich} ) {
         my @aRich = ();
         my $sRich = $rhKey{Rich};
-        for(my $iWk=0;$iWk<length($sRich); $iWk+=4) {
-            my($iPos, $iFnt) = unpack('v2', substr($sRich, $iWk));
-            push @aRich, [$iPos, $oBook->{Font}[$iFnt]];
+        for ( my $iWk = 0 ; $iWk < length($sRich) ; $iWk += 4 ) {
+            my ( $iPos, $iFnt ) = unpack( 'v2', substr( $sRich, $iWk ) );
+            push @aRich, [ $iPos, $oBook->{Font}[$iFnt] ];
         }
-        $oCell->{Rich}   =  \@aRich;
+        $oCell->{Rich} = \@aRich;
     }
 
-    if(defined $_CellHandler) {
-        if(defined $_Object){
+    if ( defined $_CellHandler ) {
+        if ( defined $_Object ) {
             no strict;
-            ref($_CellHandler) eq "CODE" ? 
-                    $_CellHandler->($_Object, $oBook, $oBook->{_CurSheet}, $iR, $iC, $oCell) :
-                    $_CellHandler->callback($_Object, $oBook, $oBook->{_CurSheet}, $iR, $iC, $oCell);
+            ref($_CellHandler) eq "CODE"
+              ? $_CellHandler->(
+                $_Object, $oBook, $oBook->{_CurSheet}, $iR, $iC, $oCell
+              )
+              : $_CellHandler->callback( $_Object, $oBook, $oBook->{_CurSheet},
+                $iR, $iC, $oCell );
         }
-        else{
-            $_CellHandler->($oBook, $oBook->{_CurSheet}, $iR, $iC, $oCell);
+        else {
+            $_CellHandler->( $oBook, $oBook->{_CurSheet}, $iR, $iC, $oCell );
         }
     }
-    unless($_NotSetCell) {
-        $oBook->{Worksheet}[$oBook->{_CurSheet}]->{Cells}[$iR][$iC] 
-            = $oCell;
+    unless ($_NotSetCell) {
+        $oBook->{Worksheet}[ $oBook->{_CurSheet} ]->{Cells}[$iR][$iC] = $oCell;
     }
     return $oCell;
 }
+
 #------------------------------------------------------------------------------
 # ColorIdxToRGB (for Spreadsheet::ParseExcel)
+#
+# TODO JMN Make this a Workbook method and re-document.
+#
 #------------------------------------------------------------------------------
 sub ColorIdxToRGB {
-    my($sPkg, $iIdx) = @_;
-    return ((defined $aColor[$iIdx])? $aColor[$iIdx] : $aColor[0]);
+    my ( $sPkg, $iIdx ) = @_;
+    return ( ( defined $aColor[$iIdx] ) ? $aColor[$iIdx] : $aColor[0] );
 }
 
-#DESTROY {
-#    my ($self) = @_;
-#    warn "DESTROY $self called\n"
-#}
+
+###############################################################################
+#
+# error().
+#
+# Return an error string for a failed parse().
+#
+sub error {
+
+    my $self = shift;
+
+    my $parse_error = $self->{_error_status};
+
+    if (exists $error_strings{$parse_error}) {
+        return $error_strings{$parse_error};
+    }
+    else {
+        return 'Unknown parse error';
+    }
+}
+
+
+###############################################################################
+#
+# error_code().
+#
+# Return an error code for a failed parse().
+#
+sub error_code {
+
+    my $self = shift;
+
+    return $self->{_error_status};
+}
+
+
+###############################################################################
+#
+# Mapping between legacy method names and new names.
+#
+{
+    no warnings;    # Ignore warnings about variables used only once.
+    *Parse = *parse;
+}
 
 1;
 __END__
 
 =head1 NAME
 
-Spreadsheet::ParseExcel - Get information from Excel file
+Spreadsheet::ParseExcel - Read information from an Excel file.
 
 =head1 SYNOPSIS
 
-    
-I<new interface>
+    #!/usr/bin/perl -w
 
     use strict;
     use Spreadsheet::ParseExcel;
 
-    my $excel = Spreadsheet::ParseExcel::Workbook->Parse($file);
-    foreach my $sheet (@{$excel->{Worksheet}}) {
-        printf("Sheet: %s\n", $sheet->{Name});
-        $sheet->{MaxRow} ||= $sheet->{MinRow};
-        foreach my $row ($sheet->{MinRow} .. $sheet->{MaxRow}) {
-            $sheet->{MaxCol} ||= $sheet->{MinCol};
-            foreach my $col ($sheet->{MinCol} ..  $sheet->{MaxCol}) {
-                my $cell = $sheet->{Cells}[$row][$col];
-                if ($cell) {
-                    printf("( %s , %s ) => %s\n", $row, $col, $cell->{Val});
-                }
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
+
+    if ( !defined $workbook ) {
+        die $parser->error(), ".\n";
+    }
+
+    for my $worksheet ( $workbook->worksheets() ) {
+
+        my ( $row_min, $row_max ) = $worksheet->row_range();
+        my ( $col_min, $col_max ) = $worksheet->col_range();
+
+        for my $row ( $row_min .. $row_max ) {
+            for my $col ( $col_min .. $col_max ) {
+
+                my $cell = $worksheet->get_cell( $row, $col );
+                next unless $cell;
+
+                print "Row, Col    = ($row, $col)\n";
+                print "Value       = ", $cell->value(),       "\n";
+                print "Unformatted = ", $cell->unformatted(), "\n";
+                print "\n";
             }
         }
     }
 
-
-I<old interface>
-    use strict;
-    use Spreadsheet::ParseExcel;
-    my $oExcel = Spreadsheet::ParseExcel->new;
-
-    #1.1 Normal Excel97
-    my $oBook = $oExcel->Parse('Excel/Test97.xls');
-    my($iR, $iC, $oWkS, $oWkC);
-    print "FILE  :", $oBook->{File} , "\n";
-    print "COUNT :", $oBook->{SheetCount} , "\n";
-    print "AUTHOR:", $oBook->{Author} , "\n";
-    for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-        $oWkS = $oBook->{Worksheet}[$iSheet];
-        print "--------- SHEET:", $oWkS->{Name}, "\n";
-        for(my $iR = $oWkS->{MinRow} ; 
-                defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-            for(my $iC = $oWkS->{MinCol} ;
-                            defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-                $oWkC = $oWkS->{Cells}[$iR][$iC];
-                print "( $iR , $iC ) =>", $oWkC->Value, "\n" if($oWkC);  # Formatted Value
-                print "( $iR , $iC ) =>", $oWkC->{Val}, "\n" if($oWkC);  # Original Value
-            }
-        }
-    }
 
 =head1 DESCRIPTION
 
-Spreadsheet::ParseExcel makes you to get information from Excel95, Excel97, Excel2000 file.
+The Spreadsheet::ParseExcel module can be used to read information from Excel 95-2003 binary files.
 
-=head2 Functions
+The module cannot read files in the Excel 2007 Open XML XLSX format. See the L<Spreadsheet::XLSX> module instead.
 
-=over 4
+=head1 Parser
 
-=item new
+=head2 new()
 
-I<$oExcel> = Spreadsheet::ParseExcel->new(
-                    [ I<CellHandler> => \&subCellHandler, 
-                      I<NotSetCell> => undef | 1,
-                    ]);
+The C<new()> method is used to create a new C<Spreadsheet::ParseExcel> parser object.
 
-Constructor.
+    my $parser = Spreadsheet::ParseExcel->new();
 
+As an advanced feature it is also possible to pass a call-back handler to the parser to control the parsing of the spreadsheet.
 
-=over 4
+    $parser = Spreadsheet::ParseExcel->new(
+                        [
+                          CellHandler => \&cell_handler,
+                          NotSetCell  => 1,
+                        ]);
 
-=item CellHandler I<(experimental)>
 
-specify callback function when a cell is detected.
+The call-back can be used to ignore certain cells or to reduce memory usage. See the section L<Reducing the memory usage of Spreadsheet::ParseExcel> for more information.
 
-I<subCellHandler> gets arguments like below:
 
-sub subCellHandler (I<$oBook>, I<$iSheet>, I<$iRow>, I<$iCol>, I<$oCell>);
+=head2 parse($filename, [$formatter])
 
-B<CAUTION> : The atributes of Workbook may not be complete.
-This function will be called almost order by rows and columns.
-Take care B<almost>, I<not perfectly>.
+The Parser C<parse()> method return a L</Workbook> object.
 
-=item NotSetCell I<(experimental)>
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
 
-specify set or not cell values to Workbook object.
+If an error occurs C<parse()> returns C<undef>. In general programs should contain a test for failed parsing as follows:
 
-=back
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
 
-=item Parse
+    if ( !defined $workbook ) {
+        die $parser->error(), ".\n";
+    }
 
-I<$oWorkbook> = $oParse->Parse(I<$sFileName> [, I<$oFmt>]);
+The C<$filename> parameter is generally the file to be parsed. However, it can also be a filehandle or a scalar reference.
 
-return L<"Workbook"> object.
-if error occurs, returns undef.
+The optional C<$formatter> array ref can be an reference to a L</Formatter Class> to format the value of cells.
 
-=over 4
+Note: Versions of Spreadsheet::ParseExcel prior to 0.50 also documented a Workbook C<parse()> method as a syntactic shortcut for the above C<new()> and C<parse()> combination. This is now deprecated since it breaks error handling.
 
-=item I<$sFileName>
 
-name of the file to parse
+=head2 error()
 
-From 0.12 (with OLE::Storage_Lite v.0.06), 
-scalar reference of file contents (ex. \$sBuff) or 
-IO::Handle object (inclucdng IO::File etc.) are also available.
+The Parser C<error()> method returns an error string if a C<parse()> fails:
 
-=item I<$oFmt>
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
 
-L<"Formatter Class"> to format the value of cells.
+    if ( !defined $workbook ) {
+        die $parser->error(), ".\n";
+    }
 
-=back
+If you wish to generate you own error string you can use the C<error_code()> method instead (see below). The C<error()> and C<error_code()> values are as follows:
 
-=item ColorIdxToRGB
+    error()                         error_code()
+    =======                         ============
+    ''                              0
+    'File not found'                1
+    'No Excel data found in file'   2
+    'File is encrypted'             3
 
-I<$sRGB> = $oParse->ColorIdxToRGB(I<$iColorIdx>);
+Spreadsheet::ParseExcel doesn't try to decrypt an encrypted Excel file. That is beyond the current scope of the module.
 
-I<ColorIdxToRGB> returns RGB string corresponding to specified color index.
-RGB string has 6 charcters, representing RGB hex value. (ex. red = 'FF0000')
+The C<error_code()> method is explained below.
 
-=back
 
-=head2 Workbook
+=head2 error_code()
 
-I<Spreadsheet::ParseExcel::Workbook>
+The Parser C<error_code()> method returns an error code if a C<parse()> fails:
 
-Workbook class has these methods :
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
 
-=over 4
+    if ( !defined $workbook ) {
+        die "Got error code ", $parser->error_code, ".\n";
+    }
 
-=item Parse
+This can be useful if you wish to employ you own error strings or error handling methods.
 
-(class method) : same as Spreadsheet::ParseExcel
 
-=back
+=head1 Workbook
 
-=over 4
+A C<Spreadsheet::ParseExcel::Workbook> is created via the C<Spreadsheet::ParseExcel> C<parse()> method:
 
-=item Worksheet
+    my $parser   = Spreadsheet::ParseExcel->new();
+    my $workbook = $parser->parse('Book1.xls');
 
-I<$oWorksheet> = $oBook->Worksheet(I<$sName>);
+The main methods of the Workbook class are:
 
-I<Worksheet> returns a Worksheet object with I<$sName> or undef.
-If there is no worksheet with I<$sName> and I<$sName> contains only digits,
-it returns a Worksheet object at that position.
+    $workbook->worksheets()
+    $workbook->worksheet()
+    $workbook->worksheet_count()
+    $workbook->get_filename()
 
-=back
+These more commonly used methods of the Workbook class are outlined below. The other, less commonly used, methods are documented in L<Spreadsheet::ParseExcel::Worksheet>.
 
-Workbook class has these properties :
 
-=over 4
+=head2 worksheets()
 
-=item File
+Returns an array of L</Worksheet> objects. This was most commonly used to iterate over the worksheets in a workbook:
 
-Name of the file
+    for my $worksheet ( $workbook->worksheets() ) {
+        ...
+    }
 
-=item Author
 
-Author of the file
+=head2 worksheet()
 
-=item Flg1904
+The C<worksheet()> method returns a single C<Worksheet> object using either its name or index:
 
-If this flag is on, date of the file count from 1904.
+    $worksheet = $workbook->worksheet('Sheet1');
+    $worksheet = $workbook->worksheet(0);
 
-=item Version
+Returns C<undef> if the sheet name or index doesn't exist.
 
-Version of the file
 
-=item SheetCount
+=head2 worksheet_count()
 
-Numbers of L<"Worksheet"> s in that Workbook
+The C<worksheet_count()> method returns the number of Worksheet objects in the Workbook.
 
-=item Worksheet[SheetNo]
+    my $worksheet_count = $workbook->worksheet_count();
 
-Array of L<"Worksheet">s class
 
-=item PrintArea[SheetNo]
+=head2 get_filename()
 
-Array of PrintArea array refs.
+The C<get_filename()> method returns the name of the Excel file of C<undef> if the data was read from a filehandle rather than a file.
 
-Each PrintArea is : [ I<StartRow>, I<StartColumn>, I<EndRow>, I<EndColumn>]
+    my $filename = $workbook->get_filename();
 
-=item PrintTitle[SheetNo]
 
-Array of PrintTitle hash refs.
+=head2 Other Workbook Methods
 
-Each PrintTitle is : 
-        { Row => [I<StartRow>, I<EndRow>], 
-          Column => [I<StartColumn>, I<EndColumn>]}
+For full documentation of the methods available via a Workbook object see L<Spreadsheet::ParseExcel::Workbook>.
 
-=back
+=head1 Worksheet
 
-=head2 Worksheet
+The C<Spreadsheet::ParseExcel::Worksheet> class encapsulates the properties of an Excel worksheet.
 
-I<Spreadsheet::ParseExcel::Worksheet>
+A Worksheet object is obtained via the L</worksheets()> or L</worksheet()> methods.
 
-Worksheet class has these methods:
+    for my $worksheet ( $workbook->worksheets() ) {
+        ...
+    }
 
-=over 4
+    # Or:
 
-=item Cell ( ROW, COL )
+    $worksheet = $workbook->worksheet('Sheet1');
+    $worksheet = $workbook->worksheet(0);
 
-Return the Cell iobject at row ROW and column COL if
-it is defined. Otherwise return undef.
+The most commonly used methods of the Worksheet class are:
 
-=item RowRange ()
+    $worksheet->get_cell()
+    $worksheet->row_range()
+    $worksheet->col_range()
+    $worksheet->get_name()
 
-Return a two-element list (MIN, MAX) containing the
-minimum and maximum of defined rows in the worksheet
-If there is no row defined MAX is smaller than MIN.
+The Spreadsheet::ParseExcel::Worksheet class exposes a lot of methods but in general very few are required unless you are writing an advanced filter.
 
-=item ColRange ()
+The most commonly used methods are detailed below. The others are documented in L<Spreadsheet::ParseExcel::Worksheet>.
 
-Return a two-element list (MIN, MAX) containing the
-minimum and maximum of defined columns in the worksheet
-If there is no row defined MAX is smaller than MIN.
+=head2 get_cell($row, $col)
 
-=back
+Return the L</Cell> object at row C<$row> and column C<$col> if it is defined. Otherwise returns undef.
 
-Worksheet class has these properties:
+    my $cell = $worksheet->get_cell($row, $col);
 
-=over 4
 
-=item Name
+=head2 row_range()
 
-Name of that Worksheet
+Returns a two-element list C<($min, $max)> containing the minimum and maximum defined rows in the worksheet. If there is no row defined C<$max> is smaller than C<$min>.
 
-=item DefRowHeight
+    my ( $row_min, $row_max ) = $worksheet->row_range();
 
-Default height of rows
 
-=item DefColWidth
+=head2 col_range()
 
-Default width of columns
+Returns a two-element list C<($min, $max)> containing the minimum and maximum of defined columns in the worksheet. If there is no column defined C<$max> is smaller than C<$min>.
 
-=item RowHeight[Row]
+    my ( $col_min, $col_max ) = $worksheet->col_range();
 
-Array of row height
 
-=item ColWidth[Col]
+=head2 get_name()
 
-Array of column width (undef means DefColWidth)
+The C<get_name()> method returns the name of the worksheet, such as 'Sheet1'.
 
-=item Cells[Row][Col]
+    my $name = $worksheet->get_name();
 
-Array of L<"Cell">s infomation in the worksheet
+=head2 Other Worksheet Methods
 
-=item Landscape
+For other, less commonly used, Worksheet methods see L<Spreadsheet::ParseExcel::Worksheet>.
 
-Print in horizontal(0) or vertical (1).
+=head1 Cell
 
-=item Scale
+The C<Spreadsheet::ParseExcel::Cell> class has the following main methods.
 
-Print scale.
+    $cell->value()
+    $cell->unformatted()
 
-=item FitWidth
+=head2 value()
 
-Number of pages with fit in width. 
+The C<value()> method returns the formatted value of the cell.
 
-=item FitHeight
+    my $value = $cell->value();
 
-Number of pages with fit in height.
+Formatted in this sense refers to the numeric format of the cell value. For example a number such as 40177 might be formatted as 40,117, 40117.000 or even as the date 2009/12/30.
 
-=item PageFit
+If the cell doesn't contain a numeric format then the formatted and unformatted cell values are the same, see the C<unformatted()> method below.
 
-Print with fit (or not).
+For a defined C<$cell> the C<value()> method will always return a value.
 
-=item PaperSize
+In the case of a cell with formatting but no numeric or string contents the method will return the empty string C<''>.
 
-Papar size. The value is like below:
 
-  Letter               1, LetterSmall          2, Tabloid              3 ,
-  Ledger               4, Legal                5, Statement            6 ,
-  Executive            7, A3                   8, A4                   9 ,
-  A4Small             10, A5                  11, B4                  12 ,
-  B5                  13, Folio               14, Quarto              15 ,
-  10x14               16, 11x17               17, Note                18 ,
-  Envelope9           19, Envelope10          20, Envelope11          21 ,
-  Envelope12          22, Envelope14          23, Csheet              24 ,
-  Dsheet              25, Esheet              26, EnvelopeDL          27 ,
-  EnvelopeC5          28, EnvelopeC3          29, EnvelopeC4          30 ,
-  EnvelopeC6          31, EnvelopeC65         32, EnvelopeB4          33 ,
-  EnvelopeB5          34, EnvelopeB6          35, EnvelopeItaly       36 ,
-  EnvelopeMonarch     37, EnvelopePersonal    38, FanfoldUS           39 ,
-  FanfoldStdGerman    40, FanfoldLegalGerman  41, User                256
+=head2 unformatted()
 
-=item PageStart
+The C<unformatted()> method returns the unformatted value of the cell.
 
-Start page number.
+    my $unformatted = $cell->unformatted();
 
-=item UsePage
+Returns the cell value without a numeric format. See the C<value()> method above.
 
-Use own start page number (or not).
+=head2 Other Cell Methods
 
-=item LeftMergin, RightMergin, TopMergin, BottomMergin, HeaderMergin, FooterMergin
+For other, less commonly used, Worksheet methods see L<Spreadsheet::ParseExcel::Cell>.
 
-Mergins for left, right, top, bottom, header and footer.
 
-=item HCenter
+=head1 Format
 
-Print in horizontal center (or not)
+The C<Spreadsheet::ParseExcel::Format> class has the following properties:
 
-=item VCenter
+=head2 Format properties
 
-Print in vertical center  (or not)
+    $format->{Font}
+    $format->{AlignH}
+    $format->{AlignV}
+    $format->{Indent}
+    $format->{Wrap}
+    $format->{Shrink}
+    $format->{Rotate}
+    $format->{JustLast}
+    $format->{ReadDir}
+    $format->{BdrStyle}
+    $format->{BdrColor}
+    $format->{BdrDiag}
+    $format->{Fill}
+    $format->{Lock}
+    $format->{Hidden}
+    $format->{Style}
 
-=item Header
+These properties are generally only of interest to advanced users. Casual users can skip this section.
 
-Content of print header.
-Please refer Excel Help.
+=head2 $format->{Font}
 
-=item Footer
+Returns the L</Font> object for the Format.
 
-Content of print footer.
-Please refer Excel Help.
+=head2 $format->{AlignH}
 
-=item PrintGrid
+Returns the horizontal alignment of the format where the value has the following meaning:
 
-Print with Gridlines (or not)
+    0 => No alignment
+    1 => Left
+    2 => Center
+    3 => Right
+    4 => Fill
+    5 => Justify
+    6 => Center across
+    7 => Distributed/Equal spaced
 
-=item PrintHeaders
+=head2 $format->{AlignV}
 
-Print with headings (or not)
+Returns the vertical alignment of the format where the value has the following meaning:
 
-=item NoColor
+    0 => Top
+    1 => Center
+    2 => Bottom
+    3 => Justify
+    4 => Distributed/Equal spaced
 
-Print in black-white (or not).
+=head2 $format->{Indent}
 
-=item Draft
+Returns the indent level of the C<Left> horizontal alignment.
 
-Print in draft mode (or not).
+=head2 $format->{Wrap}
 
-=item Notes
+Returns true if textwrap is on.
 
-Print with notes (or not).
+=head2 $format->{Shrink}
 
-=item LeftToRight
+Returns true if "Shrink to fit" is set for the format.
 
-Print left to right(0) or top to down(1).
+=head2 $format->{Rotate}
 
-=item HPageBreak
+Returns the text rotation. In Excel97+, it returns the angle in degrees of the text rotation.
 
-Array ref of horizontal page breaks.
+In Excel95 or earlier it returns a value as follows:
 
-=item VPageBreak
+    0 => No rotation
+    1 => Top down
+    2 => 90 degrees anti-clockwise,
+    3 => 90 clockwise
 
-Array ref of vertical page breaks.
+=head2 $format->{JustLast}
 
-=item MergedArea
+Return true if the "justify last" property is set for the format.
 
-Array ref of merged areas.
-Each merged area is : [ I<StartRow>, I<StartColumn>, I<EndRow>, I<EndColumn>]
+=head2 $format->{ReadDir}
 
-=back
+Returns the direction that the text is read from.
 
-=head2 Cell
+=head2 $format->{BdrStyle}
 
-I<Spreadsheet::ParseExcel::Cell>
+Returns an array ref of border styles as follows:
 
-Cell class has these properties:
+    [ $left, $right, $top, $bottom ]
 
-=over 4
+=head2 $format->{BdrColor}
 
-=item Value
+Returns an array ref of border color indexes as follows:
 
-I<Method>
-Formatted value of that cell
+    [ $left, $right, $top, $bottom ]
 
-=item Val
+=head2 $format->{BdrDiag}
 
-Original Value of that cell
+Returns an array ref of diagonal border kind, style and color index as follows:
 
-=item Type
+    [$kind, $style, $color ]
 
-Kind of that cell ('Text', 'Numeric', 'Date')
+Where kind is:
 
-=item Code
+    0 => None
+    1 => Right-Down
+    2 => Right-Up
+    3 => Both
 
-Character code of that cell (undef, 'ucs2', '_native_')
-undef tells that cell seems to be ascii.
-'_native_' tells that cell seems to be 'sjis' or something like that.
+=head2 $format->{Fill}
 
-=item Format
+Returns an array ref of fill pattern and color indexes as follows:
 
-L<"Format"> for that cell.
+    [ $pattern, $front_color, $back_color ]
 
-=item Merged
+=head2 $format->{Lock}
 
-That cells is merged (or not).
+Returns true if the cell is locked.
 
-=item Rich
+=head2 $format->{Hidden}
 
-Array ref of font informations about each characters.
+Returns true if the cell is Hidden.
 
-Each entry has : [ I<Start Position>, I<Font Object>]
+=head2 $format->{Style}
 
-For more information please refer sample/dmpExR.pl
+Returns true if the format is a Style format.
 
-=back
 
-=head2 Format
 
-I<Spreadsheet::ParseExcel::Format>
 
-Format class has these properties:
-
-=over 4
-
-=item Font
-
-L<"Font"> object for that Format.
-
-=item AlignH
-
-Horizontal Alignment.
-
-  0: (standard), 1: left,       2: center,     3: right,      
-  4: fill ,      5: justify,    7:equal_space  
-
-B<Notice:> 6 may be I<merge> but it seems not to work.
-
-=item AlignV
-
-Vertical Alignment.
-
-    0: top,  1: vcenter, 2: bottom, 3: vjustify, 4: vequal_space
-
-=item Indent
-
-Number of indent
-
-=item Wrap
-
-Wrap (or not).
-
-=item Shrink
-
-Display in shrinking (or not)
-
-=item Rotate
-
-In Excel97, 2000      : degrees of string rotation.
-In Excel95 or earlier : 0: No rotation, 1: Top down, 2: 90 degrees anti-clockwise, 
-                        3: 90 clockwise
-
-=item JustLast
-
-JustLast (or not).
-I<I have never seen this attribute.>
-
-=item ReadDir
-
-Direction for read.
-
-=item BdrStyle
-
-Array ref of boder styles : [I<Left>, I<Right>, I<Top>, I<Bottom>]
-
-=item BdrColor
-
-Array ref of boder color indexes : [I<Left>, I<Right>, I<Top>, I<Bottom>]
-
-=item BdrDiag
-
-Array ref of diag boder kind, style and color index : [I<Kind>, I<Style>, I<Color>]
-  Kind : 0: None, 1: Right-Down, 2:Right-Up, 3:Both
-
-=item Fill
-
-Array ref of fill pattern and color indexes : [I<Pattern>, I<Front Color>, I<Back Color>]
-
-=item Lock
-
-Locked (or not).
-
-=item Hidden
-
-Hiddedn (or not).
-
-=item Style
-
-Style format (or Cell format)
-
-=back
-
-=head2 Font
+=head1 Font
 
 I<Spreadsheet::ParseExcel::Font>
 
 Format class has these properties:
 
-=over 4
+=head1 Font Properties
 
-=item Name
+    $font->{Name}
+    $font->{Bold}
+    $font->{Italic}
+    $font->{Height}
+    $font->{Underline}
+    $font->{UnderlineStyle}
+    $font->{Color}
+    $font->{Strikeout}
+    $font->{Super}
 
-Name of that font.
+=head2 $font->{Name}
 
-=item Bold
+Returns the name of the font, for example 'Arial'.
 
-Bold (or not).
+=head2 $font->{Bold}
 
-=item Italic
+Returns true if the font is bold.
 
-Italic (or not).
+=head2 $font->{Italic}
 
-=item Height
+Returns true if the font is italic.
 
-Size (height) of that font.
+=head2 $font->{Height}
 
-=item Underline
+Returns the size (height) of the font.
 
-Underline (or not).
+=head2 $font->{Underline}
 
-=item UnderlineStyle
+Returns true if the font in underlined.
 
-0: None, 1: Single, 2: Double, 0x21: Single(Account), 0x22: Double(Account)
+=head2 $font->{UnderlineStyle}
 
-=item Color
+Returns the style of an underlined font where the value has the following meaning:
 
-Color index for that font.
+     0 => None
+     1 => Single
+     2 => Double
+    33 => Single accounting
+    34 => Double accounting
 
-=item Strikeout
+=head2 $font->{Color}
 
-Strikeout (or not).
+Returns the color index for the font. The index can be converted to a RGB string using the C<ColorIdxToRGB()> Parser method.
 
-=item Super
+=head2 $font->{Strikeout}
 
-0: None, 1: Upper, 2: Lower
+Returns true if the font has the strikeout property set.
 
-=back
+=head2 $font->{Super}
+
+Returns one of the following values if the superscript or subscript property of the font is set:
+
+    0 => None
+    1 => Superscript
+    2 => Subscript
 
 =head1 Formatter class
 
@@ -2495,165 +2651,330 @@ I<Spreadsheet::ParseExcel::Fmt*>
 
 Formatter class will convert cell data.
 
-Spreadsheet::ParseExcel includes 2 formatter classes: FmtDefault and FmtJapanese. 
-You can create your own FmtClass as you like.
+Spreadsheet::ParseExcel includes 2 formatter classes. C<FmtDefault> and C<FmtJapanese>. It is also possible to create a user defined formatting class.
 
-Formatter class(Spreadsheet::ParseExcel::Fmt*) should provide these functions:
+The formatter class C<Spreadsheet::ParseExcel::Fmt*> should provide the following functions:
 
-=over 4
 
-=item ChkType($oSelf, $iNumeric, $iFmtIdx)
+=head2 ChkType($self, $is_numeric, $format_index)
 
-tells type of the cell that has specified value.
+Method to check the type of data in the cell. Should return C<Date>, C<Numeric> or C<Text>. It is passed the following parameters:
 
-=over 8
+=over
 
-=item $oSelf
+=item $self
 
-Formatter itself
+A scalar reference to the Formatter object.
 
-=item $iNumeric
+=item $is_numeric
 
-If on, the value seems to be number
+If true, the value seems to be number.
 
-=item $iFmtIdx
+=item $format_index
 
-Format index number of that cell
+The index number for the cell Format object.
 
 =back
 
-=item TextFmt($oSelf, $sText, $sCode)
+=head2 TextFmt($self, $string_data, $string_encoding)
 
-converts original text into applicatable for Value.
+Converts the string data in the cell into the correct encoding.  It is passed the following parameters:
 
-=over 8
+=over
 
-=item $oSelf
+=item $self
 
-Formatter itself
+A scalar reference to the Formatter object.
 
-=item $sText
+=item $string_data
 
-Original text
+The original string/text data.
 
-=item $sCode
+=item $string_encoding
 
-Character code of Original text
-
-=back
-
-=item ValFmt($oSelf, $oCell, $oBook) 
-
-converts original value into applicatable for Value.
-
-=over 8
-
-=item $oSelf
-
-Formatter itself
-
-=item $oCell
-
-Cell object
-
-=item $oBook
-
-Workbook object
+The character encoding of original string/text.
 
 =back
 
-=item FmtString($oSelf, $oCell, $oBook)
+=head2 ValFmt($self, $cell, $workbook)
 
-get format string for the I<$oCell>.
+Convert the original unformatted cell value into the appropriate formatted value. For instance turn a number into a formatted date.  It is passed the following parameters:
 
-=over 8
+=over
 
-=item $oSelf
+=item $self
 
-Formatter itself
+A scalar reference to the Formatter object.
 
-=item $oCell
+=item $cell
 
-Cell object
+A scalar reference to the Cell object.
 
-=item $oBook
+=item $workbook
 
-WorkBook object contains that cell
-
-=back
+A scalar reference to the Workbook object.
 
 =back
 
-=head1 KNOWN PROBLEM
 
-This module can not get the values of fomulas in 
-Excel files made with Spreadsheet::WriteExcel.
-Normaly (ie. By Excel application), formula has the result with it.
-But Spreadsheet::WriteExcel writes formula with no result.
-If you set your Excel application "Auto Calculation" off.
-(maybe [Tool]-[Option]-[Calculation] or something)
-You will see the same result.
+=head2 FmtString($self, $cell, $workbook)
 
-=head1 AUTHOR
+Get the format string for the Cell.  It is passed the following parameters:
 
-Current maintainer: Gabor Szabo szabgab@cpan.org
+=over
 
-    http://www.szabgab.com/
+=item $self
 
-Original author: Kawai Takanori (Hippo2000) kwitknr@cpan.org
+A scalar reference to the Formatter object.
 
-    http://member.nifty.ne.jp/hippo2000/            (Japanese)
-    http://member.nifty.ne.jp/hippo2000/index_e.htm (English)
+=item $cell
+
+A scalar reference to the Cell object.
+
+=item $workbook
+
+A scalar reference to the Workbook object.
+
+=back
+
+
+=head1 Reducing the memory usage of Spreadsheet::ParseExcel
+
+In some cases a C<Spreadsheet::ParseExcel> application may consume a lot of memory when processing a large Excel file and, as a result, may fail to complete. The following explains why this can occur and how to resolve it.
+
+C<Spreadsheet::ParseExcel> processes an Excel file in two stages. In the first stage it extracts the Excel binary stream from the OLE container file using C<OLE::Storage_Lite>. In the second stage it parses the binary stream to read workbook, worksheet and cell data which it then stores in memory. The majority of the memory usage is required for storing cell data.
+
+The reason for this is that as the Excel file is parsed and each cell is encountered a cell handling function creates a relatively large nested cell object that contains the cell value and all of the data that relates to the cell formatting. For large files (a 10MB Excel file on a 256MB system) this overhead can cause the system to grind to a halt.
+
+However, in a lot of cases when an Excel file is being processed the only information that is required are the cell values. In these cases it is possible to avoid most of the memory overhead by specifying your own cell handling function and by telling Spreadsheet::ParseExcel not to store the parsed cell data. This is achieved by passing a cell handler function to C<new()> when creating the parse object. Here is an example.
+
+    #!/usr/bin/perl -w
+
+    use strict;
+    use Spreadsheet::ParseExcel;
+
+    my $parser = Spreadsheet::ParseExcel->new(
+        CellHandler => \&cell_handler,
+        NotSetCell  => 1
+    );
+
+    my $workbook = $parser->parse('file.xls');
+
+    sub cell_handler {
+
+        my $workbook    = $_[0];
+        my $sheet_index = $_[1];
+        my $row         = $_[2];
+        my $col         = $_[3];
+        my $cell        = $_[4];
+
+        # Do something useful with the formatted cell value
+        print $cell->value(), "\n";
+
+    }
+
+
+The user specified cell handler is passed as a code reference to C<new()> along with the parameter C<NotSetCell> which tells Spreadsheet::ParseExcel not to store the parsed cell. Note, you don't have to iterate over the rows and columns, this happens automatically as part of the parsing.
+
+The cell handler is passed 5 arguments. The first, C<$workbook>, is a reference to the C<Spreadsheet::ParseExcel::Workbook> object that represent the parsed workbook. This can be used to access any of the C<Spreadsheet::ParseExcel::Workbook> methods, see L</Workbook>. The second C<$sheet_index> is the zero-based index of the worksheet being parsed. The third and fourth, C<$row> and C<$col>, are the zero-based row and column number of the cell. The fifth, C<$cell>, is a reference to the C<Spreadsheet::ParseExcel::Cell> object. This is used to extract the data from the cell. See L</Cell> for more information.
+
+This technique can be useful if you are writing an Excel to database filter since you can put your DB calls in the cell handler.
+
+If you don't want all of the data in the spreadsheet you can add some control logic to the cell handler. For example we can extend the previous example so that it only prints the first 10 rows of the first two worksheets in the parsed workbook by adding some C<if()> statements to the cell handler:
+
+    #!/usr/bin/perl -w
+
+    use strict;
+    use Spreadsheet::ParseExcel;
+
+    my $parser = Spreadsheet::ParseExcel->new(
+        CellHandler => \&cell_handler,
+        NotSetCell  => 1
+    );
+
+    my $workbook = $parser->parse('file.xls');
+
+    sub cell_handler {
+
+        my $workbook    = $_[0];
+        my $sheet_index = $_[1];
+        my $row         = $_[2];
+        my $col         = $_[3];
+        my $cell        = $_[4];
+
+        # Skip some worksheets and rows (inefficiently).
+        return if $sheet_index >= 3;
+        return if $row >= 10;
+
+        # Do something with the formatted cell value
+        print $cell->value(), "\n";
+
+    }
+
+
+However, this still processes the entire workbook. If you wish to save some additional processing time you can abort the parsing after you have read the data that you want, using the workbook C<ParseAbort> method:
+
+    #!/usr/bin/perl -w
+
+    use strict;
+    use Spreadsheet::ParseExcel;
+
+    my $parser = Spreadsheet::ParseExcel->new(
+        CellHandler => \&cell_handler,
+        NotSetCell  => 1
+    );
+
+    my $workbook = $parser->parse('file.xls');
+
+    sub cell_handler {
+
+        my $workbook    = $_[0];
+        my $sheet_index = $_[1];
+        my $row         = $_[2];
+        my $col         = $_[3];
+        my $cell        = $_[4];
+
+        # Skip some worksheets and rows (more efficiently).
+        if ( $sheet_index >= 1 and $row >= 10 ) {
+            $workbook->ParseAbort(1);
+            return;
+        }
+
+        # Do something with the formatted cell value
+        print $cell->value(), "\n";
+
+    }
+
+=head1 KNOWN PROBLEMS
+
+=over
+
+=item * Issues reported by users: http://rt.cpan.org/Public/Dist/Display.html?Name=Spreadsheet-ParseExcel
+
+=item * This module cannot read the values of formulas from files created with Spreadsheet::WriteExcel unless the user specified the values when creating the file (which is generally not the case). The reason for this is that Spreadsheet::WriteExcel writes the formula but not the formula result since it isn't in a position to calculate arbitrary Excel formulas without access to Excel's formula engine.
+
+=item * If Excel has date fields where the specified format is equal to the system-default for the short-date locale, Excel does not store the format, but defaults to an internal format which is system dependent. In these cases ParseExcel uses the date format 'yyyy-mm-dd'.
+
+=back
+
+
+
+
+=head1 REPORTING A BUG
+
+Bugs can be reported via rt.cpan.org. See the following for instructions on bug reporting for Spreadsheet::ParseExcel
+
+http://rt.cpan.org/Public/Dist/Display.html?Name=Spreadsheet-ParseExcel
+
+
+
 
 =head1 SEE ALSO
 
-XLHTML, OLE::Storage, Spreadsheet::WriteExcel, OLE::Storage_Lite
+=over
 
-This module is based on herbert within OLE::Storage and XLHTML.
+=item * xls2csv by Ken Prows (http://search.cpan.org/~ken/xls2csv-1.06/script/xls2csv).
 
-XLSTools: http://perl.jonallen.info/projects/xlstools
+=item * xls2csv and xlscat by H.Merijn Brand (these utilities are part of Spreadsheet::Read, see below).
+
+=item * excel2txt by Ken Youens-Clark, (http://search.cpan.org/~kclark/excel2txt/excel2txt). This is an excellent example of an Excel filter using Spreadsheet::ParseExcel. It can produce CSV, Tab delimited, Html, XML and Yaml.
+
+=item * XLSperl by Jon Allen (http://search.cpan.org/~jonallen/XLSperl/bin/XLSperl). This application allows you to use Perl "one-liners" with Microsoft Excel files.
+
+=item * Spreadsheet::XLSX (http://search.cpan.org/~dmow/Spreadsheet-XLSX/lib/Spreadsheet/XLSX.pm) by Dmitry Ovsyanko. A module with a similar interface to Spreadsheet::ParseExcel for parsing Excel 2007 XLSX OpenXML files.
+
+=item * Spreadsheet::Read (http://search.cpan.org/~hmbrand/Spreadsheet-Read/Read.pm) by H.Merijn Brand. A single interface for reading several different spreadsheet formats.
+
+=item * Spreadsheet::WriteExcel (http://search.cpan.org/~jmcnamara/Spreadsheet-WriteExcel/lib/Spreadsheet/WriteExcel.pm). A perl module for creating new Excel files.
+
+=item * Spreadsheet::ParseExcel::SaveParser (http://search.cpan.org/~jmcnamara/Spreadsheet-ParseExcel/lib/Spreadsheet/ParseExcel/SaveParser.pm). This is a combination of Spreadsheet::ParseExcel and Spreadsheet::WriteExcel and it allows you to "rewrite" an Excel file. See the following example (http://search.cpan.org/~jmcnamara/Spreadsheet-WriteExcel/lib/Spreadsheet/WriteExcel.pm#MODIFYING_AND_REWRITING_EXCEL_FILES). It is part of the Spreadsheet::ParseExcel distro.
+
+=item * Text::CSV_XS (http://search.cpan.org/~hmbrand/Text-CSV_XS/CSV_XS.pm) by H.Merijn Brand. A fast and rigorous module for reading and writing CSV data. Don't consider rolling your own CSV handling, use this module instead.
+
+=back
+
+
+
+
+=head1 MAILING LIST
+
+There is a Google group for discussing and asking questions about Spreadsheet::ParseExcel. This is a good place to search to see if your question has been asked before:  http://groups-beta.google.com/group/spreadsheet-parseexcel/
+
+
+
+
+=head1 DONATIONS
+
+If you'd care to donate to the Spreadsheet::ParseExcel project, you can do so via PayPal: http://tinyurl.com/7ayes
+
+
+
 
 =head1 TODO
 
-- Add tests, and more tests
+=over
 
-- Spreadsheet::ParseExcel : 
- Password protected data, Formulas support, HyperLink support, 
- Named Range support
+=item * The current maintenance work is directed towards making the documentation more useful, improving and simplifying the API, and improving the maintainability of the code base. After that new features will be added.
 
-- Spreadsheet::ParseExcel::SaveParser :
- Catch up Spreadsheet::WriteExce feature, Create new Excel fle
+=item * Fix open bugs and documentation for SaveParser.
 
-See also:
+=item * Add Formula support, Hyperlink support, Named Range support.
 
- L<http://www.cpanforum.com/dist/Spreadsheet-ParseExcel>
+=item * Improve Spreadsheet::ParseExcel::SaveParser compatibility with Spreadsheet::WriteExcel.
 
- and
+=item * Improve Unicode and other encoding support. This will probably require dropping support for perls prior to 5.8+.
 
- http://www.perlmonks.org/index.pl?node_id=490656
- http://www.perlmonks.org/index.pl?node_id=379743 
- http://www.perlmonks.org/index.pl?node_id=433192
- http://www.perlmonks.org/index.pl?node_id=422147
+=back
+
+
+
+=head1 ACKNOWLEDGEMENTS
+
+From Kawai Takanori:
+
+First of all, I would like to acknowledge the following valuable programs and modules:
+XHTML, OLE::Storage and Spreadsheet::WriteExcel.
+
+In no particular order: Yamaji Haruna, Simamoto Takesi, Noguchi Harumi, Ikezawa Kazuhiro, Suwazono Shugo, Hirofumi Morisada, Michael Edwards, Kim Namusk, Slaven Rezic, Grant Stevens, H.Merijn Brand and many many people + Kawai Mikako.
+
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+Because this software is licensed free of charge, there is no warranty for the software, to the extent permitted by applicable law. Except when otherwise stated in writing the copyright holders and/or other parties provide the software "as is" without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The entire risk as to the quality and performance of the software is with you. Should the software prove defective, you assume the cost of all necessary servicing, repair, or correction.
+
+In no event unless required by applicable law or agreed to in writing will any copyright holder, or any other party who may modify and/or redistribute the software as permitted by the above licence, be liable to you for damages, including any general, special, incidental, or consequential damages arising out of the use or inability to use the software (including but not limited to loss of data or data being rendered inaccurate or losses sustained by you or third parties or a failure of the software to operate with any other software), even if such holder or other party has been advised of the possibility of such damages.
+
+
+
+
+=head1 LICENSE
+
+Either the Perl Artistic Licence http://dev.perl.org/licenses/artistic.html or the GPL http://www.opensource.org/licenses/gpl-license.php
+
+
+
+
+=head1 AUTHOR
+
+Current maintainer 0.40+: John McNamara jmcnamara@cpan.org
+
+Maintainer 0.27-0.33: Gabor Szabo szabgab@cpan.org
+
+Original author: Kawai Takanori (Hippo2000) kwitknr@cpan.org
+
 
 
 
 =head1 COPYRIGHT
 
-Copyright (c) 2006-2007 Gabor Szabo
+Copyright (c) 2009 John McNamara
+
+Copyright (c) 2006-2008 Gabor Szabo
+
 Copyright (c) 2000-2006 Kawai Takanori
-All rights reserved.
 
-You may distribute under the terms of either the GNU General Public
-License or the Artistic License, as specified in the Perl README file.
+All rights reserved. This is free software. You may distribute under the terms of either the GNU General Public License or the Artistic License.
 
-=head1 ACKNOWLEDGEMENTS
-
-First of all, I would like to acknowledge valuable program and modules :
-XHTML, OLE::Storage and Spreadsheet::WriteExcel.
-
-In no particular order: Yamaji Haruna, Simamoto Takesi, Noguchi Harumi, 
-Ikezawa Kazuhiro, Suwazono Shugo, Hirofumi Morisada, Michael Edwards, 
-Kim Namusk, Slaven Rezić, Grant Stevens, 
-and many many people + Kawai Mikako.
 
 =cut

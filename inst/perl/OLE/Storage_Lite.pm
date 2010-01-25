@@ -10,11 +10,9 @@
 package OLE::Storage_Lite::PPS;
 require Exporter;
 use strict;
-use Math::BigInt;
-#use OLE::Storage_Lite;
 use vars qw($VERSION @ISA);
 @ISA = qw(Exporter);
-$VERSION = '0.16';
+$VERSION = '0.19';
 
 #------------------------------------------------------------------------------
 # new (OLE::Storage_Lite::PPS)
@@ -173,7 +171,7 @@ use IO::Handle;
 use Fcntl;
 use vars qw($VERSION @ISA);
 @ISA = qw(OLE::Storage_Lite::PPS Exporter);
-$VERSION = '0.16';
+$VERSION = '0.19';
 sub _savePpsSetPnt($$$);
 sub _savePpsSetPnt2($$$);
 #------------------------------------------------------------------------------
@@ -344,23 +342,25 @@ sub _saveHeader($$$$$) {
   my $iAll = $iBBcnt + $iPPScnt + $iSBDcnt;
   my $iAllW = $iAll;
   my $iBdCntW = int($iAllW / $iBlCnt) + (($iAllW % $iBlCnt)? 1: 0);
-  my $iBdCnt = 0;
+  my $iBdCnt = int(($iAll + $iBdCntW) / $iBlCnt) + ((($iAllW+$iBdCntW) % $iBlCnt)? 1: 0);
   my $i;
-#0.1 Calculate BD count
-  $iBlCnt--; #the BlCnt is reduced in the count of the last sect is used for a pointer the next Bl
-  my $iBBleftover = $iAll - $i1stBdMax;
-  if ($iAll >$i1stBdMax) {
 
-    while(1) {
-      $iBdCnt = int(($iBBleftover) / $iBlCnt) + ((($iBBleftover) % $iBlCnt)? 1: 0);
-      $iBdExL = int(($iBdCnt) / $iBlCnt) + ((($iBdCnt) % $iBlCnt)? 1: 0);
-      $iBBleftover = $iBBleftover + $iBdExL;
-      last if($iBdCnt == (int(($iBBleftover) / $iBlCnt) + ((($iBBleftover) % $iBlCnt)? 1: 0)));
+  if ($iBdCnt > $i1stBdL) {
+    #0.1 Calculate BD count
+    $iBlCnt--; #the BlCnt is reduced in the count of the last sect is used for a pointer the next Bl
+    my $iBBleftover = $iAll - $i1stBdMax;
+
+    if ($iAll >$i1stBdMax) {
+      while(1) {
+        $iBdCnt = int(($iBBleftover) / $iBlCnt) + ((($iBBleftover) % $iBlCnt)? 1: 0);
+        $iBdExL = int(($iBdCnt) / $iBlCnt) + ((($iBdCnt) % $iBlCnt)? 1: 0);
+        $iBBleftover = $iBBleftover + $iBdExL;
+        last if($iBdCnt == (int(($iBBleftover) / $iBlCnt) + ((($iBBleftover) % $iBlCnt)? 1: 0)));
+      }
     }
+    $iBdCnt += $i1stBdL;
+    #print "iBdCnt = $iBdCnt \n";
   }
-  $iBdCnt += $i1stBdL;
-  #print "iBdCnt = $iBdCnt \n";
-
 #1.Save Header
   print {$FILE} (
             "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
@@ -376,8 +376,8 @@ sub _saveHeader($$$$$) {
             , pack("V", $iBBcnt+$iSBDcnt), #ROOT START
             , pack("V", 0)
             , pack("V", 0x1000)
-            , pack("V", 0)                  #Small Block Depot
-            , pack("V", 1)
+            , pack("V", $iSBDcnt ? 0 : -2)                  #Small Block Depot
+            , pack("V", $iSBDcnt)
     );
 #2. Extra BDList Start, Count
   if($iAll <= $i1stBdMax) {
@@ -713,7 +713,7 @@ require Exporter;
 use strict;
 use vars qw($VERSION @ISA);
 @ISA = qw(OLE::Storage_Lite::PPS Exporter);
-$VERSION = '0.16';
+$VERSION = '0.19';
 #------------------------------------------------------------------------------
 # new (OLE::Storage_Lite::PPS::File)
 #------------------------------------------------------------------------------
@@ -801,7 +801,7 @@ require Exporter;
 use strict;
 use vars qw($VERSION @ISA);
 @ISA = qw(OLE::Storage_Lite::PPS Exporter);
-$VERSION = '0.16';
+$VERSION = '0.19';
 sub new ($$;$$$) {
     my($sClass, $sName, $raTime1st, $raTime2nd, $raChild) = @_;
     OLE::Storage_Lite::PPS::_new(
@@ -824,11 +824,14 @@ sub new ($$;$$$) {
 #==============================================================================
 package OLE::Storage_Lite;
 require Exporter;
+
 use strict;
 use IO::File;
+use Time::Local 'timegm';
+
 use vars qw($VERSION @ISA @EXPORT);
 @ISA = qw(Exporter);
-$VERSION = '0.16';
+$VERSION = '0.19';
 sub _getPpsSearch($$$$$;$);
 sub _getPpsTree($$$;$);
 #------------------------------------------------------------------------------
@@ -1309,123 +1312,77 @@ sub Ucs2Asc($)
   my($sUcs) = @_;
   return join('', map(pack('c', $_), unpack('v*', $sUcs)));
 }
-#------------------------------------------------------------------------------
-# OLE Date->Localtime
-#------------------------------------------------------------------------------
-sub OLEDate2Local($)
-{
-  my($sDateTime) = @_;
-  my($iSec, $iMin, $iHour, $iDay, $iMon, $iYear);
-  my($iDate);
-  my($iDt, $iYDays);
-#1.Divide Day and Time
-  my $iBigDt = Math::BigInt->new(0);
-  foreach my $sWk (reverse(split //, $sDateTime)) {
-    $iBigDt *= 0x100;
-    $iBigDt += ord($sWk);
-  }
-  my $iHSec = $iBigDt % 10000000;
-  $iBigDt /= 10000000;
-  my $iBigDay = int($iBigDt / (24*3600)) + 1;
-  if ($iBigDay->numify eq $iBigDay) {
-      $iBigDay = $iBigDay->numify;
-  }
-  my $iTime = int($iBigDt % (24*3600));
-  if ($iTime->numify eq $iTime) {
-      $iTime = $iTime->numify;
-  }
-#2. Year->Day(1601/1/2?)
-  $iDt = $iBigDay;
-  $iYear = 1601;
-  $iYDays = _yearDays($iYear); #Not 365 (365 days is Only in Excel World)
-  while($iDt > $iYDays) {
-    $iDt -= $iYDays;
-    $iYear++;
-    $iYDays = _yearDays($iYear);
-  }
-  my $iMD;
-  for($iMon=1;$iMon < 12; $iMon++){
-    $iMD = _monthDays($iMon, $iYear);
-    last if($iDt <= $iMD);
-    $iDt -= $iMD;
-  }
-  $iDay = $iDt;
-#3. Hour->iSec
-  $iHour  = int($iTime / 3600);
-  $iMin   = int(($iTime % 3600) / 60);
-  $iSec   = $iTime % 60;
-  return ($iSec, $iMin, $iHour, $iDay, $iMon - 1, $iYear-1900, $iHSec);
-}
-#------------------------------------------------------------------------------
-# Localtime->OLE Date
-#------------------------------------------------------------------------------
-sub LocalDate2OLE($)
-{
-  my($raDate) = @_;
-  return "\x00" x 8 unless($raDate);
 
-  my ($iSec, $iMin, $iHour, $iDay, $iMon, $iYear, $iHSec) = @{$raDate};
-  $iSec ||=0; $iMin ||=0; $iHour ||=0; $iDay ||=0; $iMon ||=0; $iYear ||=0; $iHSec ||=0;
+#------------------------------------------------------------------------------
+# OLEDate2Local()
+#
+# Convert from a Window FILETIME structure to a localtime array. FILETIME is
+# a 64-bit value representing the number of 100-nanosecond intervals since
+# January 1 1601.
+#
+# We first convert the FILETIME to seconds and then subtract the difference
+# between the 1601 epoch and the 1970 Unix epoch.
+#
+sub OLEDate2Local {
 
-  my($iDate);
-  my($iDt, $iYDays);
-#1. Year -> Days
-  $iDate = -1;
-  for(my $iY=1601;$iY<($iYear+1900);$iY++){
-    $iDate += _yearDays($iY);
-  }
+    my $oletime = shift;
 
-  for(my $iM=0;$iM < $iMon ; $iM++){
-    $iDate += _monthDays($iM+1, ($iYear+1900));
-  }
-  $iDate += $iDay;
-#2. Hours->Sec + HighReso
-  my $iBigDt = Math::BigInt->new(0);
-  $iBigDt += $iHour*3600 + $iMin*60+ $iSec;
-  $iBigDt += ($iDate*(24*3600));
-  $iBigDt *= 10000000;
-  $iBigDt += $iHSec if($iHSec);
-#3. Make HEX string
-  my $iHex;
-  my $sRes = '';
-  for(my $i=0;$i<8;$i++) {
-    $iHex = $iBigDt % 0x100;
-    $sRes .= pack 'C', $iHex;
-    $iBigDt /= 0x100;
-  }
-  return $sRes;
+    # Unpack the FILETIME into high and low longs.
+    my ( $lo, $hi ) = unpack 'V2', $oletime;
+
+    # Convert the longs to a double.
+    my $nanoseconds = $hi * 2**32 + $lo;
+
+    # Convert the 100 nanosecond units into seconds.
+    my $time = $nanoseconds / 1e7;
+
+    # Subtract the number of seconds between the 1601 and 1970 epochs.
+    $time -= 11644473600;
+
+    # Convert to a localtime (actually gmtime) structure.
+    my @localtime = gmtime($time);
+
+    return @localtime;
 }
+
 #------------------------------------------------------------------------------
-# _leapYear (OLE::Storage_Lite)
-#------------------------------------------------------------------------------
-sub _leapYear($) {
-  my($iYear)=@_;
-  return undef unless($iYear);
-  return ((($iYear % 4)==0) && (($iYear % 100) || ($iYear % 400)==0))? 1: 0;
+# LocalDate2OLE()
+#
+# Convert from a a localtime array to a Window FILETIME structure. FILETIME is
+# a 64-bit value representing the number of 100-nanosecond intervals since
+# January 1 1601.
+#
+# We first convert the localtime (actually gmtime) to seconds and then add the
+# difference between the 1601 epoch and the 1970 Unix epoch. We convert that to
+# 100 nanosecond units, divide it into high and low longs and return it as a
+# packed 64bit structure.
+#
+sub LocalDate2OLE {
+
+    my $localtime = shift;
+
+    return "\x00" x 8 unless $localtime;
+
+    # Convert from localtime (actually gmtime) to seconds.
+    my $time = timegm( @{$localtime} );
+
+    # Add the number of seconds between the 1601 and 1970 epochs.
+    $time += 11644473600;
+
+    # The FILETIME seconds are in units of 100 nanoseconds.
+    my $nanoseconds = $time * 1E7;
+
+use POSIX 'fmod';
+
+    # Pack the total nanoseconds into 64 bits...
+    my $hi = int( $nanoseconds / 2**32 );
+    my $lo = fmod($nanoseconds, 2**32);
+
+    my $oletime = pack "VV", $lo, $hi;
+
+    return $oletime;
 }
-#------------------------------------------------------------------------------
-# _yearDays (OLE::Storage_Lite)
-#------------------------------------------------------------------------------
-sub _yearDays($) {
-  my($iYear)=@_;
-  return _leapYear($iYear)? 366: 365;
-}
-#------------------------------------------------------------------------------
-# _monthDays (OLE::Storage_Lite)
-#------------------------------------------------------------------------------
-sub _monthDays($$) {
-  my($iMon, $iYear)=@_;
- if($iMon == 1 || $iMon == 3 || $iMon == 5 || $iMon == 7 || $iMon == 8
-        || $iMon == 10 || $iMon == 12) {
-        return 31;
- }
- elsif($iMon == 4 || $iMon == 6 || $iMon == 9 || $iMon == 11) {
-        return 30;
- }
- elsif($iMon == 2) {
-        return _leapYear($iYear)? 29: 28;
- }
-}
+
 1;
 __END__
 
@@ -1598,10 +1555,9 @@ OLE::Storage_Lite::PPS::Root has 2 methods.
 
 Constructor.
 
-C<$raTime1st>, C<$raTime2nd> are array refs with ($iSec, $iMin, $iHour, $iDay, $iMon, $iYear, $iHSec).
+C<$raTime1st>, C<$raTime2nd> are array refs with ($iSec, $iMin, $iHour, $iDay, $iMon, $iYear).
 $iSec means seconds, $iMin means minutes. $iHour means hours.
 $iDay means day. $iMon is month -1. $iYear is year - 1900.
-$iHSec is seconds/10,000,000 in Math::BigInt.
 
 C<$raChild> is a array ref of children PPSs.
 
@@ -1639,10 +1595,9 @@ Constructor.
 C<$sName> is a name of the PPS.
 
 C<$raTime1st>, C<$raTime2nd> is a array ref as
-($iSec, $iMin, $iHour, $iDay, $iMon, $iYear, $iHSec).
+($iSec, $iMin, $iHour, $iDay, $iMon, $iYear).
 $iSec means seconds, $iMin means minutes. $iHour means hours.
 $iDay means day. $iMon is month -1. $iYear is year - 1900.
-$iHSec is seconds/10,000,000 in Math::BigInt.
 
 C<$raChild> is a array ref of children PPSs.
 

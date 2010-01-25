@@ -1,8 +1,6 @@
 \name{env}
 \alias{env}
-\title{
-  Display Information about All Loaded Environments
-}
+\title{Describe All Loaded Environments}
 \description{
   Display name, number of objects, and size of all loaded environments.
 }
@@ -10,13 +8,10 @@
 env(unit="KB", digits=0)
 }
 \arguments{
-  \item{unit}{required unit for displaying environment size: "bytes",
-    "KB", "MB", or first letter.}
+  \item{unit}{unit for displaying environment size: "bytes", "KB", "MB",
+    or first letter.}
   \item{digits}{number of decimals to display when rounding environment
     size.}
-}
-\details{
-  A verbose alternative to \code{search()}.
 }
 \value{
   A data frame with the following columns:
@@ -27,11 +22,12 @@ env(unit="KB", digits=0)
 \note{
   The name of the environment size column is the same as the unit used.
 }
-\author{Arni Magnusson \email{arnima@u.washington.edu}}
+\author{Arni Magnusson}
 \seealso{
-  \code{\link{search}} displays environment names.
+  \code{env} is a verbose alternative to \code{\link{search}}.
 
-  \code{\link{ll}} is related to \code{env}.
+  \code{\link{ll}} is a related function that describes objects in an
+  environment.
 }
 \examples{
 \dontrun{

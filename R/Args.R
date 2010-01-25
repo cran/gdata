@@ -1,4 +1,4 @@
-Args <- function(name, sort.args=FALSE)
+Args <- function(name, sort=FALSE)
 {
   a <- formals(get(as.character(substitute(name)), pos=1))
   if(is.null(a))
@@ -8,7 +8,7 @@ Args <- function(name, sort.args=FALSE)
   char <- sapply(a, is.character)
   arg.values[char] <- paste("\"", arg.values[char], "\"", sep="")
 
-  if(sort.args)
+  if(sort)
   {
     ord <- order(arg.labels)
     if(any(arg.labels == "..."))
@@ -23,4 +23,3 @@ Args <- function(name, sort.args=FALSE)
 
   invisible(output)
 }
-

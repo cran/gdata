@@ -1,13 +1,11 @@
 \name{keep}
 \alias{keep}
-\title{
-  Remove All Objects, Except Those Specified
-}
+\title{Remove All Objects, Except Those Specified}
 \description{
-  Remove all objects from the default workspace, except those specified.
+  Remove all objects from the user workspace, except those specified.
 }
 \usage{
-keep(..., list = character(0), all = FALSE, sure = FALSE)
+keep(..., list=character(0), all=FALSE, sure=FALSE)
 }
 \arguments{
   \item{...}{objects to be kept, specified one by one, quoted or
@@ -19,20 +17,18 @@ keep(..., list = character(0), all = FALSE, sure = FALSE)
     objects that would have been removed.}
 }
 \details{
-  Convenient interface to \code{rm()} when removing most objects from
-  the default workspace.
-
-  Implemented with a few safety caps: objects whose name starts with a
-  period \sQuote{\code{.}} are not removed, and \code{sure=TRUE} is
-  required to perform the removal.
+  Implemented with safety caps: objects whose name starts with a
+  \code{.} are not removed unless \code{all=TRUE}, and an explicit
+  \code{sure=TRUE} is required to remove anything.
 }
 \value{
   A character vector containing object names, or \code{NULL} when
   \code{sure} is \code{TRUE}.
 }
-\author{Arni Magnusson \email{arnima@u.washington.edu}}
+\author{Arni Magnusson}
 \seealso{
-  \code{\link{rm}}.
+  \code{keep} is a convenient interface to \code{\link{rm}} when
+  removing most objects from the user workspace.
 }
 \examples{
 data(women, cars)
