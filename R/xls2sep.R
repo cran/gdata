@@ -1,4 +1,4 @@
-## s$Id: xls2sep.R 1411 2010-01-24 23:30:26Z warnes $
+## s$Id: xls2sep.R 1418 2010-01-28 19:56:21Z warnes $
 
 xls2csv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
   xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="csv",
@@ -92,6 +92,7 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
     if(verbose)  cat("Executing '", cmd, "'... \n\n")
     ##
     results <- system(cmd, intern=!verbose)
+    if(verbose) cat(results,"\n\n")
     ##
     if (verbose) cat("Done.\n\n")
     ##

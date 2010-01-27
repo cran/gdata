@@ -1,3 +1,35 @@
+2010-01-28 19:58  warnes
+
+	* [r1419] DESCRIPTION, inst/NEWS: Update for release 2.7.1
+
+2010-01-28 19:56  warnes
+
+	* [r1418] R/xls2sep.R: xls2sep(): Show output of perl call when
+	  verbose=T
+
+2010-01-28 16:43  warnes
+
+	* [r1417] src/build.bat: More Win32 fixes
+
+2010-01-28 16:00  warnes
+
+	* [r1416] src/Makefile, src/Makefile.win, src/build.bat: More work
+	  on Win32 building
+
+2010-01-28 03:58  warnes
+
+	* [r1415] src/Makefile, src/Makefile.win, src/build.bat: Support
+	  building Compress::Raw::Zlib perl package under windows.
+
+2010-01-26 04:12  warnes
+
+	* [r1413] inst/NEWS: Fix typos
+
+2010-01-26 04:11  warnes
+
+	* [r1412] R/sheetCount.R: Show more details in sheetCount() when
+	  verbose=TRUE
+
 2010-01-24 23:30  warnes
 
 	* [r1411] R/xls2sep.R: Replace two calls to 'dQuote', to

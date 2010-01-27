@@ -1,6 +1,14 @@
 CHANGES IN 2.7.0 (2010-01-25)
 -----------------------------
 
+Bug Fixes:
+
+- Fix building of Perl libraries on Win32
+
+
+CHANGES IN 2.7.0 (2010-01-25)
+-----------------------------
+
 Enhancements:
 
 - read.xls() now supports Excel 2007 'xlsx' files.
