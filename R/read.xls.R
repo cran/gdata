@@ -1,11 +1,15 @@
-## s$Id: read.xls.R 1406 2010-01-24 19:13:22Z warnes $
+## s$Id: read.xls.R 1435 2010-05-02 06:11:26Z warnes $
 
 read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
                      method=c("csv","tsv","tab"), perl="perl")
 {
   con <- tfn <- NULL
   on.exit({ 
-    if (inherits(con, "connection") && isOpen(con)) close(con)
+	err <- FALSE
+	if (inherits(con, "connection")) {
+		tryCatch(op <- isOpen(con), error = function(x) err <<- TRUE)
+		if (!err && op) close(con)
+	}
     if (file.exists(tfn)) file.remove(tfn)
   })
 
@@ -16,6 +20,11 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
 
 
   ## translate from xls to csv/tsv/tab format (returns name of created file)
+  perl <- if (missing(perl))
+    findPerl(verbose = verbose)
+  else
+    findPerl(perl, verbose = verbose)
+  
   con <- xls2sep(xls, sheet, verbose=verbose, ..., method=method, perl = perl)
 
   ## load the csv file

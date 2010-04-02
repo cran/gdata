@@ -7,8 +7,17 @@ use lib dirname($0);
 }
 
 use strict;
-use Spreadsheet::ParseExcel;
-use Spreadsheet::XLSX;
+##
+# Try to load the modules we need
+##
+require 'module_tools.pl';
+
+my(
+   $HAS_Spreadsheet_ParseExcel,
+   $HAS_Compress_Raw_Zlib,
+   $HAS_Spreadsheet_XLSX
+  ) = check_modules_and_notify();
+
 use File::Spec::Functions;
 
 # declare some varibles local

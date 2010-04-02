@@ -1,3 +1,11 @@
+CHANGES IN 2.7.0 (2010-02-19)
+
+Enhancements:
+
+- on Windows attempts to locate ActiveState perl if perl= not specified and 
+  Rtools perl would have otherwise been used in read.xls and other perl 
+  dependent functions.
+
 CHANGES IN 2.7.0 (2010-01-25)
 -----------------------------
 

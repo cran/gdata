@@ -24,10 +24,14 @@ exampleFile2007 <- file.path(.path.package('gdata'),'xls',
 
 # see the number and names of sheets:
 sheetCount(exampleFile)
-sheetCount(exampleFile2007)
+
+if( 'XLSX' %in% xlsFormats() )
+  sheetCount(exampleFile2007)
 
 sheetNames(exampleFile)
-sheetNames(exampleFile2007)
+
+if( 'XLSX' %in% xlsFormats() )
+  sheetNames(exampleFile2007)
 
 example.1 <- read.xls(exampleFile, sheet=1) # default is first worksheet
 example.1
@@ -41,21 +45,24 @@ example.3
 example.4 <- read.xls(exampleFile, sheet=3) # second worksheet by number
 example.4
 
-example.x.1 <- read.xls(exampleFile2007, sheet=1) # default is first worksheet
-example.x.1
+if( 'XLSX' %in% xlsFormats() )
+  {
+  example.x.1 <- read.xls(exampleFile2007, sheet=1) # default is first worksheet
+  print(example.x.1)
 
-example.x.2 <- read.xls(exampleFile2007, sheet=2) # second worksheet by number
-example.x.2
+  example.x.2 <- read.xls(exampleFile2007, sheet=2) # second worksheet by number
+  print(example.x.2)
 
-example.x.3 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
-example.x.3
+  example.x.3 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
+  print(example.x.3)
 
-example.x.4 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
-example.x.4
+  example.x.4 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
+  print(example.x.4)
 
-data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
-data
-
-# load the third worksheet, skipping the first two non-data lines...
-data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
-data
+  data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
+  print(data)
+  
+  # load the third worksheet, skipping the first two non-data lines...
+  data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
+  print(data)
+}

@@ -27,7 +27,7 @@ resample(x, size, replace = FALSE, prob = NULL)
 \value{
   Vector of the same length as the input, with the elements permuted.
 }
-\author{Gregory R. Warnes \email{greg@random-technologies-llc.com} }
+\author{Gregory R. Warnes \email{greg@warnes.net} }
 \seealso{ \code{\link{sample}} }
 \examples{
 

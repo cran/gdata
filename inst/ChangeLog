@@ -1,3 +1,38 @@
+2010-05-02 06:11  warnes
+
+	* [r1435] DESCRIPTION, NAMESPACE, R/dQuote.ascii.R, R/findPerl.R,
+	  R/read.xls.R, R/xlsFormats.R, inst/doc/gregmisc.tex,
+	  inst/perl/install_modules.pl, inst/perl/module_tools.pl,
+	  inst/perl/sheetCount.pl, inst/perl/supportedFormats.pl,
+	  inst/perl/xls2csv.pl, man/ConvertMedUnits.Rd,
+	  man/aggregate.table.Rd, man/combine.Rd, man/interleave.Rd,
+	  man/matchcols.Rd, man/nobs.Rd, man/read.xls.Rd,
+	  man/rename.vars.Rd, man/reorder.Rd, man/resample.Rd,
+	  man/sheetCount.Rd, man/trim.Rd, man/unmatrix.Rd,
+	  man/upperTriangle.Rd, man/xlsFormats.Rd, src,
+	  tests/test.read.xls.R, tests/test.read.xls.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Update perl code to work (but
+	  generate warnings) when Zlib or SpreadSheet::XLXS is not
+	  instaled. Also update Greg's email address
+
+2010-02-21 17:12  ggrothendieck2
+
+	* [r1423] R/read.xls.R, man/read.xls.Rd: isOpen problems fixed
+	  (isOpen must have changed in R since this worked in earlier
+	  versions). Also nba.xls link in read.xls.Rd disappeared. Replaced
+	  with similar link.
+
+2010-02-20 11:32  ggrothendieck2
+
+	* [r1422] INSTALL: improved INSTALL file
+
+2010-02-19 15:36  ggrothendieck2
+
+	* [r1421] INSTALL, R/dQuote.ascii.R, R/read.xls.R, R/sheetCount.R,
+	  inst/NEWS: added findPerl to locate ActiveState Perl on Windows
+	  if perl= not specified and Rtools perl would have otherwise been
+	  used. Also added INSTALL file.
+
 2010-01-28 19:58  warnes
 
 	* [r1419] DESCRIPTION, inst/NEWS: Update for release 2.7.1

@@ -28,7 +28,7 @@ lowerTriangle(x, diag=FALSE) <- value
   replace the upper or lower traingular area of the
   matrix with the provided value(s).
   }
-\author{Gregory R. Warnes \email{greg@random-technologies-llc.com}}
+\author{Gregory R. Warnes \email{greg@warnes.net}}
 \seealso{ \code{\link[base]{diag}} }
 \examples{
   x <- matrix( 1:25, nrow=5, ncol=5)

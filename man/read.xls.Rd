@@ -86,7 +86,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")
 
    # read xls file from net
-   nba.url <- "http://lcb1.uoregon.edu/sergiok/DSC330HSP04/week5/NBA.xls"
+   nba.url <- "http://mgtclass.mgt.unm.edu/Bose/Excel/Tutorial.05/Cases/NBA.xls"
    nba <- read.xls(nba.url)
 
    # read xls file ignoring all lines prior to first containing State
@@ -109,18 +109,21 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
 
    # see the number and names of sheets:
    sheetCount(exampleFile)
-   sheetNames(exampleFile2007)
+
+   if( 'XLSX' \%in\% xlsFormats() )  # if XLSX is supported..
+     sheetNames(exampleFile2007)
 
    data <- read.xls(exampleFile)          # default is first worksheet
    data <- read.xls(exampleFile, sheet=2) # second worksheet by number
    data <- read.xls(exampleFile, sheet="Sheet Second",v=TRUE) # and by name
 
    # load the third worksheet, skipping the first two non-data lines...
-   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
+   if( 'XLSX' \%in\% xlsFormats() )  # if XLSX is supported..
+     data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
 
 }
 \author{
-  Gregory R. Warnes \email{greg@random-technologies-llc.com},
+  Gregory R. Warnes \email{greg@warnes.net},
   Jim Rogers \email{james.a.rogers@pfizer.com}, and
   Gabor Grothendiek \email{ggrothendieck@gmail.com}.
 }

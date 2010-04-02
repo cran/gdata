@@ -36,7 +36,8 @@ export(
        xls2csv,
        xls2tab,
        xls2tsv,       
-       xls2sep,       
+       xls2sep,
+       xlsFormats,
 
        ## Object size stuff
        object.size, as.object_size, is.object_size, humanReadable,

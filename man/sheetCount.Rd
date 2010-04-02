@@ -40,7 +40,9 @@ sheetNames(xls, verbose = FALSE, perl = "perl")
                             'ExampleExcelFile.xlsx')
 
    sheetCount(exampleFile)
-   sheetNames(exampleFile2007)
+
+   if( 'XLSX' \%in\% xlsFormats() )  # if XLSX is supported..
+     sheetNames(exampleFile2007)
 
 
 }

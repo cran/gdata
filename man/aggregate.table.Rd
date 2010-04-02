@@ -1,4 +1,4 @@
-% $Id: aggregate.table.Rd 1345 2009-07-16 02:55:27Z warnes $
+% $Id: aggregate.table.Rd 1435 2010-05-02 06:11:26Z warnes $
 %
 % $Log$
 % Revision 1.7  2005/09/12 15:42:45  nj7w
@@ -49,7 +49,7 @@ aggregate.table(x, by1, by2, FUN=mean, ...)
   Returns a matrix with one element for each combination of \code{by1}
   and \code{by2}.
 }
-\author{ Gregory R. Warnes \email{greg@random-technologies-llc.com}}
+\author{ Gregory R. Warnes \email{greg@warnes.net}}
 
 \seealso{ \code{\link{aggregate}}, \code{\link{tapply}},
           \code{\link{interleave}} }

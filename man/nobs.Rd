@@ -1,4 +1,4 @@
-% $Id: nobs.Rd 1345 2009-07-16 02:55:27Z warnes $
+% $Id: nobs.Rd 1435 2010-05-02 06:11:26Z warnes $
 %
 % $Log$
 % Revision 1.7  2005/09/12 15:42:45  nj7w
@@ -58,7 +58,7 @@ nobs(x, ...)
   A single numeric value or a vector of values (for data.frames) giving
   the number of non-missing values.
 }
-\author{ Gregory R. Warnes \email{greg@random-technologies-llc.com}  }
+\author{ Gregory R. Warnes \email{greg@warnes.net}  }
 
 \seealso{ \code{\link{is.na}}, \code{\link{length}} }
 

@@ -1,4 +1,4 @@
-% $Id: rename.vars.Rd 1345 2009-07-16 02:55:27Z warnes $
+% $Id: rename.vars.Rd 1435 2010-05-02 06:11:26Z warnes $
 %
 % $Log$
 % Revision 1.9  2005/09/12 15:42:45  nj7w
@@ -49,7 +49,7 @@ remove.vars(data, names="", info=TRUE)
 }
 \author{Code by Don MacQueen \email{macq\@llnl.gov}.
   Documentation by Gregory R. Warnes
-  \email{greg@random-technologies-llc.com} }
+  \email{greg@warnes.net} }
 \seealso{ \code{\link{names}},
   \code{\link{colnames}},
   \code{\link{data.frame}}

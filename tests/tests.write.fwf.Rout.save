@@ -27,7 +27,7 @@ Type 'q()' to quit R.
 Attaching package: 'gdata'
 
 
-	The following object(s) are masked from package:utils :
+The following object(s) are masked from package:utils :
 
 	 object.size 
 

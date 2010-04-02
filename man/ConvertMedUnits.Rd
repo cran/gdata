@@ -46,7 +46,7 @@ ConvertMedUnits(x, measurement, abbreviation,
 \references{
   \url{http://www.globalrph.com/conv_si.htm}
   }
-\author{ Gregory R. Warnes \email{greg@random-technologies-llc.com} }
+\author{ Gregory R. Warnes \email{greg@warnes.net} }
 \examples{
 data(MedUnits)
 

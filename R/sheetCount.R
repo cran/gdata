@@ -1,8 +1,14 @@
-sheetCount <- function(xls, verbose = FALSE, perl = "perl")
+sheetCount <- function(xls, verbose = FALSE, perl = "perl") {
+  perl <- if (missing(perl)) findPerl(verbose = verbose)
+  else findPerl(perl, verbose = verbose)
   sheetCmd(xls, cmd="sheetCount.pl", verbose=verbose, perl=perl)
+}
   
-sheetNames <- function(xls, verbose = FALSE, perl = "perl")
+sheetNames <- function(xls, verbose = FALSE, perl = "perl") {
+  perl <- if (missing(perl)) findPerl(verbose = verbose)
+  else findPerl(perl, verbose = verbose)
   sheetCmd(xls, cmd="sheetNames.pl", verbose=verbose, perl=perl)
+}
   
 sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
 {
@@ -40,6 +46,7 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
 
   ##
   ## execution command
+
   cmd <- paste(perl, sc, dQuote.ascii(xls), sep=" ")
   ##
   ##
