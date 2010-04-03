@@ -1,4 +1,46 @@
-CHANGES IN 2.7.0 (2010-02-19)
+CHANGES IN 2.8.0 (2010-04-03)
+-----------------------------
+
+Enhancements:
+
+- When loaded, gtools (via an .onAttach() function) now checks:
+   1) if perl is available
+   2) whether the perl libraries for XLS support are available
+   3) whether the perl libraries for XLSX support are available
+
+  If perl is not available, an appropriate warning message is displayed.
+
+  If necessary perl libraries are not available, a warning message is
+  displayed, as is a message suggesting the user run the (new)
+  installXLSXsupport() function to attempt to install the necessary
+  perl libraries.
+
+- The function function installXLSXsupport() has been provided to
+  install the binary perl modules that read.xls needs to support Excel
+  2007+ 'XLSX' files.
+
+
+CHANGES IN 2.7.3 (2010-04-02)
+-----------------------------
+
+Enhancements:
+
+- New xlsFormats() command to determine which Excel formats are
+  supported (XLS, XLSX).
+
+Bug Fixes:
+
+- No longer attempt to install perl modules Compress::Raw::Zlib and
+  Spreadsheet::XLSX at build/compile time.  This should resolve recent
+  build issues, particularly on Windows.
+
+- All perl code can now operate (but generate warnings) when perl modules Compress::Raw::Zlib and
+  Spreadsheet::XLSX when are not installed. 
+
+- Also update Greg's email address.
+
+CHANGES IN 2.7.1 (2010-02-19)
+-----------------------------
 
 Enhancements:
 

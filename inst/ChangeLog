@@ -1,3 +1,17 @@
+2010-05-03 13:35  warnes
+
+	* [r1437] DESCRIPTION, NAMESPACE, R/installXLSXModules.R,
+	  R/onAttach.R, inst/perl/install_modules.pl,
+	  inst/perl/module_tools.pl, tests/test.read.xls.R: Add .onAttach
+	  function to check & inform user if perl is available, to check
+	  whether XLS and XLSX formats are avaiable, and to run the (new)
+	  installXLSXModules() functon to attempt to install the necessar
+	  libraries if not. Added installXLSXModules() function.
+
+2010-05-02 13:56  warnes
+
+	* [r1436] man/xlsFormats.Rd: Correct error in xlsFormat example
+
 2010-05-02 06:11  warnes
 
 	* [r1435] DESCRIPTION, NAMESPACE, R/dQuote.ascii.R, R/findPerl.R,

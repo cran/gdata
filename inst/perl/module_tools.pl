@@ -80,7 +80,7 @@ sub install_modules()
   {
     my($mod, $obj, $here);
 
-    $here = getcwd();
+    $here = dirname($0);
 
     # load the module
     require CPAN;

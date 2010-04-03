@@ -1,5 +1,9 @@
 library(gdata)
 
+if ( ! 'XLSX' %in% xlsFormats() )
+  {
+    try( installXLSXModules() )
+  }
 
 # iris.xls is included in the gregmisc package for use as an example
 xlsfile <- file.path(.path.package('gdata'),'xls','iris.xls')

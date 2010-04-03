@@ -1,5 +1,6 @@
 
 export(
+       .onAttach,
        Args,
        aggregate.table,
        bindData,
@@ -10,6 +11,7 @@ export(
        elem,
        env,
        frameApply,
+       installXLSXsupport,
        interleave,
        is.what,
        keep,

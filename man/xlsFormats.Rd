@@ -2,10 +2,10 @@
 \Rdversion{1.1}
 \alias{xlsFormats}
 \title{
-Determine which XLS file formats are supported by read.xls
+Check which file formats are supported by read.xls
 }
 \description{
-Determine which XLS file formats are supported by read.xls
+Check which file formats are supported by read.xls
 }
 \usage{
 xlsFormats(perl = "perl", verbose = FALSE)
