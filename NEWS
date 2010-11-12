@@ -1,3 +1,19 @@
+CHANGES IN 2.8.1 (2010-11-12)
+-----------------------------
+
+Enhancements:
+
+- Minor improvement to Args(), read.xls() man page.
+
+Bug fixes:
+
+- Modify write.fwf() to capture and pass on additional arguments for
+  write.table(). This resolves a bug reported by Jan Wijffels.
+
+- Modify xls2sep.R to avoid use of file.access() which is unreliable
+  on Windows network shares.
+
+
 CHANGES IN 2.8.0 (2010-04-03)
 -----------------------------
 
@@ -15,9 +31,9 @@ Enhancements:
   installXLSXsupport() function to attempt to install the necessary
   perl libraries.
 
-- The function function installXLSXsupport() has been provided to
-  install the binary perl modules that read.xls needs to support Excel
-  2007+ 'XLSX' files.
+- The function installXLSXsupport() has been provided to install the
+  binary perl modules that read.xls needs to support Excel 2007+
+  'XLSX' files.
 
 
 CHANGES IN 2.7.3 (2010-04-02)

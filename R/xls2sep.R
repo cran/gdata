@@ -1,4 +1,4 @@
-## s$Id: xls2sep.R 1418 2010-01-28 19:56:21Z warnes $
+## s$Id: xls2sep.R 1452 2010-10-19 22:04:49Z warnes $
 
 xls2csv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
   xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="csv",
@@ -13,11 +13,16 @@ xls2tsv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
           perl=perl) 
 
 xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
-                    method=c("csv","tsv","tab"), perl="perl")
+                    method=c("csv","tsv","tab"), perl = perl)
   {
     
     method <- match.arg(method)
     
+	perl <- if (missing(perl))
+		findPerl(verbose = verbose)
+	else
+		findPerl(perl, verbose = verbose)
+
     ##
     ## directories
     package.dir <- .path.package('gdata')
@@ -39,9 +44,6 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
         if(verbose) cat("Done.\n")
         xls <- tf
       }
-
-    if(file.access(xls, 4)!=0)
-      stop("Unable to read xls file '", xls, "'." )
 
     if(method=="csv")
       {
@@ -90,21 +92,29 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
     ##
     ## do the translation
     if(verbose)  cat("Executing '", cmd, "'... \n\n")
-    ##
-    results <- system(cmd, intern=!verbose)
+
+    results <- try(system(cmd, intern=!verbose))
+
+    if(inherits(results, "try-error"))
+      stop( "Unable to read xls file '", xls, "':", results )
+    
     if(verbose) cat(results,"\n\n")
-    ##
     if (verbose) cat("Done.\n\n")
-    ##
-    ##
 
-    if(file.access(targetFile, 4)!=0)
-      stop("Unable to read translated ", method, " file '", targetFile, "'." )
-    
-    if (verbose) cat("Done.\n")
+    ##
+    ## check that the target file was created
+    ##
+    if(!file.exists(targetFile))
+      stop( "Intermediate file '", targetFile, "' missing!" )
 
+    ## Creae a file object to hand to the next stage..
+    retval <- try(file(targetFile))
+    if(inherits(retval, "try-error"))
+
+      stop("Unable to open intermediate file '", targetFile, "':",
+           retval)
     
-    ## prepare for cleanup now, in case of error reading file
-    file(targetFile)
+    return(retval)
+    
   }
 

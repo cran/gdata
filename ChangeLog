@@ -1,3 +1,53 @@
+2010-11-12 19:14  warnes
+
+	* [r1462] inst/NEWS: Update NEWS for gdata 2.8.1
+
+2010-11-12 19:09  warnes
+
+	* [r1461] DESCRIPTION: Update DEScription file for 2.8.1 release
+
+2010-11-12 19:08  warnes
+
+	* [r1460] tests/test.read.xls.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Update test output to match
+	  latest code
+
+2010-11-12 19:08  warnes
+
+	* [r1459] R/write.fwf.R, man/write.fwf.Rd,
+	  tests/test.write.fwf.eol.R: Modify write.fwf() to capture and
+	  pass on additional arguments for
+	  write.table(). This resolves a bug reported by Jan Wijffels.
+
+2010-11-01 00:30  arnima
+
+	* [r1453] man/Args.Rd: Minor improvement in Args.Rd help page
+
+2010-10-19 22:04  warnes
+
+	* [r1452] R/onAttach.R, R/xls2sep.R: Avoid use of file.access()
+	  which is unreliable on Windows network shares.
+
+2010-07-08 12:36  ggrothendieck2
+
+	* [r1448] R/xls2sep.R: findPerl call added to xls2sep
+
+2010-07-07 22:48  ggrothendieck2
+
+	* [r1447] man/read.xls.Rd: small improvements to read.xls.Rd
+
+2010-05-03 16:26  warnes
+
+	* [r1439] NAMESPACE, R/installXLSXModules.R,
+	  R/installXLSXsupport.R, R/onAttach.R, inst/NEWS,
+	  man/installXLSXsupport.Rd, man/xlsFormats.Rd: Rename
+	  installXLSXModules() to installXLSXsupport() and provide
+	  documentation for it.
+
+2010-05-03 13:48  warnes
+
+	* [r1438] inst/NEWS: Update news for gdata 2.8.0
+
 2010-05-03 13:35  warnes
 
 	* [r1437] DESCRIPTION, NAMESPACE, R/installXLSXModules.R,

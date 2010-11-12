@@ -1,13 +1,12 @@
 
-R version 2.11.0 (2010-04-22)
+R version 2.12.0 (2010-10-15)
 Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -18,6 +17,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gdata)
+gdata: read.xls support for 'XLS' (Excel 97-2004) files ENABLED.
+
+gdata: read.xls support for 'XLSX' (Excel 2007+) files ENABLED.
 
 Attaching package: 'gdata'
 
@@ -26,14 +28,15 @@ The following object(s) are masked from 'package:utils':
     object.size
 
 > 
+> if ( ! 'XLSX' %in% xlsFormats() )
++   {
++     try( installXLSXModules() )
++   }
 > 
 > # iris.xls is included in the gregmisc package for use as an example
 > xlsfile <- file.path(.path.package('gdata'),'xls','iris.xls')
 > 
 > iris.1 <- read.xls(xlsfile) # defaults to csv format
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > iris.1
     Sepal.Length Sepal.Width Petal.Length Petal.Width     Species
 1            5.1         3.5          1.4         0.2     setosa 
@@ -188,9 +191,6 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 150          5.9         3.0          5.1         1.8  virginica 
 > 
 > iris.2 <- read.xls(xlsfile,method="csv") # specify csv format
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > iris.2
     Sepal.Length Sepal.Width Petal.Length Petal.Width     Species
 1            5.1         3.5          1.4         0.2     setosa 
@@ -345,9 +345,6 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 150          5.9         3.0          5.1         1.8  virginica 
 > 
 > iris.3 <- read.xls(xlsfile,method="tab") # specify tab format
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > iris.3
     Sepal.Length Sepal.Width Petal.Length Petal.Width     Species
 1            5.1         3.5          1.4         0.2     setosa 
@@ -512,28 +509,22 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > 
 > # see the number and names of sheets:
 > sheetCount(exampleFile)
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 [1] 4
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   sheetCount(exampleFile2007)
+[1] 4
 > 
 > sheetNames(exampleFile)
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 [1] "Sheet First"                  "Sheet Second"                
 [3] "Sheet with a very long name!" "Sheet with initial text"     
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   sheetNames(exampleFile2007)
+[1] "Sheet First"                  "Sheet Second"                
+[3] "Sheet with a very long name!" "Sheet with initial text"     
 > 
 > example.1 <- read.xls(exampleFile, sheet=1) # default is first worksheet
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > example.1
   A  B   C
 1 1  1   1
@@ -545,9 +536,6 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 7 7 49 343
 > 
 > example.2 <- read.xls(exampleFile, sheet=2) # second worksheet by number
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > example.2
           X D  E  F  G Factor
 1  FirstRow 1 NA NA NA   Red 
@@ -556,9 +544,6 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 4 FourthRow 4  3  2  1 Black 
 > 
 > example.3 <- read.xls(exampleFile, sheet=3) # second worksheet by number
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > example.3
   X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
 1  2  2002-02-02  2:02          0.2910708         NA B 
@@ -572,9 +557,6 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
 > 
 > example.4 <- read.xls(exampleFile, sheet=3) # second worksheet by number
-WARNING: Perl module Compress::Raw::Zlib cannot be loaded.
-WARNING: Perl module Spreadsheet::XLSX cannot be loaded.
-WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 > example.4
   X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
 1  2  2002-02-02  2:02          0.2910708         NA B 
@@ -608,7 +590,47 @@ WARNING: Microsoft Excel 2007 'XLSX' formatted files will not be processed.
 +   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
 +   print(data)
 + }
+  A  B   C
+1 1  1   1
+2 2  4   8
+3 3  9  27
+4 4 16  64
+5 5 25 125
+6 6 36 216
+7 7 49 343
+          X D  E  F  G Factor
+1  FirstRow 1 NA NA NA   Red 
+2 SecondRow 2  1 NA NA Green 
+3  ThirdRow 3  2  1 NA   Red 
+4 FourthRow 4  3  2  1 Black 
+  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
+1  2  2002-02-02  2:02          0.2910708         NA B 
+2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
+3  4  2004-04-04  4:04          0.4116363  0.7080734   
+4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
+5  6  2006-06-06  6:06                 NA  0.2513698 B 
+6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
+7  8  2008-08-08  8:08          0.5821416         NA C 
+8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
+9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
+  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
+1  2  2002-02-02  2:02          0.2910708         NA B 
+2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
+3  4  2004-04-04  4:04          0.4116363  0.7080734   
+4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
+5  6  2006-06-06  6:06                 NA  0.2513698 B 
+6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
+7  8  2008-08-08  8:08          0.5821416         NA C 
+8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
+9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
+          X D  E  F  G Factor
+1  FirstRow 1 NA NA NA   Red 
+2 SecondRow 2  1 NA NA Green 
+3  ThirdRow 3  2  1 NA   Red 
+4 FourthRow 4  3  2  1 Black 
+   X       X.1 D  E  F  G Factor
+1 NA  FirstRow 1 NA NA NA   Red 
+2 NA SecondRow 2  1 NA NA Green 
+3 NA  ThirdRow 3  2  1 NA   Red 
+4 NA FourthRow 4  3  2  1 Black 
 > 
-> proc.time()
-   user  system elapsed 
-  1.350   0.285   1.659 

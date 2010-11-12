@@ -1,8 +1,13 @@
 .onAttach <- function(libname, pkgname)
   {
     show <- function(...)
-      writeLines(strwrap( x=list(...), prefix="gdata: " ))
-        
+      packageStartupMessage(
+         paste(
+            strwrap(x = list(...), 
+                    prefix = "gdata: "), 
+            collapse="\n",sep="\n"
+            )
+      ) 
 
     try(
         {

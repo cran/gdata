@@ -47,6 +47,11 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
   \code{read.table} since the first character of all lines (including
   comment lines) will be "\"" after conversion.
 
+  If you have quotes in your data which confuse the process you may wish to use 
+  \code{read.xls(..., quote = '')}.  This will cause the quotes to be regarded
+  as data and you will have to then handle the quotes yourself after reading 
+  the file in.
+
   Caution: If you call \code{"xls2csv"} directly, is your responsibility 
   to close and delete the file after using it.
 }
@@ -84,6 +89,11 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
 
    # Example specifying exact Perl path for Unix systems
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")
+
+   # finding perl 
+   # (read.xls automatically calls findPerl so this is rarely needed)
+   perl <- gdata:::findPerl("perl")
+   iris <- read.xls(xlsfile, perl=perl)
 
    # read xls file from net
    nba.url <- "http://mgtclass.mgt.unm.edu/Bose/Excel/Tutorial.05/Cases/NBA.xls"

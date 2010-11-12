@@ -1,14 +1,26 @@
 ### write.fwf.R
 ###------------------------------------------------------------------------
 ### What: Write fixed width format - code
-### $Id: write.fwf.R 1300 2008-08-05 11:47:18Z ggorjan $
+### $Id: write.fwf.R 1459 2010-11-12 19:08:12Z warnes $
 ### Time-stamp: <2008-08-05 12:11:27 ggorjan>
 ###------------------------------------------------------------------------
 
-write.fwf <- function(x, file="", append=FALSE, quote=FALSE, sep=" ",
-                      na="", rownames=FALSE, colnames=TRUE, rowCol=NULL,
-                      justify="left", formatInfo=FALSE, quoteInfo=TRUE,
-                      width=NULL, ...)
+write.fwf <- function(x,
+                      file="",
+                      append=FALSE,
+                      quote=FALSE,
+                      sep=" ",
+                      na="",
+                      rownames=FALSE,
+                      colnames=TRUE,
+                      rowCol=NULL,
+                      justify="left",
+                      formatInfo=FALSE,
+                      quoteInfo=TRUE,
+                      width=NULL,
+                      eol="\n",
+                      qmethod=c("escape", "double"),
+                      ...)
 {
   ## --- Setup ---
 
@@ -137,12 +149,28 @@ write.fwf <- function(x, file="", append=FALSE, quote=FALSE, sep=" ",
 
   if(colnames) {
     if(rownames && is.null(rowCol)) colnamesMy <- colnamesMy[-1]
-    write.table(t(as.matrix(colnamesMy)), file=file, append=append,
-                quote=quote, sep=sep, row.names=FALSE, col.names=FALSE, ...)
-  }
+    write.table(t(as.matrix(colnamesMy)),
+                file=file,
+                append=append,
+                quote=quote,
+                sep=sep,
+                eol=eol,
+                na=na,
+                row.names=FALSE,
+                col.names=FALSE,
+                qmethod=qmethod) 
+ }
 
-  write.table(x=x, file=file, append=(colnames || append), quote=quote,
-              sep=sep, row.names=FALSE, col.names=FALSE, ...)
+  write.table(x=x,
+              file=file,
+              append=(colnames || append),
+              quote=quote,
+              sep=sep,
+              eol=eol,
+              na=na,
+              row.names=FALSE,
+              col.names=FALSE,
+              qmethod=qmethod)
 
   ## --- Return format and fixed width information ---
 
