@@ -31,6 +31,14 @@ nPairs(x, margin=FALSE, names=TRUE, abbrev=TRUE, ...)
   \item{\dots}{other arguments passed to \code{\link{abbreviate}}}
 }
 
+\details{
+
+The class of returned matrix is nPairs and matrix. There is a summary method,
+which shows the opposite information - counts how many times each variable is 
+known, while the other variable of a pair is not. See examples.
+
+}
+
 \value{
 
 Matrix of order \eqn{k}, where \eqn{k} is the number of columns in \code{x}.
@@ -65,6 +73,8 @@ nPairs(x=test)
 ## Margin
 nPairs(x=test, margin=TRUE)
 
+## Summary
+summary(object=nPairs(x=test))
 }
 
 \keyword{misc}

@@ -42,6 +42,20 @@ nPairs <- function(x, margin=FALSE, names=TRUE, abbrev=TRUE, ...)
       colnames(ret) <- tmp
     }
   }
+  class(ret) <- c("nPairs", class(ret))
+  ret
+}
+
+summary.nPairs <- function(object, ...)
+{
+  n <- nrow(object)
+  ret <- matrix(data=0, nrow=n, ncol=n)
+  for(i in 1:n) {
+    tmp <- 1:n
+    tmp <- tmp[!(tmp == i)]
+    ret[i, tmp] <- object[i, i] - object[i, tmp]
+  }
+  dimnames(ret) <- dimnames(object)
   ret
 }
 

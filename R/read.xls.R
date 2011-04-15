@@ -1,4 +1,4 @@
-## s$Id: read.xls.R 1435 2010-05-02 06:11:26Z warnes $
+## s$Id: read.xls.R 1468 2011-04-15 20:25:24Z warnes $
 
 read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
                      method=c("csv","tsv","tab"), perl="perl")
@@ -33,7 +33,7 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
   if (missing(pattern))
     {
       if(verbose)
-        cat("Reading", method, "file ", dQuote.ascii(tfn), "...\n")
+        cat("Reading", method, "file ", dQuote(tfn), "...\n")
       
       if(method=="csv")
         retval <- read.csv(con, ...)
@@ -59,7 +59,7 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
     seek(con, 0)
 
     if(verbose)
-      cat("Reading", method, "file ", dQuote.ascii(tfn), "...\n")
+      cat("Reading", method, "file ", dQuote(tfn), "...\n")
 
     if(method=="csv")
       retval <- read.csv(con, skip = idx[1]-1, ...)

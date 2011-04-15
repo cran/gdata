@@ -17,9 +17,8 @@ Args(name, sort=FALSE)
   containing the default value of each argument.
 }
 \note{
-  In recent versions of \R, primitive functions like \code{sum} and
-  \code{all} have no formal arguments. See the \code{\link{formals}}
-  help page.
+  Primitive functions like \code{sum} and \code{all} have no formal
+  arguments. See the \code{\link{formals}} help page.
 }
 \author{Arni Magnusson}
 \seealso{

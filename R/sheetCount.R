@@ -29,8 +29,8 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
       tf <- paste(tempfile(), "xls", sep = ".")
       if(verbose)
         cat("Downloading",
-            dQuote.ascii(xls), " to ",
-            dQuote.ascii(tf), "...\n")
+            dQuote(xls), " to ",
+            dQuote(tf), "...\n")
       else
         cat("Downloading...\n")
       download.file(xls, tf, mode = "wb")
@@ -47,7 +47,7 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
   ##
   ## execution command
 
-  cmd <- paste(perl, sc, dQuote.ascii(xls), sep=" ")
+  cmd <- paste(shQuote(perl), shQuote(sc), shQuote(xls), sep=" ")
   ##
   ##
 
@@ -57,7 +57,7 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
     {
       cat("\n")
       cat("Extracting sheet information from\n")
-      cat("   ", dQuote.ascii(xls), "\n")
+      cat("   ", dQuote(xls), "\n")
       cat("... \n\n")
     }
   ##

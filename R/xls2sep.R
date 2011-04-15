@@ -1,4 +1,4 @@
-## s$Id: xls2sep.R 1452 2010-10-19 22:04:49Z warnes $
+## s$Id: xls2sep.R 1468 2011-04-15 20:25:24Z warnes $
 
 xls2csv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
   xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="csv",
@@ -38,8 +38,8 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
         tf <- paste(tempfile(), "xls", sep = ".")
         if(verbose)
           cat("Downloading",
-              dQuote.ascii(xls), " to ",
-              dQuote.ascii(tf), "...\n")
+              dQuote(xls), " to ",
+              dQuote(tf), "...\n")
         download.file(xls, tf, mode = "wb")
         if(verbose) cat("Done.\n")
         xls <- tf
@@ -70,11 +70,11 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
 
     ##
     ## execution command
-    cmd <- paste(dQuote.ascii(perl),
-                 dQuote.ascii(script),
-                 dQuote.ascii(xls),
-                 dQuote.ascii(targetFile),
-                 dQuote.ascii(sheet),
+    cmd <- paste(shQuote(perl),
+                 shQuote(script),
+                 shQuote(xls),
+                 shQuote(targetFile),
+                 shQuote(sheet),
                  sep=" ")
     ##
     ##
@@ -83,9 +83,9 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
       {
         cat("\n")
         cat("Converting xls file\n")
-        cat("   ", dQuote.ascii(xls), "\n")
+        cat("   ", dQuote(xls), "\n")
         cat("to", method, " file \n")
-        cat("   ", dQuote.ascii(targetFile), "\n")
+        cat("   ", dQuote(targetFile), "\n")
         cat("... \n\n")
       }
     

@@ -1,3 +1,16 @@
+CHANGES IN 2.8.1 (2011-04-15)
+-----------------------------
+
+Enhancements:
+
+- nPairs() gains a summary method that shows how many times each variable 
+  is known, while the other variable of a pair is not
+
+Bug fixes:
+
+- Fix errors on windows when R or Perl install path includes spaces by properly quoting the path.
+
+
 CHANGES IN 2.8.1 (2010-11-12)
 -----------------------------
 

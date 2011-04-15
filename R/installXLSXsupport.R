@@ -24,7 +24,7 @@ installXLSXsupport <- function(perl="perl", verbose=FALSE)
   ##
   ## execution command
 
-  cmd <- paste(perl, sc, sep=" ")
+  cmd <- paste(shQuote(perl), shQuote(sc), sep=" ")
 
   ##
 
