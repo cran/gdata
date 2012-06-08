@@ -1,6 +1,6 @@
 
-R version 2.12.0 (2010-10-15)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
@@ -29,6 +29,10 @@ gdata: read.xls support for 'XLS' (Excel 97-2004) files ENABLED.
 gdata: read.xls support for 'XLSX' (Excel 2007+) files ENABLED.
 
 Attaching package: 'gdata'
+
+The following object(s) are masked from 'package:stats':
+
+    nobs
 
 The following object(s) are masked from 'package:utils':
 
@@ -226,3 +230,6 @@ HI! num1 num2 num3 int1 fac1 fac2 cha1 cha2 Date POSIXt
 > ###------------------------------------------------------------------------
 > ### tests.write.fwf.R ends
 > 
+> proc.time()
+   user  system elapsed 
+  0.430   0.041   0.465 

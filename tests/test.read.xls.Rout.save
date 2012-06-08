@@ -1,6 +1,6 @@
 
-R version 2.12.0 (2010-10-15)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
 
@@ -23,6 +23,10 @@ gdata: read.xls support for 'XLSX' (Excel 2007+) files ENABLED.
 
 Attaching package: 'gdata'
 
+The following object(s) are masked from 'package:stats':
+
+    nobs
+
 The following object(s) are masked from 'package:utils':
 
     object.size
@@ -30,7 +34,7 @@ The following object(s) are masked from 'package:utils':
 > 
 > if ( ! 'XLSX' %in% xlsFormats() )
 +   {
-+     try( installXLSXModules() )
++     try( installXLSXsupport() )
 +   }
 > 
 > # iris.xls is included in the gregmisc package for use as an example
@@ -537,37 +541,39 @@ The following object(s) are masked from 'package:utils':
 > 
 > example.2 <- read.xls(exampleFile, sheet=2) # second worksheet by number
 > example.2
-          X D  E  F  G Factor
+          X D E.  F  G Factor
 1  FirstRow 1 NA NA NA   Red 
 2 SecondRow 2  1 NA NA Green 
 3  ThirdRow 3  2  1 NA   Red 
 4 FourthRow 4  3  2  1 Black 
 > 
-> example.3 <- read.xls(exampleFile, sheet=3) # second worksheet by number
+> example.3 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
 > example.3
-  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
-1  2  2002-02-02  2:02          0.2910708         NA B 
-2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
-3  4  2004-04-04  4:04          0.4116363  0.7080734   
-4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
-5  6  2006-06-06  6:06                 NA  0.2513698 B 
-6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
-7  8  2008-08-08  8:08          0.5821416         NA C 
-8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
-9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
+   V1         V2    V3        V4          V5 V6
+1   1 2001-01-01  1:01 0.2058182          NA A 
+2   2 2002-02-02  2:02 0.2910708          NA B 
+3   3 2003-03-03  3:03 0.3564875 -0.84147098 C 
+4   4 2004-04-04  4:04 0.4116363  0.70807342   
+5   5 2005-05-05  5:05 0.4602234  0.50136797 A 
+6   6 2006-06-06  6:06        NA  0.25136984 B 
+7   7 2007-07-07  7:07 0.5445436  0.06318679 B 
+8   8 2008-08-08  8:08 0.5821416          NA C 
+9   9 2009-09-09  9:09 0.6174545  0.00000000 A 
+10 10 2010-10-10 10:10 0.6508541  0.00000000 A 
 > 
-> example.4 <- read.xls(exampleFile, sheet=3) # second worksheet by number
+> example.4 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
 > example.4
-  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
-1  2  2002-02-02  2:02          0.2910708         NA B 
-2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
-3  4  2004-04-04  4:04          0.4116363  0.7080734   
-4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
-5  6  2006-06-06  6:06                 NA  0.2513698 B 
-6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
-7  8  2008-08-08  8:08          0.5821416         NA C 
-8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
-9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
+   V1         V2    V3        V4          V5 V6
+1   1 2001-01-01  1:01 0.2058182          NA A 
+2   2 2002-02-02  2:02 0.2910708          NA B 
+3   3 2003-03-03  3:03 0.3564875 -0.84147098 C 
+4   4 2004-04-04  4:04 0.4116363  0.70807342   
+5   5 2005-05-05  5:05 0.4602234  0.50136797 A 
+6   6 2006-06-06  6:06        NA  0.25136984 B 
+7   7 2007-07-07  7:07 0.5445436  0.06318679 B 
+8   8 2008-08-08  8:08 0.5821416          NA C 
+9   9 2009-09-09  9:09 0.6174545  0.00000000 A 
+10 10 2010-10-10 10:10 0.6508541  0.00000000 A 
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   {
@@ -577,10 +583,10 @@ The following object(s) are masked from 'package:utils':
 +   example.x.2 <- read.xls(exampleFile2007, sheet=2) # second worksheet by number
 +   print(example.x.2)
 + 
-+   example.x.3 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
++   example.x.3 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
 +   print(example.x.3)
 + 
-+   example.x.4 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
++   example.x.4 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
 +   print(example.x.4)
 + 
 +   data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
@@ -598,39 +604,44 @@ The following object(s) are masked from 'package:utils':
 5 5 25 125
 6 6 36 216
 7 7 49 343
-          X D  E  F  G Factor
+          X D E.  F  G Factor
 1  FirstRow 1 NA NA NA   Red 
 2 SecondRow 2  1 NA NA Green 
 3  ThirdRow 3  2  1 NA   Red 
 4 FourthRow 4  3  2  1 Black 
-  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
-1  2  2002-02-02  2:02          0.2910708         NA B 
-2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
-3  4  2004-04-04  4:04          0.4116363  0.7080734   
-4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
-5  6  2006-06-06  6:06                 NA  0.2513698 B 
-6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
-7  8  2008-08-08  8:08          0.5821416         NA C 
-8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
-9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
-  X1 X2001.01.01 X1.01 X0.205818150587141   X.DIV.0.  A
-1  2  2002-02-02  2:02          0.2910708         NA B 
-2  3  2003-03-03  3:03          0.3564875 -0.8414710 C 
-3  4  2004-04-04  4:04          0.4116363  0.7080734   
-4  5  2005-05-05  5:05          0.4602234  0.5013680 A 
-5  6  2006-06-06  6:06                 NA  0.2513698 B 
-6  7  2007-07-07  7:07          0.5445436  0.0631868 B 
-7  8  2008-08-08  8:08          0.5821416         NA C 
-8  9  2009-09-09  9:09          0.6174545  0.0000000 A 
-9 10  2010-10-10 10:10          0.6508541  0.0000000 A 
-          X D  E  F  G Factor
+   V1         V2    V3        V4          V5 V6
+1   1 2001-01-01  1:01 0.2058182          NA A 
+2   2 2002-02-02  2:02 0.2910708          NA B 
+3   3 2003-03-03  3:03 0.3564875 -0.84147098 C 
+4   4 2004-04-04  4:04 0.4116363  0.70807342   
+5   5 2005-05-05  5:05 0.4602234  0.50136797 A 
+6   6 2006-06-06  6:06        NA  0.25136984 B 
+7   7 2007-07-07  7:07 0.5445436  0.06318679 B 
+8   8 2008-08-08  8:08 0.5821416          NA C 
+9   9 2009-09-09  9:09 0.6174545  0.00000000 A 
+10 10 2010-10-10 10:10 0.6508541  0.00000000 A 
+   V1         V2    V3        V4          V5 V6
+1   1 2001-01-01  1:01 0.2058182          NA A 
+2   2 2002-02-02  2:02 0.2910708          NA B 
+3   3 2003-03-03  3:03 0.3564875 -0.84147098 C 
+4   4 2004-04-04  4:04 0.4116363  0.70807342   
+5   5 2005-05-05  5:05 0.4602234  0.50136797 A 
+6   6 2006-06-06  6:06        NA  0.25136984 B 
+7   7 2007-07-07  7:07 0.5445436  0.06318679 B 
+8   8 2008-08-08  8:08 0.5821416          NA C 
+9   9 2009-09-09  9:09 0.6174545  0.00000000 A 
+10 10 2010-10-10 10:10 0.6508541  0.00000000 A 
+          X D E.  F  G Factor
 1  FirstRow 1 NA NA NA   Red 
 2 SecondRow 2  1 NA NA Green 
 3  ThirdRow 3  2  1 NA   Red 
 4 FourthRow 4  3  2  1 Black 
-   X       X.1 D  E  F  G Factor
+   X       X.1 D E.  F  G Factor
 1 NA  FirstRow 1 NA NA NA   Red 
 2 NA SecondRow 2  1 NA NA Green 
 3 NA  ThirdRow 3  2  1 NA   Red 
 4 NA FourthRow 4  3  2  1 Black 
 > 
+> proc.time()
+   user  system elapsed 
+  2.916   0.357   3.366 

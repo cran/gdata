@@ -1,3 +1,64 @@
+Changes in 2.10.2 (2012-06-06)
+------------------------------
+
+Bug fixes:
+
+- Fix issues in nobs.default identified in testing with the gmodels package.
+
+
+Changes in 2.10.1 (2012-06-06)
+------------------------------
+
+Bug fixes:
+
+- Undo removal of 'nobs' and 'nobs.lm'.  Instead define aliases for
+  'nobs' and 'nobs.lm' to support backward compatibility for packages
+  depending on gdata.
+
+
+Changes in 2.10.0 (2012-06-05)
+------------------------------
+
+New features:
+
+- New ls.funs() function to list all objects of class function in the
+  specified environment.
+
+- New startsWith() function to determine if a string "starts with" the
+  specified characters.
+
+
+Enhancements:
+
+- Add 'na.strings' argument to read.xls() to convert Excel's '#DIV/0!' to NA.
+
+
+Bug fixes:
+
+- Correct various R CMD check warnings
+
+
+Other changes:
+
+- Base S3 method for nobs() and nobs.lm() method removed since these
+  are now provided in the stats package.
+
+
+Changes in 2.9.0 (2011-09-30)
+-----------------------------
+
+New features:
+
+- Add centerText() function to center text strings for a specified
+  width.
+
+- Add case() function, a vectorized variant of the base::switch()
+  function, which is useful for converting numeric codes into factors.
+
+Enhancements:
+
+- Minor improvements to xls2csv() man page.
+
 CHANGES IN 2.8.1 (2011-04-15)
 -----------------------------
 

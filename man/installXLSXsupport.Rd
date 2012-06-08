@@ -63,6 +63,8 @@ installXLSXsupport(perl = "perl", verbose = FALSE)
 	\code{\link{read.xls}}, \code{\link{xls2csv}}, \code{\link{xlsFormats}}
 }
 \examples{
+\dontrun{
    installXLSXsupport()
+}
 }
 \keyword{ misc }

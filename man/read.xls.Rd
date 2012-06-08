@@ -7,8 +7,8 @@
 \title{Read Excel files}
 \description{Read a Microsoft Excel file into a data frame}
 \usage{
-read.xls(xls, sheet = 1, verbose=FALSE, pattern, ...,
-         method=c("csv","tsv","tab"), perl="perl")
+read.xls(xls, sheet=1, verbose=FALSE, pattern, na.strings=c("NA","#DIV/0!"),
+         ..., method=c("csv","tsv","tab"), perl="perl")
 xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
 xls2tab(xls, sheet=1, verbose=FALSE, ..., perl="perl")
 xls2tsv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
@@ -18,8 +18,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
 \arguments{
   \item{xls}{path to the Microsoft Excel file.  Supports "http://",
     "https://", and "ftp://" URLS.}
-  \item{sheet}{number of the sheet within the Excel file from which data
-    are to be read}
+  \item{sheet}{name or number of the worksheet to read}
   \item{verbose}{logical flag indicating whether details should be
     printed as the file is processed.}
   \item{pattern}{if specified, them skip all lines before the first 
@@ -27,6 +26,8 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
   \item{perl}{name of the perl executable to be called.}
   \item{method}{intermediate file format, "csv" for comma-separated and
     "tab" for tab-separated}
+  \item{na.strings}{a character vector of strings which are to be interpreted
+          as 'NA' values. See \code{\link[utils]{read.table}} for details.}
   \item{...}{additional arguments to read.table. The defaults for
     read.csv() are used.}
 }
@@ -86,7 +87,9 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
    # Example specifying exact Perl path for default MS-Windows install of
    # ActiveState perl
    iris <- read.xls(xlsfile, perl="C:/perl/bin/perl.exe")
+   }
 
+   \dontrun{
    # Example specifying exact Perl path for Unix systems
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")
 
@@ -94,11 +97,15 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
    # (read.xls automatically calls findPerl so this is rarely needed)
    perl <- gdata:::findPerl("perl")
    iris <- read.xls(xlsfile, perl=perl)
+   }
 
+   \dontrun{
    # read xls file from net
    nba.url <- "http://mgtclass.mgt.unm.edu/Bose/Excel/Tutorial.05/Cases/NBA.xls"
    nba <- read.xls(nba.url)
+   }
 
+   \dontrun{
    # read xls file ignoring all lines prior to first containing State
    crime.url <- "http://www.jrsainfo.org/jabg/state_data2/Tribal_Data00.xls"
    crime <- read.xls(crime.url, pattern = "State")
@@ -107,7 +114,6 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
    con <- xls2csv(crime.url)
    print(readLines(con, 2)) 
    file.remove(summary(con)$description)
-   
    }
 
    # Examples demonstrating selection of specific 'sheets'
@@ -119,9 +125,14 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
 
    # see the number and names of sheets:
    sheetCount(exampleFile)
-
    if( 'XLSX' \%in\% xlsFormats() )  # if XLSX is supported..
-     sheetNames(exampleFile2007)
+     sheetCount(exampleFile2007)
+
+
+   # show names of shets in the file
+   sheetNames(exampleFile)
+   if( 'XLSX' \%in\% xlsFormats() )  # if XLSX is supported..
+   sheetNames(exampleFile2007)
 
    data <- read.xls(exampleFile)          # default is first worksheet
    data <- read.xls(exampleFile, sheet=2) # second worksheet by number

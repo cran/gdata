@@ -2,7 +2,7 @@ library(gdata)
 
 if ( ! 'XLSX' %in% xlsFormats() )
   {
-    try( installXLSXModules() )
+    try( installXLSXsupport() )
   }
 
 # iris.xls is included in the gregmisc package for use as an example
@@ -43,10 +43,10 @@ example.1
 example.2 <- read.xls(exampleFile, sheet=2) # second worksheet by number
 example.2
 
-example.3 <- read.xls(exampleFile, sheet=3) # second worksheet by number
+example.3 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
 example.3
 
-example.4 <- read.xls(exampleFile, sheet=3) # second worksheet by number
+example.4 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
 example.4
 
 if( 'XLSX' %in% xlsFormats() )
@@ -57,10 +57,10 @@ if( 'XLSX' %in% xlsFormats() )
   example.x.2 <- read.xls(exampleFile2007, sheet=2) # second worksheet by number
   print(example.x.2)
 
-  example.x.3 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
+  example.x.3 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
   print(example.x.3)
 
-  example.x.4 <- read.xls(exampleFile2007, sheet=3) # second worksheet by number
+  example.x.4 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
   print(example.x.4)
 
   data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name

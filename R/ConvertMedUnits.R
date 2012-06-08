@@ -2,7 +2,9 @@ ConvertMedUnits <- function(x, measurement, abbreviation,
                             to=c("Conventional","SI","US"),
                             exact=!missing(abbreviation))
   {
-    data(MedUnits,package='gdata')
+    MedUnits <- NULL ## Define to avoid R CMD check warning
+    data(MedUnits,package='gdata', envir=environment())
+    
     to=match.arg(to)
     if(!missing(measurement) && missing(abbreviation))
       {

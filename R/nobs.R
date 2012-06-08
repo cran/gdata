@@ -1,12 +1,24 @@
-# $Id: nobs.R 625 2005-06-09 14:20:30Z nj7w $
+# $Id: nobs.R 1551 2012-06-06 22:09:04Z warnes $
 
-nobs <- function(x,...)
-  UseMethod("nobs",x)
+## Redefine here, so that the locally defined methods (particularly
+## nobs.default) take precidence over the ones now defined in the
+## stats package
+nobs <- function(object, ...)
+  UseMethod("nobs")
 
-nobs.default <- function(x, ...) sum( !is.na(x) )
+nobs.default <- function(object, ...)
+  {
+    if(is.numeric(object))
+      sum( !is.na(object) )
+    else
+      stats:::nobs.default(object, ...)
+  }
+    
 
-nobs.data.frame <- function(x, ...)
-  sapply(x, nobs.default)
+nobs.data.frame <- function(object, ...)
+  sapply(object, nobs.default)
 
-nobs.lm <- function(x, ...)
-  nobs.default(x$residuals)
+## Now provided by 'stats' package, so provide alias to satisfy
+## dependencies
+nobs.lm <- stats:::nobs.lm
+

@@ -1,7 +1,9 @@
-## s$Id: read.xls.R 1468 2011-04-15 20:25:24Z warnes $
+## s$Id: read.xls.R 1541 2012-06-06 01:21:44Z warnes $
 
-read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
-                     method=c("csv","tsv","tab"), perl="perl")
+read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, 
+                     na.strings = c("NA","#DIV/0!"), ...,
+                     method=c("csv","tsv","tab"),
+                     perl="perl")
 {
   con <- tfn <- NULL
   on.exit({ 
@@ -36,9 +38,9 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
         cat("Reading", method, "file ", dQuote(tfn), "...\n")
       
       if(method=="csv")
-        retval <- read.csv(con, ...)
+        retval <- read.csv(con, na.strings=na.strings, ...)
       else if (method %in% c("tsv","tab") )
-        retval <- read.delim(con, ...)
+        retval <- read.delim(con, na.strings=na.strings, ...)
       else
         stop("Unknown method", method)
         
@@ -62,9 +64,9 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, ...,
       cat("Reading", method, "file ", dQuote(tfn), "...\n")
 
     if(method=="csv")
-      retval <- read.csv(con, skip = idx[1]-1, ...)
+      retval <- read.csv(con, skip = idx[1]-1, na.strings=na.strings, ...)
     else if (method %in% c("tsv","tab") )
-      retval <- read.delim(con, skip = idx[1]-1, ...)
+      retval <- read.delim(con, skip = idx[1]-1, na.strings=na.strings, ...)
     else
       stop("Unknown method", method)
 

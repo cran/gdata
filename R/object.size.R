@@ -7,8 +7,9 @@
 
 object.size <- function(...) 
 {
-  structure(sapply(list(...), function(x) .Internal(object.size(x))), 
-            class=c("object_size", "numeric"))
+  structure(sapply(list(...),
+                   utils::object.size),
+                   class=c("object_size", "numeric"))
 }
 
 print.object_size <- function(x, quote=FALSE, humanReadable, ...)

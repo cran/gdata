@@ -11,16 +11,16 @@ env <- function(unit="KB", digits=0)
 
   get.environment.size <- function(pos)
   {
-    if(search()[pos]=="Autoloads" || length(ls(pos,all=TRUE))==0)
+    if(search()[pos]=="Autoloads" || length(ls(pos,all.names=TRUE))==0)
       size <- 0
     else
-      size <- sum(sapply(ls(pos,all=TRUE), get.object.size, pos=pos))
+      size <- sum(sapply(ls(pos,all.names=TRUE), get.object.size, pos=pos))
     return(size)
   }
 
   get.environment.nobjects <- function(pos)
   {
-    nobjects <- length(ls(pos,all=TRUE))
+    nobjects <- length(ls(pos,all.names=TRUE))
     return(nobjects)
   }
 
