@@ -1,8 +1,8 @@
-dd126cdd3c2f0b04f2c7fac3c1d9f51c *ChangeLog
-bfb9f5c144485b84d7fc38ecdda45eb2 *DESCRIPTION
+6ec50485e59c7ebde89d2d69654b6fa5 *ChangeLog
+4c2a20ce677f85586bb828438635f0a2 *DESCRIPTION
 905fe9c5be6e143737163bc6317e6640 *INSTALL
 632a2df95d6003a608b5579ca2f1a9dd *NAMESPACE
-9d4a588933e15b83be9ae84601b06651 *NEWS
+f7044f5cc551384279cbf1cffe66e54c *NEWS
 92e3ca5e31d594044b8325a441142c37 *R/Args.R
 94976a0bed5195b50511e200d1711280 *R/ConvertMedUnits.R
 734e0ca76e140f510bc30c597f2e1dc1 *R/aggregate.table.R
@@ -26,7 +26,7 @@ b75ac1b645046c8028d8014de255bd25 *R/ls.funs.R
 17850c5a2e9185aff447f7e19a125cb6 *R/mapLevels.R
 e7d2246f66781fe99981b2dd083dd6cb *R/matchcols.R
 afe62c0075aaa73974eabad0c53cf68c *R/nPairs.R
-2a894eb4134786be75bff8e74fa8f462 *R/nobs.R
+2141528b10d1732e0683ba27fc97f581 *R/nobs.R
 eca2d4b7165eb8ae97e0944284120cc9 *R/object.size.R
 c3c6e74c9238d0b99b74c09cf76b154d *R/onAttach.R
 f43e1a53025924fe95e25ad4cbd3933b *R/read.xls.R
@@ -46,8 +46,8 @@ a568b5b2ffcd3552c2ccf06d17e88d01 *R/write.fwf.R
 b81fdf0f09f0f69e3931acb748f13e74 *R/xls2sep.R
 aa1b782482928d032b1b0961d333c0f1 *R/xlsFormats.R
 0df2e08650ae305a620ceb84ca798a63 *data/MedUnits.rda
-dd126cdd3c2f0b04f2c7fac3c1d9f51c *inst/ChangeLog
-9d4a588933e15b83be9ae84601b06651 *inst/NEWS
+6ec50485e59c7ebde89d2d69654b6fa5 *inst/ChangeLog
+f7044f5cc551384279cbf1cffe66e54c *inst/NEWS
 ac512b1ebd4d71ac96b2a4d5288d53cb *inst/bin/xls2csv
 ce0b4437c51faccb3595d986e8acae80 *inst/bin/xls2csv.bat
 99af68b9933865da35d30b3f0d4606be *inst/doc/Rnews.dtx
@@ -55,9 +55,9 @@ a7982b90f82857e34a253df2be42d7c1 *inst/doc/Rnews.sty
 e444b0ed03b42abe356a8ad70f055189 *inst/doc/gregmisc.pdf
 f1dc90111b7898b5944c1f67abec00a2 *inst/doc/gregmisc.tex
 afcc7e1ba12e2aab12a4349fc8470d08 *inst/doc/mapLevels.Rnw
-8abb8873f95dd1e9a8d597674d5f7d04 *inst/doc/mapLevels.pdf
+f970e2a3d637065b9f4eba450dd3dbbd *inst/doc/mapLevels.pdf
 a968a07310286934daaea108e3f915f4 *inst/doc/unknown.Rnw
-7566eff296fa989e8041172af32699cd *inst/doc/unknown.pdf
+d3d4930e0055c9a04e858aba4862bc21 *inst/doc/unknown.pdf
 3622c5d29d09f1a179211f22acf6cdef *inst/perl/Archive/README-Archive-Zip
 013677fabc8a49480cca5c10d67dd850 *inst/perl/Archive/Zip.pm
 da56a4326657fda95d0de93c65ed4006 *inst/perl/Archive/Zip/Archive.pm

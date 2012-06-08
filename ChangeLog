@@ -1,3 +1,56 @@
+2012-06-13 01:00  warnes
+
+	* [r1563] R/nobs.R: nobs.default needs to handle logical as well as
+	  numeric vectors.
+
+2012-06-08 22:04  warnes
+
+	* [r1562] DESCRIPTION, tests/test.read.xls.Rout.save: Update
+	  DESCRIPTION and tests
+
+2012-06-08 21:59  warnes
+
+	* [r1561] tests/test.read.xls.R: fix incorrect function name
+
+2012-06-08 20:02  warnes
+
+	* [r1560] DESCRIPTION, man/installXLSXsupport.Rd: Mark example for
+	  installXLSXsupport() to not be executed durin R CMD check.
+
+2012-06-08 19:01  warnes
+
+	* [r1559] DESCRIPTION: stats:::nobs.default and stats::nobs.lm
+	  require R > 2.13.0, so add this as a dependency.
+
+2012-06-06 22:10  warnes
+
+	* [r1552] DESCRIPTION, inst/NEWS: Update for release 2.10.2
+
+2012-06-06 22:09  warnes
+
+	* [r1551] R/nobs.R: Fix bugs in nobs.default.
+
+2012-06-06 21:11  warnes
+
+	* [r1550] tests/test.read.xls.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Update to reflect warning on
+	  startup that 'nobs' hides 'stats::nobs'.
+
+2012-06-06 21:11  warnes
+
+	* [r1549] man/nobs.Rd: Remove stray non-ASCII characters.
+
+2012-06-06 21:07  warnes
+
+	* [r1548] R/nobs.R: The nobs() dispatch method must be defined in
+	  the gdata namespace to
+	  pick up the definition of gdata::nobs.default.
+
+2012-06-06 20:30  warnes
+
+	* [r1547] DESCRIPTION, inst/NEWS: Update DESCRIPTION and NEWS for
+	  2.10.1 release.
+
 2012-06-06 20:26  warnes
 
 	* [r1546] NAMESPACE, R/nobs.R, man/nobs.Rd: Define aliases for

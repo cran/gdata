@@ -1,5 +1,28 @@
-Changes in 2.10.2 (2012-06-06)
+Changes in 2.10.6 (2012-06-12)
 ------------------------------
+
+Bug fixes:
+
+- gdata::nobs.default() needs to handle logical vectors in addition to
+  numeric vectors.
+
+Changes in 2.10.{3,4,5} (2012-06-08)
+------------------------------------
+
+Bug fixes:
+
+- Mark example for installXLSsupport() as dontrun so R CMD check won't
+  fail on systems where PERL is not fully functional.
+
+- Correct name of installXLSsupport() in tests/test.read.xls.R.
+
+Other Changes:
+
+- Add dependency on R 2.13.0, since that is when stats::nobs appeared.
+
+
+Changes in 2.10.2 (2012-06-06)
+---------------------------------------
 
 Bug fixes:
 
