@@ -11,6 +11,7 @@ use strict;
 #use Spreadsheet::XLSX;
 use POSIX;
 use File::Spec::Functions;
+use Getopt::Std;
 
 ##
 # Try to load the modules we need
@@ -26,7 +27,8 @@ my(
 my($row, $col, $sheet, $cell, $usage,
    $targetfile,$basename, $sheetnumber,
    $filename, $volume, $directories, $whoami,
-   $sep, $sepName, $sepLabel, $sepExt);
+   $sep, $sepName, $sepLabel, $sepExt, 
+   $skipBlankLines, %switches);
 
 ##
 ## Figure out whether I'm called as xls2csv.pl or xls2tab.pl
@@ -66,11 +68,11 @@ else
 ##
 $usage = <<EOF;
 
-$whoami <excel file> [<output file>] [<worksheet number>]
+$whoami [-s] <excel file> [<output file>] [<worksheet number>]
 
-Translate the Microsoft Excel spreadsheet file contained in
-<excel file> into $sepName separated value format ($sepLabel) and
-store in <output file>.
+Translate the Microsoft Excel spreadsheet file contained in <excel
+file> into $sepName separated value format ($sepLabel) and store in
+<output file>, skipping blank lines unless "-s" is present.
 
 If <output file> is not specified, the output file will have the same
 name as the input file with '.xls', or 'xlsx' removed and '.$sepExt'
@@ -84,6 +86,12 @@ EOF
 ##
 ## parse arguments
 ##
+
+# Handle switches (currently, just -s)
+getopts('s', \%switches);
+$skipBlankLines=!$switches{s};
+
+# Now the rest of the arguments
 
 if( !defined($ARGV[0]) )
   {
@@ -253,12 +261,12 @@ foreach my $sheet (@sheetlist)
          }
 
        # skip blank/empty lines
-       if( $outputLine =~ /^[$sep ]*$/ )
-	 {
-	   $cumulativeBlankLines++
-	 }
+       if( $skipBlankLines && ($outputLine =~ /^[$sep ]*$/) )
+       	 {
+       	   $cumulativeBlankLines++
+       	 }
        else
-	 {
+       	 {
 	   print OutFile "$outputLine \n"
 	 }
      }
@@ -266,7 +274,7 @@ foreach my $sheet (@sheetlist)
   close OutFile;
 
   print "  (Ignored $cumulativeBlankLines blank lines.)\n" 
-    if ($cumulativeBlankLines);
+      if $skipBlankLines;
   print "\n";
 }
 

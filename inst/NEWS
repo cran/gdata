@@ -1,3 +1,21 @@
+Changes in 2.11.0 (2012-06-18)
+------------------------------
+
+New Features:
+
+- read.xls() and supporting functions now allow blank lines to be
+  preserved, rather than skipped, by supplying the argument
+  "blank.lines.skip=FALSE". The underlying perl function has been
+  extended to suppor this via an optional "-s" argument which, when
+  present, *preserves* blank lines during the conversion.  (The
+  default behavior remains unchanged.)
+
+Other Changes:
+
+- Add SystemRequirements field specifying that perl is necessary for
+  gdata to function fully.
+
+
 Changes in 2.10.6 (2012-06-12)
 ------------------------------
 

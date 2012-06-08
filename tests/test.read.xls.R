@@ -70,3 +70,21 @@ if( 'XLSX' %in% xlsFormats() )
   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
   print(data)
 }
+
+
+## Check handling of skip.blank.lines=FALSE
+
+example.skip <- read.xls(exampleFile, sheet=2, blank.lines.skip=FALSE)
+example.skip
+
+if( 'XLSX' %in% xlsFormats() )
+  {
+    example.x.skip <- read.xls(exampleFile2007, sheet=2, blank.lines.skip=FALSE)
+    example.x.skip
+  }
+
+
+
+
+
+

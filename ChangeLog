@@ -1,3 +1,25 @@
+2012-06-18 20:27  warnes
+
+	* [r1566] DESCRIPTION: Bump version number and add
+	  SystemRequirements for perl.
+
+2012-06-18 20:26  warnes
+
+	* [r1565] R/xls2sep.R, inst/perl/xls2csv.pl, man/read.xls.Rd,
+	  tests/test.read.xls.R, tests/test.read.xls.Rout.save: read.xls()
+	  and supporting functions now allow blank lines to be
+	  preserved, rather than skipped, by supplying the argument
+	  "blank.lines.skip=FALSE". The underlying perl function has been
+	  extended to suppor this via an optional "-s" argument which, when
+	  present, *preserves* blank lines during the conversion.
+
+2012-06-13 01:10  warnes
+
+	* [r1564] DESCRIPTION, R/nobs.R, inst/NEWS: - nobs.default needs to
+	  handle logical vectors in addition to numeric
+	  vectors.
+	  - update DESCRIPTION and NEWS for 2.10.6.
+
 2012-06-13 01:00  warnes
 
 	* [r1563] R/nobs.R: nobs.default needs to handle logical as well as

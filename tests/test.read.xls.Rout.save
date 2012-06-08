@@ -642,6 +642,36 @@ The following object(s) are masked from 'package:utils':
 3 NA  ThirdRow 3  2  1 NA   Red 
 4 NA FourthRow 4  3  2  1 Black 
 > 
+> 
+> ## Check handling of skip.blank.lines=FALSE
+> 
+> example.skip <- read.xls(exampleFile, sheet=2, blank.lines.skip=FALSE)
+> example.skip
+          X  D E.  F  G Factor
+1  FirstRow  1 NA NA NA   Red 
+2 SecondRow  2  1 NA NA Green 
+3           NA NA NA NA       
+4  ThirdRow  3  2  1 NA   Red 
+5 FourthRow  4  3  2  1 Black 
+> 
+> if( 'XLSX' %in% xlsFormats() )
++   {
++     example.x.skip <- read.xls(exampleFile2007, sheet=2, blank.lines.skip=FALSE)
++     example.x.skip
++   }
+          X  D E.  F  G Factor
+1  FirstRow  1 NA NA NA   Red 
+2 SecondRow  2  1 NA NA Green 
+3           NA NA NA NA       
+4  ThirdRow  3  2  1 NA   Red 
+5 FourthRow  4  3  2  1 Black 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
 > proc.time()
    user  system elapsed 
-  2.916   0.357   3.366 
+  3.259   0.383   3.748 

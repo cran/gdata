@@ -1,19 +1,30 @@
-## s$Id: xls2sep.R 1468 2011-04-15 20:25:24Z warnes $
+## s$Id: xls2sep.R 1565 2012-06-18 20:26:32Z warnes $
 
-xls2csv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-  xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="csv",
+xls2csv <- function(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE,
+                    ..., perl="perl")
+  xls2sep(xls=xls, sheet=sheet, verbose=verbose,
+          blank.lines.skip=blank.lines.skip, ..., method="csv",
           perl=perl)
 
-xls2tab <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-  xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="tab",
+xls2tab <- function(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE,
+                    ..., perl="perl")
+  xls2sep(xls=xls, sheet=sheet, verbose=verbose,
+          blank.lines.skip=blank.lines.skip, ..., method="tab",
           perl=perl) 
 
-xls2tsv <- function(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-  xls2sep(xls=xls, sheet=sheet, verbose=verbose, ..., method="tsv",
+xls2tsv <- function(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE,
+                    ..., perl="perl")
+  xls2sep(xls=xls, sheet=sheet, verbose=verbose,
+          blank.lines.skip=blank.lines.skip, ..., method="tsv",
           perl=perl) 
 
-xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
-                    method=c("csv","tsv","tab"), perl = perl)
+xls2sep <- function(xls,
+                    sheet=1,
+                    verbose=FALSE,
+                    blank.lines.skip=TRUE,
+                    ...,
+                    method=c("csv","tsv","tab"),
+                    perl = perl)
   {
     
     method <- match.arg(method)
@@ -69,9 +80,18 @@ xls2sep <- function(xls, sheet=1, verbose=FALSE, ...,
     ##
 
     ##
+    ## blank.lines.skip
+    ##
+    if (blank.lines.skip)
+      skipBlank=""
+    else
+      skipBlank="-s"
+
+    ##
     ## execution command
     cmd <- paste(shQuote(perl),
                  shQuote(script),
+                 skipBlank,  # flag is not quoted
                  shQuote(xls),
                  shQuote(targetFile),
                  shQuote(sheet),

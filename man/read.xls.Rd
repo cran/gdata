@@ -9,11 +9,11 @@
 \usage{
 read.xls(xls, sheet=1, verbose=FALSE, pattern, na.strings=c("NA","#DIV/0!"),
          ..., method=c("csv","tsv","tab"), perl="perl")
-xls2csv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-xls2tab(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-xls2tsv(xls, sheet=1, verbose=FALSE, ..., perl="perl")
-xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
-        perl="perl")
+xls2csv(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ..., perl="perl")
+xls2tab(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ..., perl="perl")
+xls2tsv(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ..., perl="perl")
+xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
+        method=c("csv","tsv","tab"), perl="perl")
 }
 \arguments{
   \item{xls}{path to the Microsoft Excel file.  Supports "http://",
@@ -27,7 +27,10 @@ xls2sep(xls, sheet=1, verbose=FALSE, ..., method=c("csv","tsv","tab"),
   \item{method}{intermediate file format, "csv" for comma-separated and
     "tab" for tab-separated}
   \item{na.strings}{a character vector of strings which are to be interpreted
-          as 'NA' values. See \code{\link[utils]{read.table}} for details.}
+          as 'NA' values. See \code{\link[utils]{read.table}} for
+	  details.}
+  \item{blank.lines.skip}{logical flag indicating whether blank lines in
+    the orginal file should be ignored.}
   \item{...}{additional arguments to read.table. The defaults for
     read.csv() are used.}
 }
