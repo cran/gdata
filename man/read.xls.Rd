@@ -67,7 +67,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
 \examples{
 
    # iris.xls is included in the gregmisc package for use as an example
-   xlsfile <- file.path(.path.package('gdata'),'xls','iris.xls')
+   xlsfile <- file.path(path.package('gdata'),'xls','iris.xls')
    xlsfile
 
    iris <- read.xls(xlsfile) # defaults to csv format
@@ -121,9 +121,9 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
 
    ## Examples demonstrating selection of specific 'sheets'
    ## from the example XLS file 'ExampleExcelFile.xls'
-   exampleFile <- file.path(.path.package('gdata'),'xls',
+   exampleFile <- file.path(path.package('gdata'),'xls',
                             'ExampleExcelFile.xls')
-   exampleFile2007 <- file.path(.path.package('gdata'),'xls',
+   exampleFile2007 <- file.path(path.package('gdata'),'xls',
                             'ExampleExcelFile.xlsx')
 
    ## see the number and names of sheets:
@@ -147,7 +147,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
 
    ## load a file containing data and column names using latin-1
    ## characters
-   latinFile <- file.path(.path.package('gdata'),'xls','latin-1.xls')
+   latinFile <- file.path(path.package('gdata'),'xls','latin-1.xls')
    latin1 <- read.xls(latinFile, fileEncoding="latin1")
    colnames(latin1)
 

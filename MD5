@@ -1,5 +1,5 @@
 483f69e6cdc20db9b61860670972684d *ChangeLog
-76dc135ba649afc3bbdf366b76485592 *DESCRIPTION
+c55297619d430b9b718fab75a1020702 *DESCRIPTION
 905fe9c5be6e143737163bc6317e6640 *INSTALL
 632a2df95d6003a608b5579ca2f1a9dd *NAMESPACE
 8397287f5ada0a978e40002ccdb2ba56 *NEWS
@@ -162,12 +162,12 @@ dfe069423abb32eaed74b2daad0a56d8 *man/ls.funs.Rd
 4789e9c9a034bc5665d93c80579729ef *man/nPairs.Rd
 4e3ba1601ecb171596b609516d2e8911 *man/nobs.Rd
 67467a836f6e35a897d6bee4d0a7808d *man/object.size.Rd
-e60eab08c9047f0ccfb78fa0d8c0b94b *man/read.xls.Rd
+2ad3d3570252d4954bdf4d81ea3404fa *man/read.xls.Rd
 b73a198509b4fdcb4a24a85909309532 *man/rename.vars.Rd
 dce038a56263e98621c3715f0aefecd3 *man/reorder.Rd
 fc28b1b680997fd8ff2ab73478db4872 *man/resample.Rd
 f6615191c438d8526183c169fcb38224 *man/runRUnitTests.Rd
-430ee5852d4a81b5c5ea7c30ee1332c4 *man/sheetCount.Rd
+55d4019112a5759791610fd48c20d4b3 *man/sheetCount.Rd
 1a3958cb8dfc8a3d50d73e51bd280a08 *man/startsWith.Rd
 7408562319ded22f6ea6dab9d21b25b3 *man/trim.Rd
 347e8e1afc135b4ce6f5f3a7face76d5 *man/trimSum.Rd

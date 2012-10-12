@@ -34,9 +34,9 @@ sheetNames(xls, verbose = FALSE, perl = "perl")
    sheetCount(xlsfile)
 
 
-   exampleFile <- file.path(.path.package('gdata'),'xls',
+   exampleFile <- file.path(path.package('gdata'),'xls',
                             'ExampleExcelFile.xls')
-   exampleFile2007 <- file.path(.path.package('gdata'),'xls',
+   exampleFile2007 <- file.path(path.package('gdata'),'xls',
                             'ExampleExcelFile.xlsx')
 
    sheetCount(exampleFile)
