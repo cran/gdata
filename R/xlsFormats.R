@@ -7,17 +7,17 @@ xlsFormats <- function(perl="perl", verbose=FALSE)
     findPerl(verbose = verbose)
   else
     findPerl(perl, verbose = verbose)
-  
+
   ##
   ## directories
-  package.dir <- .path.package('gdata')
+  package.dir <- path.package('gdata')
   perl.dir <- file.path(package.dir,'perl')
   ##
   ##
 
   cmd <- "supportedFormats.pl"
   sc <- file.path(perl.dir, cmd)
-  
+
   ##
   ##
 

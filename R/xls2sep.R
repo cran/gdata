@@ -10,13 +10,13 @@ xls2tab <- function(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE,
                     ..., perl="perl")
   xls2sep(xls=xls, sheet=sheet, verbose=verbose,
           blank.lines.skip=blank.lines.skip, ..., method="tab",
-          perl=perl) 
+          perl=perl)
 
 xls2tsv <- function(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE,
                     ..., perl="perl")
   xls2sep(xls=xls, sheet=sheet, verbose=verbose,
           blank.lines.skip=blank.lines.skip, ..., method="tsv",
-          perl=perl) 
+          perl=perl)
 
 xls2sep <- function(xls,
                     sheet=1,
@@ -26,9 +26,9 @@ xls2sep <- function(xls,
                     method=c("csv","tsv","tab"),
                     perl = perl)
   {
-    
+
     method <- match.arg(method)
-    
+
 	perl <- if (missing(perl))
 		findPerl(verbose = verbose)
 	else
@@ -36,7 +36,7 @@ xls2sep <- function(xls,
 
     ##
     ## directories
-    package.dir <- .path.package('gdata')
+    package.dir <- path.package('gdata')
     perl.dir <- file.path(package.dir,'perl')
     ##
 
@@ -75,7 +75,7 @@ xls2sep <- function(xls,
       {
         stop("Unknown method", method)
       }
-    
+
     ##
     ##
 
@@ -108,7 +108,7 @@ xls2sep <- function(xls,
         cat("   ", dQuote(targetFile), "\n")
         cat("... \n\n")
       }
-    
+
     ##
     ## do the translation
     if(verbose)  cat("Executing '", cmd, "'... \n\n")
@@ -117,7 +117,7 @@ xls2sep <- function(xls,
 
     if(inherits(results, "try-error"))
       stop( "Unable to read xls file '", xls, "':", results )
-    
+
     if(verbose) cat(results,"\n\n")
     if (verbose) cat("Done.\n\n")
 
@@ -133,8 +133,8 @@ xls2sep <- function(xls,
 
       stop("Unable to open intermediate file '", targetFile, "':",
            retval)
-    
+
     return(retval)
-    
+
   }
 

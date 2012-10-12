@@ -6,7 +6,7 @@ if ( ! 'XLSX' %in% xlsFormats() )
   }
 
 # iris.xls is included in the gregmisc package for use as an example
-xlsfile <- file.path(.path.package('gdata'),'xls','iris.xls')
+xlsfile <- file.path(path.package('gdata'),'xls','iris.xls')
 
 iris.1 <- read.xls(xlsfile) # defaults to csv format
 iris.1
@@ -20,10 +20,10 @@ iris.3
 stopifnot(all.equal(iris.1, iris.2))
 stopifnot(all.equal(iris.1, iris.3))
 
-exampleFile <- file.path(.path.package('gdata'),'xls',
+exampleFile <- file.path(path.package('gdata'),'xls',
                          'ExampleExcelFile.xls')
 
-exampleFile2007 <- file.path(.path.package('gdata'),'xls',
+exampleFile2007 <- file.path(path.package('gdata'),'xls',
                          'ExampleExcelFile.xlsx')
 
 # see the number and names of sheets:
@@ -65,7 +65,7 @@ if( 'XLSX' %in% xlsFormats() )
 
   data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
   print(data)
-  
+
   # load the third worksheet, skipping the first two non-data lines...
   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
   print(data)
@@ -86,8 +86,8 @@ if( 'XLSX' %in% xlsFormats() )
 
 ## Check handing of fileEncoding for latin-1 characters
 
-latin1File <- file.path(.path.package('gdata'),'xls', 'latin-1.xls')
-latin1FileX <- file.path(.path.package('gdata'),'xls', 'latin-1.xlsx')
+latin1File <- file.path(path.package('gdata'),'xls', 'latin-1.xls')
+latin1FileX <- file.path(path.package('gdata'),'xls', 'latin-1.xlsx')
 
 example.latin1 <- read.xls(latin1File, fileEncoding='latin1')
 

@@ -1,5 +1,5 @@
 483f69e6cdc20db9b61860670972684d *ChangeLog
-673939a0718c96893c11d3d64315c364 *DESCRIPTION
+76dc135ba649afc3bbdf366b76485592 *DESCRIPTION
 905fe9c5be6e143737163bc6317e6640 *INSTALL
 632a2df95d6003a608b5579ca2f1a9dd *NAMESPACE
 8397287f5ada0a978e40002ccdb2ba56 *NEWS
@@ -17,7 +17,7 @@ d1aa5d0677fb46d53b4e4628b18159c2 *R/combine.R
 7f43c48b182d910961f643876fefbdf9 *R/findPerl.R
 4f9c6613afb87d8360ea897bbc485fe7 *R/frameApply.R
 d6474a86ab986d0cbcc8712797bbb57b *R/getDateTimeParts.R
-289a3f3e8b0e85d1e59b3b3759bd59f6 *R/installXLSXsupport.R
+3744dcc5ce917b5fb85dff5259091a8d *R/installXLSXsupport.R
 037266e58fb3a611b3a56bb09c898abd *R/interleave.R
 e9594e1749df0f487eaab95db4253e59 *R/is.what.R
 4fc53a992903de783b5cd9a515f1242b *R/keep.R
@@ -34,7 +34,7 @@ aaace07c7a900ddec695220ad10e0d14 *R/rename.vars.R
 8dbe70d52ae3d60a07aa928fc3c62413 *R/reorder.R
 cef4f8eb74136397feee111cf921676f *R/resample.R
 df4f4b68dcfee49ff4f57fd008ce6dcc *R/runRUnitTests.R
-82fd4c4f007007d7aed606bfe1159602 *R/sheetCount.R
+cc1e120d70616e025a9a8fc67aa16635 *R/sheetCount.R
 dffd0684af87ed05ae550eab75f0787c *R/startsWith.R
 f511d0ee44c0d69a2d8e6ad195421243 *R/trim.R
 05f7763f8efeef44932e4c47cfc091ff *R/trimSum.R
@@ -43,8 +43,8 @@ f511d0ee44c0d69a2d8e6ad195421243 *R/trim.R
 d124821046808c5e8492a6db12ac0be4 *R/upperTriangle.R
 5a0dcdddde5d9c1ec0d215d12f323500 *R/wideByFactor.R
 a568b5b2ffcd3552c2ccf06d17e88d01 *R/write.fwf.R
-151173ad3f3a2e7f065e494b474ae3d7 *R/xls2sep.R
-aa1b782482928d032b1b0961d333c0f1 *R/xlsFormats.R
+04158490321d44e4853a88b30c532650 *R/xls2sep.R
+b9a9e578c6bd810be057023138008e1c *R/xlsFormats.R
 0df2e08650ae305a620ceb84ca798a63 *data/MedUnits.rda
 483f69e6cdc20db9b61860670972684d *inst/ChangeLog
 8397287f5ada0a978e40002ccdb2ba56 *inst/NEWS
@@ -54,8 +54,10 @@ ce0b4437c51faccb3595d986e8acae80 *inst/bin/xls2csv.bat
 a7982b90f82857e34a253df2be42d7c1 *inst/doc/Rnews.sty
 e444b0ed03b42abe356a8ad70f055189 *inst/doc/gregmisc.pdf
 f1dc90111b7898b5944c1f67abec00a2 *inst/doc/gregmisc.tex
+b19ba078add1b84a300ae1adb5167567 *inst/doc/mapLevels.R
 afcc7e1ba12e2aab12a4349fc8470d08 *inst/doc/mapLevels.Rnw
 4c6ef5f6392d7b16379427aebd117941 *inst/doc/mapLevels.pdf
+788f58d8791841c0dd0a9bddfa28b8fe *inst/doc/unknown.R
 a968a07310286934daaea108e3f915f4 *inst/doc/unknown.Rnw
 61a58e50ee3d6de9aa65406508f1ccaa *inst/doc/unknown.pdf
 3622c5d29d09f1a179211f22acf6cdef *inst/perl/Archive/README-Archive-Zip
@@ -175,8 +177,8 @@ f6615191c438d8526183c169fcb38224 *man/runRUnitTests.Rd
 ad219282ec6913083b82073691923f9b *man/wideByFactor.Rd
 56d52a59a9c4f5132d5ae69673823ae8 *man/write.fwf.Rd
 8a9c1fe9d0316d0b98e6d353c2b7a6cf *man/xlsFormats.Rd
-019c9def35c544fde79f6fdfbcc4a066 *tests/test.read.xls.R
-1d037734847eb0062a9dcfe04fdba49b *tests/test.read.xls.Rout.save
+5c276e204256712fe011de32488770b0 *tests/test.read.xls.R
+95fffc8526e8ecf6570879b9a9b9a18d *tests/test.read.xls.Rout.save
 dee3232474b92bcdf1ad75ca31080792 *tests/test.write.fwf.eol.R
 b32b0eb85790d71ea6025ae5eca71fb1 *tests/tests.write.fwf.R
-ee812493ba050211ca9960810a98dddd *tests/tests.write.fwf.Rout.save
+c44523282c4058a5a820be92dd93c13f *tests/tests.write.fwf.Rout.save
