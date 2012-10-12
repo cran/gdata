@@ -1,4 +1,4 @@
-## s$Id: read.xls.R 1541 2012-06-06 01:21:44Z warnes $
+## s$Id: read.xls.R 1596 2012-08-22 15:45:22Z warnes $
 
 read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, 
                      na.strings = c("NA","#DIV/0!"), ...,
@@ -28,19 +28,21 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern,
     findPerl(perl, verbose = verbose)
   
   con <- xls2sep(xls, sheet, verbose=verbose, ..., method=method, perl = perl)
+  ## While xls2sep returns a connection, we are better off directly
+  ## opening the file, so that R can properly handle the encoding.  So,
+  ## just grab the full file path to use later, and close the connection.
+  tfn <- summary(con)$description  
+  close(con)
 
-  ## load the csv file
-  open(con)
-  tfn <- summary(con)$description
   if (missing(pattern))
     {
       if(verbose)
         cat("Reading", method, "file ", dQuote(tfn), "...\n")
       
       if(method=="csv")
-        retval <- read.csv(con, na.strings=na.strings, ...)
+        retval <- read.csv(tfn, na.strings=na.strings, ...)
       else if (method %in% c("tsv","tab") )
-        retval <- read.delim(con, na.strings=na.strings, ...)
+        retval <- read.delim(tfn, na.strings=na.strings, ...)
       else
         stop("Unknown method", method)
         
@@ -49,8 +51,8 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern,
     }
   else {
     if(verbose)
-      cat("Searching for lines containing pattern ", pattern, "... ")
-    idx <- grep(pattern, readLines(con))
+      cat("Searching for lines tfntaining pattern ", pattern, "... ")
+    idx <- grep(pattern, readLines(tfn))
     if (length(idx) == 0) {
       warning("pattern not found")
       return(NULL)
@@ -58,23 +60,20 @@ read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern,
    if(verbose)
      cat("Done.\n")
     
-    seek(con, 0)
-
     if(verbose)
       cat("Reading", method, "file ", dQuote(tfn), "...\n")
 
     if(method=="csv")
-      retval <- read.csv(con, skip = idx[1]-1, na.strings=na.strings, ...)
+      retval <- read.csv(tfn, skip = idx[1]-1, na.strings=na.strings, ...)
     else if (method %in% c("tsv","tab") )
-      retval <- read.delim(con, skip = idx[1]-1, na.strings=na.strings, ...)
+      retval <- read.delim(tfn, skip = idx[1]-1, na.strings=na.strings, ...)
     else
       stop("Unknown method", method)
-
-    close(con)
 
     if(verbose)
       cat("Done.\n")     
   }
+
   retval
 }
 

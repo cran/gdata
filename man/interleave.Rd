@@ -1,4 +1,4 @@
-% $Id: interleave.Rd 1435 2010-05-02 06:11:26Z warnes $
+% $Id: interleave.Rd 1603 2012-09-11 20:41:43Z warnes $
 %
 % $Log$
 % Revision 1.8  2005/12/12 22:02:48  nj7w
@@ -52,8 +52,8 @@ interleave(..., append.source=TRUE, sep=": ", drop=FALSE)
     argument name will be appended to the row names to show the source of
     each row. }
   \item{sep}{Separator between the original row name and the object name.}
-  \item{drop}{logical - If the number of columns in output matrix is 1, whether
-    matrix should be returned or a vector }
+  \item{drop}{boolean flag - When TRUE, matrices containing one column
+    will be converted to vectors.}
 }
 \details{
   This function creates a new matrix or data frame from its arguments.
@@ -88,9 +88,9 @@ dat <- rnorm(1000)
 
 stderr <- function(x) sqrt( var(x,na.rm=TRUE) / nobs(x) )
 
-means   <- aggregate.table( dat, g1, g2, mean )
-stderrs <- aggregate.table( dat, g1, g2, stderr )
-ns      <- aggregate.table( dat, g1, g2, nobs )
+means   <- tapply(dat, list(g1, g2), mean )
+stderrs <- tapply(dat, list(g1, g2), stderr )
+ns      <- tapply(dat, list(g1, g2), nobs )
 blanks <- matrix( " ", nrow=5, ncol=3)
 
 tab <- interleave( "Mean"=round(means,2),

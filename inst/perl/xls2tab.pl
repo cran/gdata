@@ -267,7 +267,7 @@ foreach my $sheet (@sheetlist)
        	 }
        else
        	 {
-	   print OutFile "$outputLine \n"
+	   print OutFile "$outputLine\n"
 	 }
      }
 

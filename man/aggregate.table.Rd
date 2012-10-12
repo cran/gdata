@@ -1,4 +1,4 @@
-% $Id: aggregate.table.Rd 1435 2010-05-02 06:11:26Z warnes $
+% $Id: aggregate.table.Rd 1605 2012-09-12 17:39:42Z warnes $
 %
 % $Log$
 % Revision 1.7  2005/09/12 15:42:45  nj7w
@@ -53,21 +53,34 @@ aggregate.table(x, by1, by2, FUN=mean, ...)
 
 \seealso{ \code{\link{aggregate}}, \code{\link{tapply}},
           \code{\link{interleave}} }
-
+\note{This function is DEPRECIATED.  Please use \code{tapply} 
+  instead. See example for illustration.}
 \examples{
 # Useful example:
 #
 # Create a 2-way table of means, standard errors, and # obs
-
+set.seed(314159)
 g1 <- sample(letters[1:5], 1000, replace=TRUE)
 g2 <- sample(LETTERS[1:3], 1000, replace=TRUE )
 dat <- rnorm(1000)
 
 stderr <- function(x) sqrt( var(x,na.rm=TRUE) / nobs(x) )
 
+## Depreciated:
 means   <- aggregate.table( dat, g1, g2, mean )
+## Instead use:
+means   <- tapply( dat, list(g1, g2), mean )
+
+## Depreciated
 stderrs <- aggregate.table( dat, g1, g2, stderr )
+## Instead use:
+stderrs <- tapply( dat, list(g1, g2), stderr )
+
+## Depreciated
 ns      <- aggregate.table( dat, g1, g2, nobs )
+## Instead use:
+ns      <- tapply( dat, list(g1, g2), nobs )
+
 blanks <- matrix( " ", nrow=5, ncol=3)
 
 tab <- interleave( "Mean"=round(means,2),

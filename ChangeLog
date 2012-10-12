@@ -1,3 +1,73 @@
+2012-09-12 17:29  warnes
+
+	* [r1604] .Rinstignore: Don't ignore .Rnw files, but do ignore .svn
+	  files.
+
+2012-09-11 20:41  warnes
+
+	* [r1603] man/interleave.Rd: Clarify workding of DROP argument to
+	  interleave().
+
+2012-09-11 20:37  warnes
+
+	* [r1602] man/interleave.Rd: Replace call to aggregate.table() with
+	  equivalent tapply() call since aggregate.table() is being
+	  depreciated.
+
+2012-08-22 16:47  warnes
+
+	* [r1601] DESCRIPTION, inst/NEWS: Update DESCRIPTION and NEWS for
+	  gdate 2.11.1.
+
+2012-08-22 16:42  warnes
+
+	* [r1600] man/read.xls.Rd: Add example for read.xls() that shows
+	  how to use the fileEncoding
+	  argument to read in latin-1 encoded data.
+
+2012-08-22 16:41  warnes
+
+	* [r1599] tests/latin-1.xls, tests/test.read.xls.R,
+	  tests/test.read.xls.Rout.save: Add XLSX test for latin-1
+	  characters, and look for them in their new
+	  location in inst/xls/.
+
+2012-08-22 16:35  warnes
+
+	* [r1598] inst/xls/latin-1.xls, inst/xls/latin-1.xlsx: add XLSX
+	  version of latin-1.xls
+
+2012-08-22 15:48  warnes
+
+	* [r1597] tests/latin-1.xls, tests/test.read.xls.R,
+	  tests/test.read.xls.Rout.save: Add test file and code to ensure
+	  that read.xls() can properly handle
+	  files with alternative encodings. latin-1.xls contains each of
+	  the
+	  non-ascii latin-1 special characters in both the column headings
+	  and
+	  the body of the file.
+
+2012-08-22 15:45  warnes
+
+	* [r1596] R/read.xls.R: Change code to have R read the csv/tab data
+	  from the file rather than
+	  from the connetion we made, so that file encodings can be
+	  properly handled.
+
+2012-08-22 14:29  warnes
+
+	* [r1595] R/read.xls.R: Always close the connection.
+
+2012-08-13 22:13  warnes
+
+	* [r1594] inst/perl/xls2csv.pl: Remove trailing space from output
+	  line.
+
+2012-06-18 20:32  warnes
+
+	* [r1567] inst/NEWS: Update NEWS for 2.11.0 release.
+
 2012-06-18 20:27  warnes
 
 	* [r1566] DESCRIPTION: Bump version number and add

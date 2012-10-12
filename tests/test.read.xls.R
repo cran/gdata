@@ -84,7 +84,16 @@ if( 'XLSX' %in% xlsFormats() )
   }
 
 
+## Check handing of fileEncoding for latin-1 characters
 
+latin1File <- file.path(.path.package('gdata'),'xls', 'latin-1.xls')
+latin1FileX <- file.path(.path.package('gdata'),'xls', 'latin-1.xlsx')
 
+example.latin1 <- read.xls(latin1File, fileEncoding='latin1')
+
+if( 'XLSX' %in% xlsFormats() )
+  {
+    example.latin1.x <- read.xls(latin1FileX, fileEncoding='latin1')
+  }
 
 
