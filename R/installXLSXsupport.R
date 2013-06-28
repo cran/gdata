@@ -7,17 +7,17 @@ installXLSXsupport <- function(perl="perl", verbose=FALSE)
     findPerl(verbose = verbose)
   else
     findPerl(perl, verbose = verbose)
-
+  
   ##
   ## directories
-  package.dir <- path.package('gdata')
+  package.dir <- find.package('gdata')
   perl.dir <- file.path(package.dir,'perl')
   ##
   ##
 
   cmd <- "install_modules.pl"
   sc <- file.path(perl.dir, cmd)
-
+  
   ##
   ##
 
@@ -53,6 +53,6 @@ installXLSXsupport <- function(perl="perl", verbose=FALSE)
   else
 	{
         	stop("\nUnable to install Perl XLSX support libraries.\n\n")
-		invisible(FALSE)
-	}
+		invisible(FALSE)                
+	}		
 }

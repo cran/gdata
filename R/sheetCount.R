@@ -3,19 +3,19 @@ sheetCount <- function(xls, verbose = FALSE, perl = "perl") {
   else findPerl(perl, verbose = verbose)
   sheetCmd(xls, cmd="sheetCount.pl", verbose=verbose, perl=perl)
 }
-
+  
 sheetNames <- function(xls, verbose = FALSE, perl = "perl") {
   perl <- if (missing(perl)) findPerl(verbose = verbose)
   else findPerl(perl, verbose = verbose)
   sheetCmd(xls, cmd="sheetNames.pl", verbose=verbose, perl=perl)
 }
-
+  
 sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
 {
 
   ##
   ## directories
-  package.dir <- path.package('gdata')
+  package.dir <- find.package('gdata')
   perl.dir <- file.path(package.dir,'perl')
   ##
   ##
@@ -38,9 +38,9 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
       xls <- tf
     }
   ##
-
+  
   sc <- file.path(perl.dir, cmd)
-
+  
   ##
   ##
 
@@ -61,7 +61,7 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
       cat("... \n\n")
     }
   ##
-  output <- system(cmd, intern=TRUE)
+  output <- system(cmd, intern=TRUE, ignore.stderr=TRUE)
   if(verbose) cat("Results: ", output, "\n")
   ##
   tc <- textConnection(output)
@@ -71,7 +71,7 @@ sheetCmd <- function(xls, cmd="sheetCount.pl", verbose=FALSE, perl="perl")
   names(results) <- NULL
   ##
   if (verbose) cat("Done.\n\n")
-
+  
   results
 }
 

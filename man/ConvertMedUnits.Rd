@@ -30,7 +30,7 @@ ConvertMedUnits(x, measurement, abbreviation,
   This function converts between SI and US 'Conventional' units.
 
   If \code{exact=FALSE}, \code{grep} will be used to do a
-  case-insensitive sub-string search for matching measurment names.  If
+  case-insensitive sub-string search for matching measurement names.  If
   more than one match is found, an error will be generated, along with a
   list of the matching entries.
   

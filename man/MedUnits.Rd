@@ -17,9 +17,9 @@
   \describe{
     \item{Abbreviation}{Common Abbreviation (mostly missing)}
     \item{Measurement}{Measurement Name}
-    \item{SIUnit}{SI Unit}
+    \item{ConventionalUnit}{Conventional Unit}
     \item{Conversion}{Conversion factor}
-    \item{ConvetionalUnit}{Conventional Unit}
+    \item{SIUnit}{SI Unit}
   }
 }
 \details{

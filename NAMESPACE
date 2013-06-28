@@ -1,6 +1,7 @@
 
 export(
        .onAttach,
+       ans,
        Args,
        aggregate.table,
        bindData,
@@ -10,6 +11,7 @@ export(
        combine,
        ConvertMedUnits,
        drop.levels,
+       duplicated2,
        elem,
        env,
        frameApply,

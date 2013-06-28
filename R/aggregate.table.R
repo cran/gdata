@@ -1,8 +1,8 @@
-# $Id: aggregate.table.R 1605 2012-09-12 17:39:42Z warnes $
+# $Id: aggregate.table.R 1681 2013-06-28 20:26:56Z warnes $
 
-aggregate.table <- function(x, by1, by2, FUN=mean, ... )
+aggregate.table <- function(x, by1, by2, FUN=mean, ...)
   {
-    warning("'aggregate.table' is depreciated.",
+    warning("'aggregate.table' is deprecated and will be removed in a future version of the gdata package. ",
             "Please use 'tapply(X=",
             deparse(substitute(x)),
             ", INDEX=list(",

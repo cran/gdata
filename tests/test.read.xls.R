@@ -65,7 +65,7 @@ if( 'XLSX' %in% xlsFormats() )
 
   data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
   print(data)
-
+  
   # load the third worksheet, skipping the first two non-data lines...
   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
   print(data)
