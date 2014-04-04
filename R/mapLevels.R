@@ -1,7 +1,7 @@
 ### mapLevels.R
 ###------------------------------------------------------------------------
 ### What: Mapping levels
-### $Id: mapLevels.R 1094 2007-06-06 10:15:49Z ggorjan $
+### $Id: mapLevels.R 1797 2014-04-05 18:19:49Z warnes $
 ### Time-stamp: <2007-04-26 13:16:18 ggorjan>
 ###------------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ mapLevels.data.frame <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
 
 print.levelsMap <- function(x, ...)
 {
-  x <- gdata:::.unlistLevelsMap(x)
+  x <- .unlistLevelsMap(x)
   print(x, ...)
 }
 
@@ -159,7 +159,7 @@ is.listLevelsMap <- function(x)
 as.levelsMap <- function(x, check=TRUE, ...)
 {
   if(check)
-    gdata:::.checkLevelsMap(x, method="raw")
+    .checkLevelsMap(x, method="raw")
   class(x) <- "levelsMap"
   unique(x, ...)
 }
@@ -167,7 +167,7 @@ as.levelsMap <- function(x, check=TRUE, ...)
 as.listLevelsMap <- function(x, check=TRUE)
 {
   if(check)
-    gdata:::.checkListLevelsMap(x, method="raw")
+    .checkListLevelsMap(x, method="raw")
   class(x) <- "listLevelsMap"
   x
 }
@@ -203,7 +203,7 @@ as.listLevelsMap <- function(x, check=TRUE)
   if(!is.list(x) || any(!sapply(x, FUN=is.levelsMap)))
     stop(sprintf("'%s' must be %s a list of %s", xLab, also,
                  dQuote("levelsMap")))
-  lapply(x, FUN=gdata:::.checkLevelsMap, method=method)
+  lapply(x, FUN=.checkLevelsMap, method=method)
 }
 
 ### }}}
@@ -221,12 +221,12 @@ c.levelsMap <- function(..., sort=TRUE, recursive=FALSE)
 c.listLevelsMap <- function(..., sort=TRUE, recursive=FALSE)
 {
   x <- list(...)
-  lapply(x, FUN=gdata:::.checkListLevelsMap, method="class")
+  lapply(x, FUN=.checkListLevelsMap, method="class")
   x <- unlist(x, recursive=FALSE)
   if(!recursive) {
     class(x) <- "listLevelsMap"
   } else {
-    if(any(!sapply(x, FUN=gdata:::.isCharacterMap)))
+    if(any(!sapply(x, FUN=.isCharacterMap)))
       stop(sprintf("can not combine integer %s", dQuote("levelsMaps")))
     if(!is.null(names(x))) names(x) <- NULL
     x <- unlist(x, recursive=FALSE)
@@ -252,7 +252,7 @@ sort.levelsMap <- function(x, decreasing=FALSE, na.last=TRUE, ...)
 unique.levelsMap <- function(x, incomparables=FALSE, ...)
 {
   ## Find duplicates
-  y <- gdata:::.unlistLevelsMap(x, ind=TRUE)
+  y <- .unlistLevelsMap(x, ind=TRUE)
   ## Duplicates for values and names combinations
   test <- duplicated(cbind(y[[1]], names(y[[1]])),
                      incomparables=incomparables, ...)
@@ -296,7 +296,7 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
   if(any(!(class(x) %in% classX)))
     stop(sprintf("'x' must be either: %s", paste(dQuote(classX), collapse=", ")))
 
-  gdata:::.checkLevelsMap(x=value, method="class")
+  .checkLevelsMap(x=value, method="class")
 
   ## --- Mapping levels in x ---
 

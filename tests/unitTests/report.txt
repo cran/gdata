@@ -1,0 +1,66 @@
+RUNIT TEST PROTOCOL -- Fri Apr  4 22:20:27 2014 
+*********************************************** 
+Number of test functions: 23 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+gdata RUnit testing - 23 test functions, 0 errors, 0 failures
+
+
+
+Details 
+*************************** 
+Test Suite: gdata RUnit testing 
+Test function regexp: ^test.+ 
+Test file regexp: ^runit.+\.[rR]$ 
+Involved directory: 
+/Users/warnes/src/r-gregmisc/gdata/inst/unitTests 
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.bindData.R 
+test.bindData: (11 checks) ... OK (0.01 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.cbindX.R 
+test.cbindX: (5 checks) ... OK (0.01 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.drop.levels.R 
+test.drop.levels: (3 checks) ... OK (0.01 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.getDateTimeParts.R 
+test.getDay: (6 checks) ... OK (0 seconds)
+test.getHour: (3 checks) ... OK (0 seconds)
+test.getMin: (3 checks) ... OK (0 seconds)
+test.getMonth: (6 checks) ... OK (0 seconds)
+test.getSec: (3 checks) ... OK (0 seconds)
+test.getYear: (6 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.mapLevels.R 
+test.cLevelsMap: (8 checks) ... OK (0.01 seconds)
+test.checkLevelsMap: (5 checks) ... OK (0.05 seconds)
+test.mapLevels: (26 checks) ... OK (0.01 seconds)
+test.mapLevels<-: (19 checks) ... OK (0.05 seconds)
+test.uniqueLevelsMap: (1 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.nPairs.R 
+test.nPairs: (8 checks) ... OK (0.01 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.reorder.factor.R 
+test.reorder.factor: (5 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.trim.R 
+test.trim: (5 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.trimSum.R 
+test.trimSum: (10 checks) ... OK (0 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.unknown.R 
+test.NAToUnknown: (43 checks) ... OK (0.23 seconds)
+test.isUnknown: (38 checks) ... OK (0 seconds)
+test.unknownToNA: (39 checks) ... OK (0.02 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.wideByFactor.R 
+test.wideByFactor: (10 checks) ... OK (0.01 seconds)
+--------------------------- 
+Test file: /Users/warnes/src/r-gregmisc/gdata/inst/unitTests/runit.write.fwf.R 
+test.write.fwf: (16 checks) ... OK (0.16 seconds)

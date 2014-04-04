@@ -191,6 +191,6 @@ President, ZeeGee Software Inc (F<http://www.zeegee.com>).
 
 =head1 REVISION
 
-$Revision: 1.2 $
+$Revision: 1248 $
 
 =cut 

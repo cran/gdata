@@ -752,7 +752,7 @@ use the OO version; e.g.:
 
 =head1 VERSION
 
-$Id: ScalarArray.pm,v 1.7 2005/02/10 21:21:53 dfs Exp $
+$Id: ScalarArray.pm 1248 2008-03-25 00:51:31Z warnes $
 
 
 =head1 AUTHOR

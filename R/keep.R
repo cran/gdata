@@ -2,8 +2,8 @@ keep <- function(..., list=character(0), all=FALSE, sure=FALSE)
 {
   if(missing(...) && missing(list))
   {
-    warning("Keep something, or use rm(list=ls()) to clear workspace. ",
-            "Nothing was removed.")
+    warning("keep something, or use rm(list=ls()) to clear workspace - ",
+            "nothing was removed")
     return(invisible(NULL))
   }
   names <- as.character(substitute(list(...)))[-1]
@@ -11,8 +11,8 @@ keep <- function(..., list=character(0), all=FALSE, sure=FALSE)
   keep.elements <- match(list, ls(1,all.names=all))
   if(any(is.na(keep.elements)))
   {
-    warning("You tried to keep \"", list[which(is.na(keep.elements))[1]],
-            "\" which doesn't exist in workspace. Nothing was removed.", sep="")
+    warning("you tried to keep \"", list[which(is.na(keep.elements))[1]],
+            "\" which doesn't exist in workspace - nothing was removed", sep="")
     return(invisible(NULL))
   }
 

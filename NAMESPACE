@@ -43,7 +43,7 @@ export(
        write.fwf,
        xls2csv,
        xls2tab,
-       xls2tsv,       
+       xls2tsv,
        xls2sep,
        xlsFormats,
 
@@ -57,10 +57,7 @@ export(
        mapLevels, as.levelsMap, as.listLevelsMap, is.levelsMap, is.listLevelsMap, "mapLevels<-",
 
        ## unknown stuff
-       isUnknown, unknownToNA, NAToUnknown,
-
-       ## Unit testing
-       .runRUnitTestsGdata
+       isUnknown, unknownToNA, NAToUnknown
 )
 
 importFrom(stats, reorder)
@@ -124,7 +121,7 @@ S3method(sort, levelsMap)
 
 ## nobs stuff
 S3method(nobs, data.frame)
-S3method(nobs, default) 
+S3method(nobs, default)
 S3method(nobs, lm)      # now provided by stats package
 
 ## Object size stuff

@@ -1,7 +1,7 @@
 ### unknown.R
 ###------------------------------------------------------------------------
 ### What: Change given unknown value to NA and vice versa
-### $Id: unknown.R 1094 2007-06-06 10:15:49Z ggorjan $
+### $Id: unknown.R 1797 2014-04-05 18:19:49Z warnes $
 ### Time-stamp: <2007-04-26 13:16:10 ggorjan>
 ###------------------------------------------------------------------------
 
@@ -29,11 +29,18 @@ isUnknown.POSIXlt <- function(x, unknown=NA, ...)
   } else {
     unknown <- as.character(x=unknown, ...)
   }
-  isUnknown.default(x=as.character(x), unknown=unknown)
+
+  if(is.list(x) && !inherits(x=x, what="POSIXlt")) {
+    x <- lapply(x, FUN=as.character, ...)
+  } else {
+    x <- as.character(x=x, ...)
+  }
+
+  isUnknown.default(x=as.character(x), unknown=as.character(unknown))
 }
 
 isUnknown.list <- function(x, unknown=NA, ...) {
-  unknown <- gdata:::.unknownList(x=x, unknown=unknown)
+  unknown <- .unknownList(x=x, unknown=unknown)
   x <- mapply(FUN="isUnknown", x=x, unknown=unknown, ..., SIMPLIFY=FALSE)
   x
 }
@@ -83,7 +90,7 @@ unknownToNA.factor <- function(x, unknown, warning=FALSE, ...)
 
 unknownToNA.list <- function(x, unknown, warning=FALSE, ...)
 {
-  unknown <- gdata:::.unknownList(x=x, unknown=unknown)
+  unknown <- .unknownList(x=x, unknown=unknown)
   x <- mapply(FUN="unknownToNA", x=x, unknown=unknown, warning=warning,
               SIMPLIFY=FALSE)
   return(x)
@@ -141,7 +148,7 @@ NAToUnknown.factor <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 
 NAToUnknown.list <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 {
-  unknown <- gdata:::.unknownList(x=x, unknown=unknown)
+  unknown <- .unknownList(x=x, unknown=unknown)
   x <- mapply(FUN="NAToUnknown", x=x, unknown=unknown, force=force,
               call.=call., SIMPLIFY=FALSE)
   x

@@ -32,13 +32,4 @@ The following are sources of information on \pkg{gdata} package:
 
 }
 
-\section{Testing}{
-
-If you want to perform the validity/unit testing of the installed
-\pkg{ggmisc} package on your own computer, take a look at
-\code{\link{.runRUnitTestsGdata}} function - please note that
-you need the \pkg{RUnit} package for this to work.
-
-}
-
 \keyword{package}

@@ -204,7 +204,7 @@ or as C<"Foo::FOO">.  However, C<"STDIN"> and friends will work just fine.
 
 =head1 VERSION
 
-$Id: Wrap.pm,v 1.2 2005/02/10 21:21:53 dfs Exp $
+$Id: Wrap.pm 1248 2008-03-25 00:51:31Z warnes $
     
 
 =head1 AUTHOR

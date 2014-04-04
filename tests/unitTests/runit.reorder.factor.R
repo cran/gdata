@@ -1,7 +1,7 @@
 ### runit.reorder.factor.R
 ###------------------------------------------------------------------------
 ### What: Tests for reorder.factor
-### $Id: runit.reorder.factor.R 995 2006-10-30 17:27:38Z ggorjan $
+### $Id: runit.reorder.factor.R 1784 2014-04-05 02:23:45Z warnes $
 ### Time-stamp: <2006-10-30 18:25:05 ggorjan>
 ###------------------------------------------------------------------------
 

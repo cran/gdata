@@ -1,5 +1,94 @@
+2014-04-05  warnes
+
+	* [r1799] R/nobs.R: Call stats::nobs instead of
+	  stats:::nobs.default within
+	  gdata::nobs.default. This avoids R CMD check warning.
+	* [r1798] tests/unitTests/runit.unknown.R: Don't compare optional
+	  POSIXlt field. Explicitly compare POSIXlt, with special handling
+	  of '-1' unknown value.
+	* [r1797] R/mapLevels.R, R/unknown.R: Don't use gdata:::<foo>
+	  prefix to access gdata function <foo>
+	* [r1796] DESCRIPTION: Fix syntax error in DESCRIPTION file.
+	* [r1795] tests/runRUnitTests.R: Package name needs to be defined
+	  outside of if test.
+	* [r1794] vignettes/Rnews.sty: Style file needed
+	* [r1793] R/unknown.R, tests/unitTests/runit.unknown.R: The issue
+	  Brian pointed out was an error in the isUnknown() code, not an
+	  error in the unit tests!
+	* [r1792] tests/unitTests/runit.unknown.R: Apply changes Brian
+	  recommned to NAtoUnknown as well as unknownToNA.
+	* [r1791] inst/NEWS: Update NEWS file
+	* [r1790] inst/doc/Rnews.dtx: Don't need latex .dtx source file
+	* [r1789] inst/doc/mapLevels.Rnw, inst/doc/unknown.Rnw, vignettes,
+	  vignettes/mapLevels.Rnw, vignettes/unknown.Rnw: Move vignettes
+	  from inst/doc/ to vignettes/
+	* [r1788] R/aggregate.table.R, man/aggregate.table.Rd,
+	  man/gdata-defunct.Rd: Change 'aggregate.table' from deprecated to
+	  defunct.
+	* [r1787] DESCRIPTION, inst/unitTests, man/gdata-package.Rd,
+	  tests/runRUnitTests.R, tests/unitTests: Complete changes so that
+	  the unit tests are run as part of R CMD check
+	* [r1786] DESCRIPTION, inst/NEWS: Update NEWS for gdata 2.13.4
+	* [r1785] NAMESPACE: Update NAMESPACE file to remove deleted
+	  function
+	* [r1784] inst/unitTests/Makefile, inst/unitTests/runit.bindData.R,
+	  inst/unitTests/runit.cbindX.R,
+	  inst/unitTests/runit.drop.levels.R,
+	  inst/unitTests/runit.getDateTimeParts.R,
+	  inst/unitTests/runit.mapLevels.R, inst/unitTests/runit.nPairs.R,
+	  inst/unitTests/runit.reorder.factor.R,
+	  inst/unitTests/runit.trim.R, inst/unitTests/runit.trimSum.R,
+	  inst/unitTests/runit.unknown.R,
+	  inst/unitTests/runit.wideByFactor.R,
+	  inst/unitTests/runit.write.fwf.R, tests/Makefile,
+	  tests/runRUnitTests.R, tests/runit.bindData.R,
+	  tests/runit.cbindX.R, tests/runit.drop.levels.R,
+	  tests/runit.getDateTimeParts.R, tests/runit.mapLevels.R,
+	  tests/runit.nPairs.R, tests/runit.reorder.factor.R,
+	  tests/runit.trim.R, tests/runit.trimSum.R, tests/runit.unknown.R,
+	  tests/runit.wideByFactor.R, tests/runit.write.fwf.R: Move unit
+	  test files back to inst/unitTests. Fix up runRUnitTests.R to work
+	  properly in the new location
+	* [r1783] tests/runit.unknown.R: - For unit tests, don't check for
+	  equality of optional POSIXlt
+	  components. (Bug reported by Brian Ripley).
+	* [r1782] R/runRUnitTests.R, inst/unitTests/Makefile,
+	  inst/unitTests/runRUnitTests.R, inst/unitTests/runit.bindData.R,
+	  inst/unitTests/runit.cbindX.R,
+	  inst/unitTests/runit.drop.levels.R,
+	  inst/unitTests/runit.getDateTimeParts.R,
+	  inst/unitTests/runit.mapLevels.R, inst/unitTests/runit.nPairs.R,
+	  inst/unitTests/runit.reorder.factor.R,
+	  inst/unitTests/runit.trim.R, inst/unitTests/runit.trimSum.R,
+	  inst/unitTests/runit.unknown.R,
+	  inst/unitTests/runit.wideByFactor.R,
+	  inst/unitTests/runit.write.fwf.R, man/runRUnitTests.Rd,
+	  tests/Makefile, tests/runRUnitTests.R, tests/runit.bindData.R,
+	  tests/runit.cbindX.R, tests/runit.drop.levels.R,
+	  tests/runit.getDateTimeParts.R, tests/runit.mapLevels.R,
+	  tests/runit.nPairs.R, tests/runit.reorder.factor.R,
+	  tests/runit.trim.R, tests/runit.trimSum.R, tests/runit.unknown.R,
+	  tests/runit.wideByFactor.R, tests/runit.write.fwf.R: Move unit
+	  test code into the (now) standard location
+
+2014-03-19  arnima
+
+	* [r1777] R/keep.R: change warning message to R standards
+
+2013-12-18  arnima
+
+	* [r1758] R/ll.R: Retain original list order unless sort=FALSE;
+	  also stop if unnamed list
+
+2013-12-16  warnes
+
+	* [r1757] R/trim.R: Trim will now remove all types of
+	  leading/trailing whitespace by using
+	  the [:blank:] character class.
+
 2013-06-29  warnes
 
+	* [r1692] inst/NEWS: Update NEWS for second try for gdata 2.13.2
 	* [r1691] R/ll.R: Simplify ll() by stuffing list arguments into an
 	  environment, avoiding the need to use attach/detach.
 

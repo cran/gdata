@@ -1,4 +1,4 @@
-# $Id: trim.R 989 2006-10-29 15:28:26Z ggorjan $
+# $Id: trim.R 1757 2013-12-16 19:58:56Z warnes $
 
 trim <- function(s, recode.factor=TRUE, ...)
   UseMethod("trim", s)
@@ -8,8 +8,8 @@ trim.default <- function(s, recode.factor=TRUE, ...)
 
 trim.character <- function(s, recode.factor=TRUE, ...)
 {
-  s <- sub(pattern="^ +", replacement="", x=s)
-  s <- sub(pattern=" +$", replacement="", x=s)
+  s <- sub(pattern="^[[:blank:]]+", replacement="", x=s)
+  s <- sub(pattern="[[:blank:]]+$", replacement="", x=s)
   s
 }
 

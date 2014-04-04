@@ -6,10 +6,6 @@ R=R
 test: # Run unit tests
 	${R} --vanilla --slave < ${SUITE}
 
-inst: # Install package
-	cd ${TOP}/..;\
-	${R} CMD INSTALL ${PKG}
-
 all: inst test
 
 echo: # Echo env. variables

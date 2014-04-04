@@ -29,13 +29,21 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
     return(size)
   }
 
+  ## 1  Set unit, denominator, original.rank
   unit <- match.arg(unit, c("bytes","KB","MB"))
   denominator <- switch(unit, "KB"=1024, "MB"=1024^2, 1)
+  original.rank <- NULL
 
+  ## 2  Detect what 'pos' is like, then get class, size, dim
   if(is.character(pos))  # pos is an environment name
     pos <- match(pos, search())
   if(is.list(pos))  # pos is a list-like object
+  {
+    if(is.null(names(pos)))
+      stop("All elements of a list must be named")
+    original.rank <- rank(names(pos))
     pos <- as.environment(pos)
+  }
   if(length(ls(pos,...)) == 0)  # pos is an empty environment
   {
     object.frame <- data.frame()
@@ -66,6 +74,12 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
       object.frame <- cbind(object.frame,
                             Dim=sapply(ls(pos,...),get.object.dim,pos=pos))
   }
+
+  ## 3  Retain original order of list elements
+  if(!sort && !is.null(original.rank))
+    object.frame <- object.frame[original.rank,]
+
+  ## 4  Filter results given class
   if(!is.null(class))
   {
     include <- object.frame$Class %in% class
