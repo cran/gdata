@@ -10,12 +10,12 @@ require 'module_tools.pl';
 
 my( $HAS_Spreadsheet_ParseExcel,
     $HAS_Compress_Raw_Zlib,
-    $HAS_Spreadsheet_XLSX) = check_modules(0);
+    $HAS_Spreadsheet_ParseXLSX) = check_modules(0);
 
 $XLS_Support  = $HAS_Spreadsheet_ParseExcel;
 $XLSX_Support = $HAS_Spreadsheet_ParseExcel &&
                 $HAS_Compress_Raw_Zlib &&
-                $HAS_Spreadsheet_XLSX;
+                $HAS_Spreadsheet_ParseXLSX;
 
 printf "Supported formats: ";
 printf "XLS " if ( $XLS_Support );

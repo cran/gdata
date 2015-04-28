@@ -1,7 +1,7 @@
 ### runit.write.fwf.R
 ###------------------------------------------------------------------------
 ### What: Unit tests for write.fwf
-### $Id: runit.write.fwf.R 1784 2014-04-05 02:23:45Z warnes $
+### $Id: runit.write.fwf.R 1966 2015-04-25 16:23:31Z warnes $
 ### Time-stamp: <2008-08-05 11:58:50 ggorjan>
 ###------------------------------------------------------------------------
 
@@ -59,8 +59,16 @@ test.write.fwf <- function()
                             digits=c(0, 1),
                             exp=c(0, 0),
                             stringsAsFactors=FALSE)
-  formatInfo  <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE)
+
+  testData1 <- testData[, c("num1", "num2")]
+  testData1M <- as.matrix(testData1)
+
+  formatInfo  <- write.fwf(testData1, formatInfo=TRUE)
   checkEquals(formatInfo, formatInfoT)
+
+  formatInfoM  <- write.fwf(testData1M, formatInfo=TRUE)
+  checkEquals(formatInfoM, formatInfoT)
+
 
   ## scientific notation
   dd <- options("digits"); options(digits = 7)
@@ -91,39 +99,66 @@ test.write.fwf <- function()
                              digits=c(0, 0, 1),
                              exp=c(0, 0, 0),
                              stringsAsFactors=FALSE)
-  formatInfoR <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE,
-                           rownames=TRUE, rowCol="row")
+  testData3 <- testData[, c("num1", "num2")]
+  testData3M <- as.matrix(testData3)
+
+  formatInfoR <- write.fwf(testData3, formatInfo=TRUE, rownames=TRUE,
+                           rowCol="row")
   checkEquals(formatInfoR, formatInfoTR)
 
+  formatInfoR <- write.fwf(testData3M, formatInfo=TRUE, rownames=TRUE,
+                           rowCol="row")
+  checkEquals(formatInfoR, formatInfoTR)
+
+
   ## quoteInfo alone does not have any effect
-  formatInfoI <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE,
-                           quoteInfo=TRUE)
+  formatInfoI <- write.fwf(testData3,  formatInfo=TRUE, quoteInfo=TRUE)
+  checkEquals(formatInfoI, formatInfoT)
+
+  formatInfoI <- write.fwf(testData3M, formatInfo=TRUE, quoteInfo=TRUE)
   checkEquals(formatInfoI, formatInfoT)
 
   ## quote
-  formatInfoQ <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE,
-                           quote=TRUE)
   formatInfoTQ <-  formatInfoT
   formatInfoTQ$position <- c(1, 6)
   formatInfoTQ$width <- c(4, 5)
+
+  formatInfoQ <- write.fwf(testData3, formatInfo=TRUE, quote=TRUE)
+  checkEquals(formatInfoQ, formatInfoTQ)
+
+  formatInfoQ <- write.fwf(testData3M, formatInfo=TRUE, quote=TRUE)
   checkEquals(formatInfoQ, formatInfoTQ)
 
   ## quote without quoteInfo
-  formatInfoQI <- write.fwf(testData[, c("num1", "num2")], formatInfo=TRUE,
-                            quote=TRUE, quoteInfo=FALSE)
   formatInfoTQI <-  formatInfoT
   formatInfoTQI$position <- c(2, 6)
+
+  formatInfoQI <- write.fwf(testData3, formatInfo=TRUE, quote=TRUE,
+                            quoteInfo=FALSE)
+  checkEquals(formatInfoQI, formatInfoTQI)
+
+  formatInfoQI <- write.fwf(testData3M, formatInfo=TRUE, quote=TRUE,
+                            quoteInfo=FALSE)
   checkEquals(formatInfoQI, formatInfoTQI)
 
   ## width
   ## --> default width for num1 is 2
-  formatInfo <- write.fwf(testData[, "num1", drop=FALSE], width=10, formatInfo=TRUE)
+  testData4 <- testData[, "num1", drop=FALSE]
+  testData4M <- as.matrix(testData[, "num1", drop=FALSE])
+
+  formatInfo <- write.fwf(testData4, width=10, formatInfo=TRUE)
+  checkEquals(formatInfo$width, 10)
+
+  formatInfo <- write.fwf(testData4M, width=10, formatInfo=TRUE)
   checkEquals(formatInfo$width, 10)
 
   ## too small value in width (this also tests recycling)
   ## --> proper width for num1 is 2, while for num2 it is 3
   checkException(write.fwf(testData[, c("num1", "num2")], width=2))
   checkException(write.fwf(testData[, c("num1", "num2")], width=c(2, 1)))
+
+  ## Done
+  cat("\nDONE.\n\n")
 }
 
 ### }}}

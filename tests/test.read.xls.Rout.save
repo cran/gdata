@@ -1,7 +1,7 @@
 
-R version 3.0.1 (2013-05-16) -- "Good Sport"
-Copyright (C) 2013 The R Foundation for Statistical Computing
-Platform: i686-pc-linux-gnu (32-bit)
+R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -507,7 +507,7 @@ The following object is masked from 'package:utils':
 > exampleFile <- file.path(path.package('gdata'),'xls',
 +                          'ExampleExcelFile.xls')
 > 
-> exampleFile2007 <- file.path(path.package('gdata'),'xls',
+> exampleFileX <- file.path(path.package('gdata'),'xls',
 +                          'ExampleExcelFile.xlsx')
 > 
 > # see the number and names of sheets:
@@ -515,7 +515,14 @@ The following object is masked from 'package:utils':
 [1] 4
 > 
 > if( 'XLSX' %in% xlsFormats() )
-+   sheetCount(exampleFile2007)
++   {
++     sheetCount(exampleFileX)
++   } else {
++       cat("************************************************************\n")
++       cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++       cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED                  **\n")
++       cat("************************************************************\n")
++   }
 [1] 4
 > 
 > sheetNames(exampleFile)
@@ -523,9 +530,17 @@ The following object is masked from 'package:utils':
 [3] "Sheet with a very long name!" "Sheet with initial text"     
 > 
 > if( 'XLSX' %in% xlsFormats() )
-+   sheetNames(exampleFile2007)
++   {
++     sheetNames(exampleFileX)
++   } else {
++       cat("************************************************************\n")
++       cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++       cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED                  **\n")
++       cat("************************************************************\n")
++   }
 [1] "Sheet First"                  "Sheet Second"                
 [3] "Sheet with a very long name!" "Sheet with initial text"     
+> 
 > 
 > example.1 <- read.xls(exampleFile, sheet=1) # default is first worksheet
 > example.1
@@ -548,53 +563,72 @@ The following object is masked from 'package:utils':
 > 
 > example.3 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
 > example.3
-   V1         V2    V3        V4          V5 V6
-1   1 2001-01-01  1:01 0.2058182          NA  A
-2   2 2002-02-02  2:02 0.2910708          NA  B
-3   3 2003-03-03  3:03 0.3564875 -0.84147098  C
-4   4 2004-04-04  4:04 0.4116363  0.70807342   
-5   5 2005-05-05  5:05 0.4602234  0.50136797  A
-6   6 2006-06-06  6:06        NA  0.25136984  B
-7   7 2007-07-07  7:07 0.5445436  0.06318679  B
-8   8 2008-08-08  8:08 0.5821416          NA  C
-9   9 2009-09-09  9:09 0.6174545  0.00000000  A
-10 10 2010-10-10 10:10 0.6508541  0.00000000  A
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  36892.04
+2  37289.08
+3  37683.13
+4  38081.17
+5  38477.21
+6  38874.25
+7  39270.30
+8  39668.34
+9  40065.38
+10 40461.42
 > 
-> example.4 <- read.xls(exampleFile, sheet=3, header=FALSE) # third worksheet by number
+> example.4 <- read.xls(exampleFile, sheet=4, header=FALSE) # fourth worksheet by number
 > example.4
-   V1         V2    V3        V4          V5 V6
-1   1 2001-01-01  1:01 0.2058182          NA  A
-2   2 2002-02-02  2:02 0.2910708          NA  B
-3   3 2003-03-03  3:03 0.3564875 -0.84147098  C
-4   4 2004-04-04  4:04 0.4116363  0.70807342   
-5   5 2005-05-05  5:05 0.4602234  0.50136797  A
-6   6 2006-06-06  6:06        NA  0.25136984  B
-7   7 2007-07-07  7:07 0.5445436  0.06318679  B
-8   8 2008-08-08  8:08 0.5821416          NA  C
-9   9 2009-09-09  9:09 0.6174545  0.00000000  A
-10 10 2010-10-10 10:10 0.6508541  0.00000000  A
+                                                                        V1
+1 This line contains text that would need to be skipped to get to the data
+2                                                                         
+3                                                                         
+4                                                                         
+5                                                                         
+6                                                                         
+7                                                                         
+              V2 V3   V4   V5   V6     V7
+1                                        
+2 This line too!                         
+3                 D   E     F    G Factor
+4       FirstRow  1 <NA> <NA> <NA>    Red
+5      SecondRow  2    1 <NA> <NA>  Green
+6       ThirdRow  3    2    1 <NA>    Red
+7      FourthRow  4    3    2    1  Black
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   {
-+   example.x.1 <- read.xls(exampleFile2007, sheet=1) # default is first worksheet
-+   print(example.x.1)
++     example.x.1 <- read.xls(exampleFileX, sheet=1) # default is first worksheet
++     print(example.x.1)
 + 
-+   example.x.2 <- read.xls(exampleFile2007, sheet=2) # second worksheet by number
-+   print(example.x.2)
++     example.x.2 <- read.xls(exampleFileX, sheet=2) # second worksheet by number
++     print(example.x.2)
 + 
-+   example.x.3 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
-+   print(example.x.3)
++     example.x.3 <- read.xls(exampleFileX, sheet=3, header=FALSE) # third worksheet by number
++     print(example.x.3)
 + 
-+   example.x.4 <- read.xls(exampleFile2007, sheet=3, header=FALSE) # third worksheet by number
-+   print(example.x.4)
++     example.x.4 <- read.xls(exampleFileX, sheet=4, header=FALSE) # fourth worksheet by number
++     print(example.x.4)
 + 
-+   data <- read.xls(exampleFile2007, sheet="Sheet Second") # and by name
-+   print(data)
++     data <- read.xls(exampleFileX, sheet="Sheet Second") # and by name
++     print(data)
 + 
-+   # load the third worksheet, skipping the first two non-data lines...
-+   data <- read.xls(exampleFile2007, sheet="Sheet with initial text", skip=2)
-+   print(data)
-+ }
++     # load the third worksheet, skipping the first two non-data lines...
++     data <- read.xls(exampleFileX, sheet="Sheet with initial text", skip=2)
++     print(data)
++   } else {
++     cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++     cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED **\n")
++   }
   A  B   C
 1 1  1   1
 2 2  4   8
@@ -608,28 +642,44 @@ The following object is masked from 'package:utils':
 2 SecondRow 2  1 NA NA  Green
 3  ThirdRow 3  2  1 NA    Red
 4 FourthRow 4  3  2  1  Black
-   V1         V2    V3        V4          V5 V6
-1   1 2001-01-01  1:01 0.2058182          NA  A
-2   2 2002-02-02  2:02 0.2910708          NA  B
-3   3 2003-03-03  3:03 0.3564875 -0.84147098  C
-4   4 2004-04-04  4:04 0.4116363  0.70807342   
-5   5 2005-05-05  5:05 0.4602234  0.50136797  A
-6   6 2006-06-06  6:06        NA  0.25136984  B
-7   7 2007-07-07  7:07 0.5445436  0.06318679  B
-8   8 2008-08-08  8:08 0.5821416          NA  C
-9   9 2009-09-09  9:09 0.6174545  0.00000000  A
-10 10 2010-10-10 10:10 0.6508541  0.00000000  A
-   V1         V2    V3        V4          V5 V6
-1   1 2001-01-01  1:01 0.2058182          NA  A
-2   2 2002-02-02  2:02 0.2910708          NA  B
-3   3 2003-03-03  3:03 0.3564875 -0.84147098  C
-4   4 2004-04-04  4:04 0.4116363  0.70807342   
-5   5 2005-05-05  5:05 0.4602234  0.50136797  A
-6   6 2006-06-06  6:06        NA  0.25136984  B
-7   7 2007-07-07  7:07 0.5445436  0.06318679  B
-8   8 2008-08-08  8:08 0.5821416          NA  C
-9   9 2009-09-09  9:09 0.6174545  0.00000000  A
-10 10 2010-10-10 10:10 0.6508541  0.00000000  A
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  36892.04
+2  37289.08
+3  37683.13
+4  38081.17
+5  38477.21
+6  38874.25
+7  39270.30
+8  39668.34
+9  40065.38
+10 40461.42
+                                                                        V1
+1 This line contains text that would need to be skipped to get to the data
+2                                                                         
+3                                                                         
+4                                                                         
+5                                                                         
+6                                                                         
+7                                                                         
+              V2 V3   V4   V5   V6     V7
+1                                        
+2 This line too!                         
+3                 D   E     F    G Factor
+4       FirstRow  1 <NA> <NA> <NA>    Red
+5      SecondRow  2    1 <NA> <NA>  Green
+6       ThirdRow  3    2    1 <NA>    Red
+7      FourthRow  4    3    2    1  Black
           X D E.  F  G Factor
 1  FirstRow 1 NA NA NA    Red
 2 SecondRow 2  1 NA NA  Green
@@ -640,7 +690,6 @@ The following object is masked from 'package:utils':
 2 NA SecondRow 2  1 NA NA  Green
 3 NA  ThirdRow 3  2  1 NA    Red
 4 NA FourthRow 4  3  2  1  Black
-> 
 > 
 > ## Check handling of skip.blank.lines=FALSE
 > 
@@ -655,8 +704,13 @@ The following object is masked from 'package:utils':
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   {
-+     example.x.skip <- read.xls(exampleFile2007, sheet=2, blank.lines.skip=FALSE)
++     example.x.skip <- read.xls(exampleFileX, sheet=2, blank.lines.skip=FALSE)
 +     example.x.skip
++   } else {
++       cat("************************************************************\n")
++       cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++       cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED                  **\n")
++       cat("************************************************************\n")
 +   }
           X  D E.  F  G Factor
 1  FirstRow  1 NA NA NA    Red
@@ -668,18 +722,180 @@ The following object is masked from 'package:utils':
 > 
 > ## Check handing of fileEncoding for latin-1 characters
 > 
-> latin1File <- file.path(path.package('gdata'),'xls', 'latin-1.xls')
+> latin1File  <- file.path(path.package('gdata'),'xls', 'latin-1.xls' )
 > latin1FileX <- file.path(path.package('gdata'),'xls', 'latin-1.xlsx')
 > 
-> example.latin1 <- read.xls(latin1File, fileEncoding='latin1')
+> if(.Platform$OS.type=="unix")
++   {
++       example.latin1 <- read.xls(latin1File,
++                                  fileEncoding='latin1',
++                                  encoding='latin1',
++                                  stringsAsFactors=FALSE)
++   } else {
++       example.latin1 <- read.xls(latin1File,
++                                         #fileEncoding='latin1',
++                                  encoding='latin1',
++                                  stringsAsFactors=FALSE)
++   }
 > 
 > if( 'XLSX' %in% xlsFormats() )
 +   {
-+     example.latin1.x <- read.xls(latin1FileX, fileEncoding='latin1')
++       if(.Platform$OS.type=="unix")
++           {
++               example.latin1.x <- read.xls(latin1FileX,
++                                          fileEncoding='latin1',
++                                          encoding='latin1',
++                                          stringsAsFactors=FALSE)
++           } else {
++               example.latin1.x <- read.xls(latin1FileX,
++                                         #fileEncoding='latin1',
++                                          encoding='latin1',
++                                          stringsAsFactors=FALSE)
++           }
++   } else {
++     cat("************************************************************\n")
++     cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++     cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED                  **\n")
++     cat("************************************************************\n")
++ }
+> 
+> 
+> ## Check handling of very wide file
+> 
+> wideFile  <- file.path(path.package('gdata'),'xls', 'wide.xls' )
+> wideFileX <- file.path(path.package('gdata'),'xls', 'wide.xlsx')
+> 
+> example.wide <- read.xls(wideFile)
+> stopifnot(dim(example.wide)==c(0,256))
+> 
+> if( 'XLSX' %in% xlsFormats() )
++   {
++      example.wide.x <- read.xls(wideFileX)
++      stopifnot(dim(example.wide.x)==c(0,16384))
++   } else {
++     cat("** DIFF IN THIS SECTION IS EXPECTED BECAUSE PERL PACKAGES **\n")
++     cat("** FOR SUPPORTING XLSX ARE NOT INSTALLED **\n")
 +   }
 > 
+> ## Check handling of files with dates calulcated relative to
+> ## 1900-01-01 and 1904-01-01
 > 
+> file.1900  <- file.path(path.package('gdata'),'xls', 'ExampleExcelFile_1900.xls' )
+> file.1904  <- file.path(path.package('gdata'),'xls', 'ExampleExcelFile_1904.xls' )
+> fileX.1900 <- file.path(path.package('gdata'),'xls', 'ExampleExcelFile_1900.xlsx')
+> fileX.1904 <- file.path(path.package('gdata'),'xls', 'ExampleExcelFile_1904.xlsx')
+> 
+> example.1900 <- read.xls(file.1900, sheet=3, header=FALSE)
+> example.1900
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  36892.04
+2  37289.08
+3  37683.13
+4  38081.17
+5  38477.21
+6  38874.25
+7  39270.30
+8  39668.34
+9  40065.38
+10 40461.42
+> 
+> example.1904 <- read.xls(file.1904, sheet=3, header=FALSE)
+> example.1904
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  35430.04
+2  35827.08
+3  36221.13
+4  36619.17
+5  37015.21
+6  37412.25
+7  37808.30
+8  38206.34
+9  38603.38
+10 38999.42
+> 
+> exampleX.1900 <- read.xls(file.1900, sheet=3, header=FALSE)
+> exampleX.1900
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  36892.04
+2  37289.08
+3  37683.13
+4  38081.17
+5  38477.21
+6  38874.25
+7  39270.30
+8  39668.34
+9  40065.38
+10 40461.42
+> 
+> exampleX.1904 <- read.xls(file.1904, sheet=3, header=FALSE)
+> exampleX.1904
+   V1         V2          V3        V4          V5 V6                     V7
+1   1 2001-01-01 01:01:00.00 0.2058182          NA  A 2001-01-01 01:01:01.01
+2   2 2002-02-02 02:02:00.00 0.2910708          NA  B 2002-02-02 02:02:02.02
+3   3 2003-03-03 03:03:00.00 0.3564875 -0.84147098  C 2003-03-03 03:03:03.03
+4   4 2004-04-04 04:04:00.00 0.4116363  0.70807342    2004-04-04 04:04:04.04
+5   5 2005-05-05 05:05:00.00 0.4602234  0.50136797  A 2005-05-05 05:05:05.05
+6   6 2006-06-06 06:06:00.00        NA  0.25136984  B 2006-06-06 06:06:06.06
+7   7 2007-07-07 07:07:00.00 0.5445436  0.06318679  B 2007-07-07 07:07:07.07
+8   8 2008-08-08 08:08:00.00 0.5821416          NA  C 2008-08-08 08:08:08.08
+9   9 2009-09-09 09:09:00.00 0.6174545  0.00000000  A 2009-09-09 09:09:09.09
+10 10 2010-10-10 10:10:00.00 0.6508541  0.00000000  A 2010-10-10 10:10:10.10
+         V8
+1  35430.04
+2  35827.08
+3  36221.13
+4  36619.17
+5  37015.21
+6  37412.25
+7  37808.30
+8  38206.34
+9  38603.38
+10 38999.42
+> 
+> # all colmns should be identical
+> stopifnot( na.omit(example.1900  == exampleX.1900) )
+> stopifnot( na.omit(example.1904  == exampleX.1904) )
+> 
+> # column 8 will differ by 1462 due to different date baselines (1900 vs 1904)
+> stopifnot( na.omit(example.1900 [,-8] == example.1904 [,-8]) )
+> stopifnot( na.omit(exampleX.1900[,-8] == exampleX.1904[,-8]) )
+> 
+> stopifnot( na.omit(example.1900 [,8] - example.1904 [,8]) == 1462 )
+> stopifnot( na.omit(exampleX.1900[,8] - exampleX.1904[,8]) == 1462 )
 > 
 > proc.time()
    user  system elapsed 
- 10.072   1.468  12.094 
+ 14.560   0.980  15.861 

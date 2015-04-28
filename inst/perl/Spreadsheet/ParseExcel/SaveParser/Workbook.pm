@@ -6,7 +6,8 @@ package Spreadsheet::ParseExcel::SaveParser::Workbook;
 #
 # Used in conjunction with Spreadsheet::ParseExcel.
 #
-# Copyright (c) 2009      John McNamara
+# Copyright (c) 2014      Douglas Wilson
+# Copyright (c) 2009-2013 John McNamara
 # Copyright (c) 2006-2008 Gabor Szabo
 # Copyright (c) 2000-2006 Kawai Takanori
 #
@@ -19,7 +20,7 @@ use strict;
 use warnings;
 
 use base 'Spreadsheet::ParseExcel::Workbook';
-our $VERSION = '0.56';
+our $VERSION = '0.65';
 
 #==============================================================================
 # Spreadsheet::ParseExcel::SaveParser::Workbook
@@ -156,12 +157,12 @@ sub SaveAs {
                 $oWrS->protect();
             }
         }
-        if ( ( $oWkS->{FitWidth} == 1 ) and ( $oWkS->{FitHeight} == 1 ) ) {
+        if ( $oWkS->{Scale} != 100 ) {
 
             # Pages on fit with width and Heigt
             $oWrS->fit_to_pages( $oWkS->{FitWidth}, $oWkS->{FitHeight} );
 
-            #Print Scale
+            #Print Scale and reset FitWidth/FitHeight
             $oWrS->set_print_scale( $oWkS->{Scale} );
         }
         else {
@@ -232,7 +233,7 @@ sub SaveAs {
 
 #        PageStart    => $oWkS->{PageStart},            # Page number for start
 #        UsePage      => $oWkS->{UsePage},              # Use own start page number
-#        NoColor      => $oWkS->{NoColor},               # Print in blcak-white
+#        NoColor      => $oWkS->{NoColor},               # Print in black-white
 #        Draft        => $oWkS->{Draft},                 # Print in draft mode
 #        Notes        => $oWkS->{Notes},                 # Print notes
 #        LeftToRight  => $oWkS->{LeftToRight},           # Left to Right
@@ -254,7 +255,16 @@ sub SaveAs {
                 }
             }
         }
-        for (
+        
+		my $merged_areas = $oWkS->get_merged_areas();
+		my $merged_areas_h = {};
+		if ($merged_areas) {
+			foreach my $range (@$merged_areas) {
+				$merged_areas_h->{$range->[0]}{$range->[1]} = $range;
+			}
+		}
+		
+		for (
             my $iR = $oWkS->{MinRow} ;
             defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ;
             $iR++
@@ -270,13 +280,11 @@ sub SaveAs {
 
                 my $oWkC = $oWkS->{Cells}[$iR][$iC];
                 if ($oWkC) {
-                    if ( $oWkC->{Merged} ) {
+                    if ( $oWkC->{Merged} and exists $merged_areas_h->{$iR}{$iC} ) {
                         my $oFmtN = $oWrEx->addformat();
                         $oFmtN->copy( $hFmt{ $oWkC->{FormatNo} } );
-                        $oFmtN->set_merge(1);
-                        $oWrS->write(
-                            $iR,
-                            $iC,
+						$oWrS->merge_range (
+							@{$merged_areas_h->{$iR}{$iC}},
                             $oBook->{FmtClass}
                               ->TextFmt( $oWkC->{Val}, $oWkC->{Code} ),
                             $oFmtN
@@ -378,7 +386,8 @@ sub AddFormat {
 sub AddCell {
     my ( $oBook, $iSheet, $iR, $iC, $sVal, $oCell, $sCode ) = @_;
     my %rhKey;
-    $oCell ||= 0;
+    $oCell ||= $oBook->{Worksheet}[$iSheet]
+		->{Cells}[$iR][$iC]->{FormatNo} || 0;
     my $iFmt =
       ( UNIVERSAL::isa( $oCell, 'Spreadsheet::ParseExcel::Cell' ) )
       ? $oCell->{FormatNo}
@@ -389,9 +398,22 @@ sub AddCell {
     $rhKey{Val}         = $sVal;
     $rhKey{Code}        = $sCode || '_native_';
     $oBook->{_CurSheet} = $iSheet;
+
+	my $merged_areas = $oBook->{Worksheet}[$iSheet]->get_merged_areas();
+	my $merged_areas_h = {};
+	if ($merged_areas) {
+		foreach my $range (@$merged_areas) {
+			$merged_areas_h->{$range->[0]}{$range->[1]} = $range;
+		}
+	}
+
     my $oNewCell =
       Spreadsheet::ParseExcel::_NewCell( $oBook, $iR, $iC, %rhKey );
     Spreadsheet::ParseExcel::_SetDimension( $oBook, $iR, $iC, $iC );
+
+	$oNewCell->{Merged} = 1
+		if exists $merged_areas_h->{$iR}{$iC};
+
     return $oNewCell;
 }
 
@@ -415,7 +437,9 @@ This module is used in conjunction with Spreadsheet::ParseExcel. See the documen
 
 =head1 AUTHOR
 
-Maintainer 0.40+: John McNamara jmcnamara@cpan.org
+Current maintainer 0.60+: Douglas Wilson dougw@cpan.org
+
+Maintainer 0.40-0.59: John McNamara jmcnamara@cpan.org
 
 Maintainer 0.27-0.33: Gabor Szabo szabgab@cpan.org
 
@@ -423,7 +447,9 @@ Original author: Kawai Takanori kwitknr@cpan.org
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 John McNamara
+Copyright (c) 2014 Douglas Wilson
+
+Copyright (c) 2009-2013 John McNamara
 
 Copyright (c) 2006-2008 Gabor Szabo
 

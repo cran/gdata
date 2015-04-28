@@ -3,7 +3,6 @@ export(
        .onAttach,
        ans,
        Args,
-       aggregate.table,
        bindData,
        case,
        cbindX,
@@ -14,11 +13,14 @@ export(
        duplicated2,
        elem,
        env,
+       first,
        frameApply,
        installXLSXsupport,
        interleave,
        is.what,
        keep,
+       last,
+       left,
        ll,
        ls.funs,
        lowerTriangle,
@@ -31,6 +33,7 @@ export(
        remove.vars,
        reorder.factor,
        resample,
+       right,
        sheetCount,
        sheetNames,
        startsWith,
@@ -48,7 +51,7 @@ export(
        xlsFormats,
 
        ## Object size stuff
-       object.size, as.object_size, is.object_size, humanReadable,
+       object.size, as.object_sizes, is.object_sizes, humanReadable,
 
        ## getDateTime stuff
        getYear, getMonth, getDay, getHour, getMin, getSec,
@@ -125,8 +128,9 @@ S3method(nobs, default)
 S3method(nobs, lm)      # now provided by stats package
 
 ## Object size stuff
-S3method(print, object_size)
-S3method(c, object_size)
+S3method(c,      object_sizes)
+S3method(format, object_sizes)
+S3method(print,  object_sizes)
 
 ## unknown stuff
 S3method(isUnknown, default)
@@ -151,3 +155,9 @@ S3method(trim, default)
 S3method(trim, factor)
 S3method(trim, list)
 S3method(trim, data.frame)
+
+## left, right
+S3method(left,  data.frame)
+S3method(left,  matrix)
+S3method(right, data.frame)
+S3method(right, matrix)

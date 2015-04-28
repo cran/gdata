@@ -1,15 +1,14 @@
 #!/usr/bin/perl
 
 BEGIN {
-use File::Basename;
-# Add current path to perl library search path
-use lib dirname($0);
+  use File::Basename;
+  # Add current path to perl library search path
+  use lib dirname($0);
 }
 
 use strict;
 #use Spreadsheet::ParseExcel;
-#use Spreadsheet::XLSX;
-use POSIX;
+#use Spreadsheet::ParseXLSX;
 use File::Spec::Functions;
 use Getopt::Std;
 
@@ -20,15 +19,18 @@ require 'module_tools.pl';
 my(
    $HAS_Spreadsheet_ParseExcel,
    $HAS_Compress_Raw_Zlib,
-   $HAS_Spreadsheet_XLSX
+   $HAS_Spreadsheet_ParseXLSX
   ) = check_modules_and_notify();
 
 # declare some varibles local
 my($row, $col, $sheet, $cell, $usage,
    $targetfile,$basename, $sheetnumber,
    $filename, $volume, $directories, $whoami,
-   $sep, $sepName, $sepLabel, $sepExt, 
-   $skipBlankLines, %switches);
+   $sep, $sepName, $sepLabel, $sepExt,
+   $skipBlankLines, %switches,
+   $parser, $oBook, $formatter,
+   $using_1904_date
+);
 
 ##
 ## Figure out whether I'm called as xls2csv.pl or xls2tab.pl
@@ -59,7 +61,7 @@ elsif ($whoami eq "xls2tab.pl")
   }
 else
   {
-    die("This script is named '$whoami', but must be named either 'xls2csv.pl' or 'xls2tab.pl' to function properly.\n");
+    die("This script is named '$whoami', but must be named 'xls2csv.pl', 'xls2tsv', or 'xls2tab.pl' to function properly.\n");
   }
 
 
@@ -115,7 +117,7 @@ my $sheetnumber;
 
 if(defined($ARGV[2]) )
   {
-    if ( isdigit($ARGV[2]) )
+    if ( $ARGV[2] =~ m|^\d+$| )
       {
 	$sheetnumber = $ARGV[2];
 	die "Sheetnumber must be an integer larger than 0.\n" if $sheetnumber < 1;
@@ -133,29 +135,50 @@ if(defined($ARGV[2]) )
 my $oExcel;
 my $oBook;
 
-$oExcel = new Spreadsheet::ParseExcel;
+$oExcel    = new Spreadsheet::ParseExcel;
+$formatter = Spreadsheet::ParseExcel::FmtDefault->new();
 
 open(FH, "<$ARGV[0]") or die "Unable to open file '$ARGV[0]'.\n";
 close(FH);
 
+print "\n";
 print "Loading '$ARGV[0]'...\n";
 ## First try as a Excel 2007+ 'xml' file
 eval
   {
     local $SIG{__WARN__} = sub {};
-    $oBook = Spreadsheet::XLSX -> new ($ARGV[0]);
+    $parser = Spreadsheet::ParseXLSX -> new();
+    $oBook = $parser->parse ($ARGV[0]);
   };
 ## Then Excel 97-2004 Format
-if($@)
+if ( !defined $oBook )
   {
-    $oBook = new Spreadsheet::ParseExcel->Parse($ARGV[0]) or \
+    $parser = Spreadsheet::ParseExcel -> new();
+    $oBook = $parser->parse($ARGV[0]) or \
       die "Error parsing file '$ARGV[0]'.\n";
   }
 print "Done.\n";
 
+## Does this file use 1904-01-01 as the reference date instead of
+## 1900-01-01?
+$using_1904_date = ( $oBook->using_1904_date() == 1 ) || # ParseExcel
+                   ( $oBook->{Flag1904}        == 1 );   # ParseXLSX
+
+
+## Show the user some summary information before we start extracting
+## date
 print "\n";
 print "Orignal Filename: ", $ARGV[0], "\n";
 print "Number of Sheets: ", $oBook->{SheetCount} , "\n";
+if($using_1904_date)
+  {
+      print "Date reference  : 1904-01-01\n";
+  }
+else
+  {
+      print "Date reference  : 1900-01-01\n";
+  }
+
 print "\n";
 
 ## Get list all worksheets in the file
@@ -236,19 +259,53 @@ foreach my $sheet (@sheetlist)
 
        for(my $col = $mincol; $col <= $maxcol; $col++)
          {
-           my $cell = $sheet->{Cells}[$row][$col];
+           my $cell   = $sheet->{Cells}[$row][$col];
+	   my $format = $formatter->FmtString($cell, $oBook);
 	   if( defined($cell) )
 	      {
-		$_=$cell->Value; #{Val};
+		  if ($cell->type() eq "Date") # && $using_1904_date )
+		    {
+			my $is_date = ( $format =~ m/y/ &&
+					$format =~ m/m/ &&
+					$format =~ m/d/ );
+
+			my $is_time = ( $format =~ m/h[:\]]*m/ ||
+					$format =~ m/m[:\]]*s/ );
+
+
+			if($is_date && $is_time)
+			  {
+			      $format = "yyyy-mm-dd hh:mm:ss.00";
+			  }
+			elsif ($is_date)
+			  {
+			      $format = "yyyy-mm-dd";
+			  }
+			elsif ($is_time)
+			  {
+			      $format = "hh:mm:ss.00"
+			  }
+
+			$_ = ExcelFmt($format,
+				      $cell->unformatted(),
+				      $using_1904_date);
+		    }
+		  else
+		    {
+		      $_=$cell->value();
+		    }
 
 		# convert '#NUM!' strings to missing (empty) values
 		s/#NUM!//;
+
+		# convert "#DIV/0!" strings to missing (emtpy) values
+                s|#DIV/0!||;
 
 		# escape double-quote characters in the data since
 		# they are used as field delimiters
 		s/\"/\\\"/g;
 	      }
-	   else 
+	   else
 	     {
 	       $_ = '';
 	     }
@@ -273,7 +330,7 @@ foreach my $sheet (@sheetlist)
 
   close OutFile;
 
-  print "  (Ignored $cumulativeBlankLines blank lines.)\n" 
+  print "  (Ignored $cumulativeBlankLines blank lines.)\n"
       if $skipBlankLines;
   print "\n";
 }

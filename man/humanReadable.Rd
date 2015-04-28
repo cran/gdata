@@ -1,44 +1,43 @@
-% humanReadable.Rd
-%--------------------------------------------------------------------------
-% What: Print byte size in human readable format man page
-% $Id$
-% Time-stamp: <2008-12-30 13:26:35 ggorjan>
-%--------------------------------------------------------------------------
-
 \name{humanReadable}
 
 \alias{humanReadable}
 
-\title{Print byte size in human readable format}
+\title{Print Byte Size in Human Readable Format}
 
 \description{
 
-\code{humanReadable} converts byte size in human readable format such as
+\code{humanReadable} converts integer byte sizes to a human readable units such as
 kB, MB, GB, etc.
 
 }
 
 \usage{
-
-humanReadable(x, standard="SI", digits=1, width=3, sep=" ")
-
+humanReadable(x, units="auto", standard=c("IEC", "SI", "Unix"),
+              digits=1, width=NULL, sep=" ", justify=c("right", "left") )
 }
 
 \arguments{
   \item{x}{integer, byte size}
-  \item{standard}{character, "SI" for powers of 1000 or anything else for
-    powers of 1024, see details}
+  \item{standard}{character, "IEC" for powers of 1024 ('MiB'), "SI" for
+    powers of 1000 ('MB'), or "Unix" for powers of 1024 ('M').  See
+    details.}
+  \item{units}{character, unit to use for all values (optional), one of
+    "auto", "bytes", or an appropriate unit corresponding to
+    \code{standard}.}
   \item{digits}{integer, number of digits after decimal point}
   \item{width}{integer, width of number string}
   \item{sep}{character, separator between number and unit}
+  \item{justify}{two-element vector specifiy the alignment for the number
+    and unit components of the size.  Each element should be one of
+    "none", "left", "right", or "center"}
 }
 
 \details{
 
-Basic unit used to store information in computers is a bit. Bits are
+The basic unit used to store information in computers is a bit. Bits are
 represented as zeroes and ones - binary number system. Although, the binary
 number system is not the same as the decimal number system, decimal prefixes
-for binary multiples such as kilo and mega are often used. In the decimal system 
+for binary multiples such as kilo and mega are often used. In the decimal system
 kilo represent 1000, which is close to \eqn{1024 = 2^{10}} in the binary system.
 This sometimes causes problems as it is not clear which powers (2 or 10) are used
 in a notation like 1 kB. To overcome this problem International Electrotechnical
@@ -66,14 +65,30 @@ yebibyte  \tab binary  \tab YiB    \tab \eqn{(2^{10})^8} \tab 1024 zebibytes\cr
 }
 
 where Zi and Yi are GNU extensions to IEC. To get the output in the decimal
-system (powers of 1000) use \code{standard="SI"}. Otherwise IEC standard
-(powers of 1024) is used.
+system (powers of 1000) use \code{standard="SI"}. To obtain IEC standard
+(powers of 1024) use \code{standard="IEC"}.
+
+In addition, single-character units are provided that follow (and
+extend) the Unix pattern (use \code{standard="Unix"}):
+
+\tabular{lrcll}{
+Name      \tab System  \tab Symbol \tab Size             \tab Conversion    \cr
+byte      \tab binary  \tab B      \tab \eqn{2^3}        \tab    8 bits     \cr
+kibibyte  \tab binary  \tab K      \tab \eqn{2^{10}}     \tab 1024 bytes    \cr
+mebibyte  \tab binary  \tab M      \tab \eqn{(2^{10})^2} \tab 1024 kibibytes\cr
+gibibyte  \tab binary  \tab G      \tab \eqn{(2^{10})^3} \tab 1024 mebibytes\cr
+tebibyte  \tab binary  \tab T      \tab \eqn{(2^{10})^4} \tab 1024 gibibytes\cr
+pebibyte  \tab binary  \tab P      \tab \eqn{(2^{10})^5} \tab 1024 tebibytes\cr
+exbibyte  \tab binary  \tab E      \tab \eqn{(2^{10})^6} \tab 1024 pebibytes\cr
+zebibyte  \tab binary  \tab Z      \tab \eqn{(2^{10})^7} \tab 1024 exbibytes\cr
+yottabyte \tab binary  \tab Y      \tab \eqn{(2^{10})^8} \tab 1024 zebibytes\cr
+}
 
 For printout both \code{digits} and \code{width} can be specified. If
 \code{width} is \code{NULL}, all values have given number of digits. If
 \code{width} is not \code{NULL}, output is rounded to a given width and
-formated similar to human readable format of \code{ls}, \code{df} or
-\code{du} shell commands.
+formated similar to human readable format of the Unix \code{ls},
+\code{df} or \code{du} shell commands.
 
 }
 
@@ -96,33 +111,40 @@ added at the end of the string.
 
 }
 
-\author{Ales Korosec and Gregor Gorjanc}
+\author{Ales Korosec, Gregor Gorjanc, and Gregory R. Warnes
+  \email{greg@warnes.net}}
+
 
 \seealso{
-  \code{\link{object.size}}, \code{\link[gdata]{ll}}
+  \code{\link{object.size}} in package 'gdata',
+  \code{\link[utils]{object.size}} in package 'utils',
+  \code{\link[gdata]{ll}}
 }
 
 \examples{
 
-baseSI <- 10
-powerSI <- seq(from=3, to=27, by=3)
-SI0 <- (baseSI)^powerSI
-k <- length(SI0) - 1
-SI1 <- SI0 - SI0 / c(2, runif(n=k, min=1.01, max=5.99))
-SI2 <- SI0 + SI0 / c(2, runif(n=k, min=1.01, max=5.99))
+# Simple example: maximum addressible size of 32 bit pointer
+humanReadable(2^32-1)
+humanReadable(2^32-1, standard="IEC")
+humanReadable(2^32-1, standard="SI")
+humanReadable(2^32-1, standard="Unix")
 
-baseIEC <- 2
-powerIEC <- seq(from=10, to=90, by=10)
-IEC0 <- (baseIEC)^powerIEC
-IEC1 <- IEC0 - IEC0 / c(2, runif(n=k, min=1.01, max=5.99))
-IEC2 <- IEC0 + IEC0 / c(2, runif(n=k, min=1.01, max=5.99))
+humanReadable(2^32-1, unit="MiB")
+humanReadable(2^32-1, standard="IEC",  unit="MiB")
+humanReadable(2^32-1, standard="SI",   unit="MB")
+humanReadable(2^32-1, standard="Unix", unit="M")
 
-cbind(humanReadable(x=SI1, width=NULL, digits=3),
-      humanReadable(x=SI0, width=NULL, digits=2),
-      humanReadable(x=SI2, width=NULL, digits=1),
-      humanReadable(x=IEC1, standard="IEC", width=7, digits=3),
-      humanReadable(x=IEC0, standard="IEC", width=7, digits=2),
-      humanReadable(x=IEC2, standard="IEC", width=7, digits=1))
+# Vector of sizes
+matrix(humanReadable(c(60810, 124141, 124, 13412513), width=4))
+matrix(humanReadable(c(60810, 124141, 124, 13412513), width=4, unit="KiB"))
+
+# Specify digits rather than width
+matrix(humanReadable(c(60810, 124141, 124, 13412513), width=NULL, digits=2))
+
+# Change the justification
+matrix(humanReadable(c(60810, 124141, 124, 13412513), width=NULL,
+                    justify=c("right", "right") ))
+
 }
 
 \keyword{misc}

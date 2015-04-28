@@ -1,7 +1,7 @@
 % write.fwf.Rd
 %--------------------------------------------------------------------------
 % What: Write fixed width format man page
-% $Id: write.fwf.Rd 1459 2010-11-12 19:08:12Z warnes $
+% $Id: write.fwf.Rd 1928 2015-04-14 22:02:01Z warnes $
 % Time-stamp: <2008-08-05 12:40:32 ggorjan>
 %--------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@
 write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
   rownames=FALSE, colnames=TRUE, rowCol=NULL, justify="left",
   formatInfo=FALSE, quoteInfo=TRUE, width=NULL, eol="\n",
-  qmethod=c("escape", "double"),  \dots)
+  qmethod=c("escape", "double"),  scientific=TRUE, \dots)
 
 }
 
@@ -54,6 +54,8 @@ write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
     '"escape"' (default), in which case the quote character is
     escaped in C style by a backslash, or '"double"', in which
     case it is doubled.  You can specify just the initial letter.}
+  \item{scientific}{logical, if TRUE, allow numeric values to be
+    formatted using scientific notation.}
   \item{\dots}{further arguments to
     \code{\link{format.info}} and \code{\link{format}}
   }
@@ -61,10 +63,8 @@ write.fwf(x, file="", append=FALSE, quote=FALSE, sep=" ", na="",
 
 \details{
 
-*F*ixed *w*idth *f*ormat is not used widely anymore. Use some other
-format (say *c*omma *s*eparated *v*alues; see \code{\link{read.csv}}) if
-you can. However, if you need fixed width format then \code{write.fwf}
-can help you.
+While *F*ixed *w*idth *f*ormat is no longer widely used, it remains
+common in some disciplines.
 
 Output is similar to \code{print(x)} or \code{format(x)}. Formatting is
 done completely by \code{\link{format}} on a column basis. Columns in
@@ -217,15 +217,22 @@ following columns:
   ## Force wider columns
   write.fwf(x=testData[, 1:5], width=20)
 
+  ## Show effect of 'scienfic' option
+  testData$num3 <- testData$num3 * 1e8
+  write.fwf(testData, scientific=TRUE)
+  write.fwf(testData, scientific=FALSE)
+  testData$num3 <- testData$num3 / 1e8
+
   ## Write to file and report format and fixed width information
   file <- tempfile()
   formatInfo <- write.fwf(x=testData, file=file, formatInfo=TRUE)
+  formatInfo
 
   ## Read exported data back to R (note +1 due to separator)
   ## ... without header
   read.fwf(file=file, widths=formatInfo$width + 1, header=FALSE, skip=1,
            strip.white=TRUE)
-
+  
   ## ... with header - via postimport modfication
   tmp <- read.fwf(file=file, widths=formatInfo$width + 1, skip=1,
                   strip.white=TRUE)

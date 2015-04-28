@@ -15,7 +15,7 @@ require 'module_tools.pl';
 my(
    $HAS_Spreadsheet_ParseExcel,
    $HAS_Compress_Raw_Zlib,
-   $HAS_Spreadsheet_XLSX
+   $HAS_Spreadsheet_ParseXLSX
   ) = check_modules_and_notify();
 
 use File::Spec::Functions;
@@ -24,7 +24,7 @@ use File::Spec::Functions;
 my($row, $col, $sheet, $cell, $usage,
    $filename, $volume, $directories, $whoami,
    $basename, $sheetnumber, $filename,
-   $text);
+   $text, $parser);
 
 
 ##
@@ -78,15 +78,18 @@ close(FH);
 my $oBook;
 
 ## First try as a Excel 2007+ 'xml' file
+## First try as a Excel 2007+ 'xml' file
 eval
   {
     local $SIG{__WARN__} = sub {};
-    $oBook = Spreadsheet::XLSX -> new ($ARGV[0]);
+    $parser = Spreadsheet::ParseXLSX -> new();
+    $oBook = $parser->parse ($ARGV[0]);
   };
 ## Then Excel 97-2004 Format
-if($@)
+if ( !defined $oBook )
   {
-    $oBook = new Spreadsheet::ParseExcel->Parse($ARGV[0]) or \
+    $parser = Spreadsheet::ParseExcel -> new();
+    $oBook = $parser->parse($ARGV[0]) or \
       die "Error parsing file '$ARGV[0]'.\n";
   }
 

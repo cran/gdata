@@ -1,7 +1,7 @@
 ### mapLevels.R
 ###------------------------------------------------------------------------
 ### What: Mapping levels
-### $Id: mapLevels.R 1797 2014-04-05 18:19:49Z warnes $
+### $Id: mapLevels.R 1991 2015-04-29 03:27:50Z warnes $
 ### Time-stamp: <2007-04-26 13:16:18 ggorjan>
 ###------------------------------------------------------------------------
 
@@ -300,8 +300,8 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
 
   ## --- Mapping levels in x ---
 
-  char <- all(lapply(value, is.character))
-  int <- all(lapply(value, is.integer))
+  char <- all(sapply(value, is.character))
+  int <- all(sapply(value, is.integer))
 
   if(int) { # codes=TRUE
     if(is.integer(x)) x <- factor(x)

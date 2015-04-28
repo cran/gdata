@@ -1,5 +1,3 @@
-# $Id: trim.R 1757 2013-12-16 19:58:56Z warnes $
-
 trim <- function(s, recode.factor=TRUE, ...)
   UseMethod("trim", s)
 
@@ -19,7 +17,7 @@ trim.factor <- function(s, recode.factor=TRUE, ...)
   if(recode.factor) {
     dots <- list(x=s, ...)
     if(is.null(dots$sort)) dots$sort <- sort
-    s <- do.call(what=reorder.factor, args=dots)
+    s <- do.call(what="reorder.factor", args=dots)
   }
   s
 }

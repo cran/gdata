@@ -1,5 +1,223 @@
+2015-04-29  warnes
+
+	* [r1992] tests/test.humanReadable.Rout.save,
+	  tests/test.read.xls.R, tests/test.read.xls.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Apparentely read.csv() needs
+	  different combination of "fileEncoding=`latin1`" and
+	  "encoding=`latin1`" on unix and windows platforms.
+	* [r1991] R/mapLevels.R: In mapLevels(), use sapply() instead of
+	  lapply() to avoid warning message.
+	* [r1990] tests/test.humanReadable.Rout.save,
+	  tests/test.read.xls.R, tests/test.read.xls.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Displaying all the latin1
+	  characters for diff isn't reliable across platforms. Simply
+	  summarize the latin1 data instead.
+	* [r1989] R/installXLSXsupport.R,
+	  tests/test.humanReadable.Rout.save, tests/test.read.xls.R,
+	  tests/test.read.xls.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Display read latin1 data so that
+	  diff can catch changes.
+
+2015-04-28  warnes
+
+	* [r1988] inst/ChangeLog: Update ChangeLog for gdata 2.16.1
+	* [r1987] inst/NEWS: Update NEWS for gdata 2.16.1
+	* [r1986] NAMESPACE: Remove no-longer defined methods.
+	* [r1985] man/reorder.Rd: Summary: Minor formatting changes, use
+	  rnorm() for X in example, and use set.seed() for consistent
+	  results.
+	* [r1984] man/first.Rd: Summary: Replace unicode single-quote
+	  characters with ASCII ones.
+	* [r1983] R/reorder.R: Summary: Call base::sort instead of sort,
+	  which has been redefined by arguments.
+	* [r1982] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog.
+	* [r1981] DESCRIPTION: Bump version number.
+	* [r1980] R/trim.R: Remove CVS header tag.
+	* [r1979] DESCRIPTION: Update version requirement for R (>= 2.3.0)
+	  and perl (5.10.0).
+	* [r1978] R/first.R, R/left.R, man/first.Rd: - first() and last()
+	  are now simply wrappers to utils::head() and
+	  utils::tail() with a default 'n=1' instead of 'n=6'.
+	  - Move code for left() and right() into a separate file.
+	* [r1977] R/reorder.R, man/reorder.Rd: If arguments 'X' or 'FUN' is
+	  supplied to reorder.factor(), mimic the
+	  behavior of stats::reorder.default() rather than trying to call
+	  it via
+	  NextMethod.
+
+2015-04-25  warnes
+
+	* [r1974] DESCRIPTION: List needs a conjuction
+	* [r1973] inst/NEWS: Fix spelling errors & typos
+	* [r1972] DESCRIPTION: Fix typographical errors
+	* [r1971] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog
+	  (again)
+	* [r1970] NAMESPACE, R/aggregate.table.R: Remove aggregate.table()
+	  entirely
+	* [r1969] tests/test.humanReadable.R,
+	  tests/test.humanReadable.Rout.save,
+	  tests/test.read.xls.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save: 'test.humanReadable.R' needed
+	  set.seed() to make the results consistent.
+	* [r1968] tests/test.humanReadable.Rout.save,
+	  tests/test.read.xls.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save: Update .save files
+	* [r1967] R/write.fwf.R: Missed on commit.
+	* [r1966] R/write.fwf.R, tests/test.humanReadable.Rout.save,
+	  tests/test.reorder.factor.Rout.save,
+	  tests/tests.write.fwf.Rout.save,
+	  tests/unitTests/runit.write.fwf.R: Modfy write.fwf() to properly
+	  handle matrix argument, avoiding conversion to dataframe unless
+	  rownames=TRUE. Add corresponding unit tests.
+	* [r1965] inst/perl/module_tools.pl: Installing PERL modules was
+	  failing. Adding CPAN configuration option fixed the problem.
+	* [r1964] inst/perl/xls2csv.pl: Error message about executable name
+	  was missing one alternative
+	* [r1963] DESCRIPTION: Better describe gdata contents
+	* [r1962] NAMESPACE: is.* and as.* aren't generics
+	* [r1961] man/humanReadable.Rd, man/object.size.Rd: Add 'justify'
+	  argument to print and format object_sizes methods
+	* [r1960] R/humanReadable.R, R/object.size.R: Add 'justify'
+	  argument to print and format object_sizes methods
+	* [r1959] R/write.fwf.R: Remove stray call to 'browser'
+	* [r1958] DESCRIPTION, inst/ChangeLog, inst/NEWS: Update
+	  DESCRIPTION, ChangeLog, and NEWS
+	* [r1957] NAMESPACE, R/humanReadable.R, R/object.size.R,
+	  man/humanReadable.Rd, man/object.size.Rd,
+	  tests/test.humanReadable.R, tests/test.humanReadable.Rout.save:
+	  Complete work on object.size(), object_sizes methods, and
+	  humanReadable.
+	* [r1956] inst/perl/Spreadsheet/ParseExcel.pm: Add error message if
+	  Excel file format is too old
+
+2015-04-23  warnes
+
+	* [r1953] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog
+	* [r1952] R/write.fwf.R: - write.fwf() now properly supports matrix
+	  objects, including matrix
+	  objects wihtout column names. (Reported by Carl Witthoft.)
+	* [r1951] inst/perl/xls2csv.pl: Remove 'use POSIX' from xls2csv.pl
+	  since it is no longer needed
+	* [r1939] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog
+	* [r1938] R/reorder.R: reorder.factor() now hands off processing to
+	  stats:::reorder.default() when either 'X' or 'FUN' is specified.
+
+2015-04-22  warnes
+
+	* [r1937] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog for
+	  changes to humanReadable()
+	* [r1936] DESCRIPTION, R/humanReadable.R, R/object.size.R,
+	  man/humanReadable.Rd: Fix 'units' argument of humanReadable()
+	* [r1935] man/object.size.Rd: Update object.size() man page to
+	  reflect change in class of return value from 'object_size' to
+	  'object_sizes'
+	* [r1934] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog for
+	  gdata 2.16.0
+	* [r1933] NAMESPACE, R/object.size.R: Modify gdaata:object.size to
+	  generate S3 objects of class 'object_sizes' (note the final 's')
+	  to avoid conflicts with methods in utils for object_size.
+	* [r1932] R/reorder.R, tests/test.reorder.factor.R,
+	  tests/test.reorder.factor.Rout.save: Correct behavior of
+	  reorder.factor() when argument 'X' is supplied by delgating to
+	  stats:::reorder.default()
+
+2015-04-14  warnes
+
+	* [r1929] inst/ChangeLog: Update ChangeLog
+	* [r1928] man/write.fwf.Rd: Remove editorializing
+	* [r1927] inst/ChangeLog, inst/NEWS: Update NEWS and ChangeLog for
+	  gdata 2.15.0
+	* [r1926] R/write.fwf.R, man/write.fwf.Rd: Add 'scientific'
+	  argument to write.fwf to allow control of whether numeric values
+	  can be displated using scientific notation.
+	* [r1925] inst/perl/xls2csv.pl: Replace depricated PERL function
+	  POSIX::isnumeric with equivalent regexp
+	* [r1924] inst/ChangeLog: Add gdata ChangeLog to SVN
+
+2015-04-10  warnes
+
+	* [r1922] DESCRIPTION, NAMESPACE, inst/NEWS: Update files for gdata
+	  2.15.0
+
+2015-04-08  warnes
+
+	* [r1919] R/first.R, man/first.Rd, man/left.Rd: Move
+	  first/last/left/right to from gtools to gdata
+
+2014-08-28  warnes
+
+	* [r1883] R/trim.R, inst/NEWS, inst/perl/xls2csv.pl,
+	  inst/xls/ExampleExcelFile.xls, inst/xls/ExampleExcelFile.xlsx,
+	  inst/xls/ExampleExcelFile_1900.xls,
+	  inst/xls/ExampleExcelFile_1900.xlsx,
+	  inst/xls/ExampleExcelFile_1904.xls,
+	  inst/xls/ExampleExcelFile_1904.xlsx, tests/test.read.xls.R,
+	  tests/test.read.xls.Rout.save, tests/tests.write.fwf.Rout.save:
+	  Everything works now!
+	* [r1882] inst/perl/Spreadsheet/ParseExcel/FmtDefault.pm: Suppress
+	  annoying warnings in Spreadsheet::ParseXLS::FmtDefalt.
+	* [r1881] inst/xls/ExampleExcelFile_1900.xls,
+	  inst/xls/ExampleExcelFile_1900.xlsx,
+	  inst/xls/ExampleExcelFile_1904.xls,
+	  inst/xls/ExampleExcelFile_1904.xlsx, tests/test.read.xls.R: Add
+	  tests and corresponding test files for 1900 and 1904 based
+	  XLX/XLSX files
+	* [r1880] inst/perl/Spreadsheet/XLSX,
+	  inst/perl/Spreadsheet/XLSX.pm, inst/perl/install_modules.pl,
+	  inst/perl/module_tools.pl, inst/perl/sheetCount.pl,
+	  inst/perl/supportedFormats.pl: Complete transition from
+	  Spreadsheet::XLSX to Spreadsheet::ParseXLSX
+	* [r1879] inst/perl/xls2csv.pl: Handle Excel files created on the
+	  Mac, where by default Excel uses
+	  1904-01-01 as the baseline for dates, rather than the usual
+	  1900-01-01.
+	* [r1878] inst/perl/Crypt/.exists, inst/perl/XML/.exists: Remove
+	  dotfiles
+	* [r1877] DESCRIPTION, inst/NEWS: Update for release
+	* [r1876] inst/xls/wide.xls, inst/xls/wide.xlsx: Add test for
+	  handling fo very wide xls and xlsx files.
+	* [r1875] tests/test.read.xls.R: Add test for handling fo very wide
+	  xls and xlsx files.
+	* [r1874] inst/perl/module_tools.pl, inst/perl/sheetCount.pl,
+	  inst/perl/xls2csv.pl: Modify code to use latest version of
+	  Spreadsheet::ParseExcel and to replace Spreadsheet::XLSX woth
+	  Spreadsheet::ParseXLSX
+	* [r1873] inst/perl/Crypt, inst/perl/Crypt/.exists,
+	  inst/perl/Crypt/RC4.pm, inst/perl/Digest, inst/perl/Digest/Perl,
+	  inst/perl/Digest/Perl/MD5.pm, inst/perl/Graphics,
+	  inst/perl/Graphics/ColorUtils.pm,
+	  inst/perl/Spreadsheet/ParseExcel.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Cell.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Dump.pm,
+	  inst/perl/Spreadsheet/ParseExcel/FmtDefault.pm,
+	  inst/perl/Spreadsheet/ParseExcel/FmtJapan.pm,
+	  inst/perl/Spreadsheet/ParseExcel/FmtJapan2.pm,
+	  inst/perl/Spreadsheet/ParseExcel/FmtUnicode.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Font.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Format.pm,
+	  inst/perl/Spreadsheet/ParseExcel/SaveParser.pm,
+	  inst/perl/Spreadsheet/ParseExcel/SaveParser/Workbook.pm,
+	  inst/perl/Spreadsheet/ParseExcel/SaveParser/Worksheet.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Utility.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Workbook.pm,
+	  inst/perl/Spreadsheet/ParseExcel/Worksheet.pm,
+	  inst/perl/Spreadsheet/ParseXLSX.pm,
+	  inst/perl/Spreadsheet/XLSX.pm, inst/perl/XML,
+	  inst/perl/XML/.exists, inst/perl/XML/Twig, inst/perl/XML/Twig.pm,
+	  inst/perl/XML/Twig/XPath.pm: Update Spreadsheet::ParseExcel, add
+	  Spreadsheet:ParseXLSX, add dependencies
+
 2014-04-05  warnes
 
+	* [r1801] tests/unitTests/runit.unknown.R: Apply same changes to
+	  NAToUnknown that were previously applied to
+	  unknownToNA for POSIXlt.
+	* [r1800] inst/NEWS: Update NEWS with latest changes
 	* [r1799] R/nobs.R: Call stats::nobs instead of
 	  stats:::nobs.default within
 	  gdata::nobs.default. This avoids R CMD check warning.
