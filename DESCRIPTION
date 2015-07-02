@@ -22,9 +22,9 @@ Description: Various R programming tools for data manipulation, including:
      scalar and vector arguments ('resample').
 Depends: R (>= 2.3.0)
 SystemRequirements: perl (>= 5.10.0)
-Imports: gtools
-Version: 2.16.1
-Date: 2015-04-28
+Imports: gtools, stats, methods, utils
+Version: 2.17.0
+Date: 2015-07-02
 Author: Gregory R. Warnes, Ben Bolker, Gregor Gorjanc, Gabor
         Grothendieck, Ales Korosec, Thomas Lumley, Don MacQueen, Arni
         Magnusson, Jim Rogers, and others
@@ -32,6 +32,6 @@ Maintainer: Gregory R. Warnes <greg@warnes.net>
 License: GPL-2
 NeedsCompilation: no
 Suggests: RUnit
-Packaged: 2015-04-29 15:32:39 UTC; warnes
+Packaged: 2015-07-03 23:13:13 UTC; warnes
 Repository: CRAN
-Date/Publication: 2015-05-01 15:26:32
+Date/Publication: 2015-07-04 09:51:58
