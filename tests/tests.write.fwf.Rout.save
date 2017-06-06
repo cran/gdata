@@ -1,6 +1,6 @@
 
-R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-apple-darwin13.4.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -36,6 +36,10 @@ The following object is masked from 'package:stats':
 The following object is masked from 'package:utils':
 
     object.size
+
+The following object is masked from 'package:base':
+
+    startsWith
 
 > 
 > ## --- Test data ---
@@ -231,4 +235,4 @@ HI! num1 num2 num3 int1 fac1 fac2 cha1 cha2 Date POSIXt
 > 
 > proc.time()
    user  system elapsed 
-  0.426   0.048   0.462 
+  0.333   0.044   0.392 
