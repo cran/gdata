@@ -23,7 +23,7 @@ Description: Various R programming tools for data manipulation, including:
 Depends: R (>= 2.3.0)
 SystemRequirements: perl (>= 5.10.0)
 Imports: gtools, stats, methods, utils
-Version: 2.18.0
+Version: 2.18.0.1
 Date: 2017-06-05
 Author: Gregory R. Warnes, Ben Bolker, Gregor Gorjanc, Gabor
         Grothendieck, Ales Korosec, Thomas Lumley, Don MacQueen, Arni
@@ -32,6 +32,6 @@ Maintainer: Gregory R. Warnes <greg@warnes.net>
 License: GPL-2
 NeedsCompilation: no
 Suggests: RUnit
-Packaged: 2017-06-05 21:27:42 UTC; gwarnes
+Packaged: 2022-05-10 12:33:07 UTC; ripley
 Repository: CRAN
-Date/Publication: 2017-06-06 15:34:19 UTC
+Date/Publication: 2022-05-10 16:42:52

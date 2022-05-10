@@ -3,7 +3,7 @@ is.what <- function(object, verbose=FALSE)
   do.test <- function(test, object)
   {
     result <- try(get(test)(object), silent=TRUE)
-    if(!is.logical(result) || is.na(result) || length(result)!=1)
+    if(!is.logical(result) || length(result)!=1 || is.na(result))
       result <- NULL
     return(result)
   }

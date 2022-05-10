@@ -1,5 +1,5 @@
 0c46058204b94013b5fa456893dc4c00 *ChangeLog
-58ea7fd4dc6d1eef72eeedc774865974 *DESCRIPTION
+99cd483dda0a85b4035e8390d96cb7ac *DESCRIPTION
 905fe9c5be6e143737163bc6317e6640 *INSTALL
 d9c89c6d5053540222d6360e8efc127b *NAMESPACE
 c449f3a8a7472e85450b46bf30440206 *NEWS
@@ -14,7 +14,7 @@ d1aa5d0677fb46d53b4e4628b18159c2 *R/combine.R
 23a1a2a8bf811331e02ccd5668567cf4 *R/drop.levels.R
 1e65b516ecac8ecc4d9caa8d66c6e494 *R/duplicated2.R
 3896b0c9e1e81f87adb9c876f3ecfbda *R/elem.R
-0388011f483caa3314a0688a376f7cc5 *R/env.R
+728e4f824f28aaf844d5d6126dd42448 *R/env.R
 7f43c48b182d910961f643876fefbdf9 *R/findPerl.R
 3044762c27f0a3b46a5d7d43e687e407 *R/first.R
 4f9c6613afb87d8360ea897bbc485fe7 *R/frameApply.R
@@ -22,10 +22,10 @@ d6474a86ab986d0cbcc8712797bbb57b *R/getDateTimeParts.R
 2c548ba3e816419eae43cfef033bc495 *R/humanReadable.R
 a4f086ff4289d532ac61ca2ecc5a8862 *R/installXLSXsupport.R
 037266e58fb3a611b3a56bb09c898abd *R/interleave.R
-e9594e1749df0f487eaab95db4253e59 *R/is.what.R
+3875f020830abb8fed9a3ec02179b207 *R/is.what.R
 67c1d25af3bb35db744d5534991d3b20 *R/keep.R
 b7b1031b972faf2efe7445fb5f396132 *R/left.R
-b8c1e8dbe508af1afa208883503679ec *R/ll.R
+bc63ed026a26b32bce14eeb2e5bbe6f8 *R/ll.R
 b75ac1b645046c8028d8014de255bd25 *R/ls.funs.R
 c88c8f75673c31e0f04a8799a91d1f60 *R/mapLevels.R
 e7d2246f66781fe99981b2dd083dd6cb *R/matchcols.R
@@ -132,8 +132,8 @@ c2cc0620d5e325d16db0fab03afdba9e *inst/xls/ExampleExcelFile_1904.xlsx
 a8cf07872660e85dab41367e2b4f08e5 *inst/xls/wide.xls
 47183196217c8b121f88bfd588beffed *inst/xls/wide.xlsx
 24a1020fb457c398c620457ad114e245 *man/Args.Rd
-b0dec88638d111fb8b0c75ebfd99cdfd *man/ConvertMedUnits.Rd
-673f2150582676c574a306697b29ffa5 *man/MedUnits.Rd
+e828a08507974114b533602642195f47 *man/ConvertMedUnits.Rd
+a7ab5f95ae295476346a26aec90e039f *man/MedUnits.Rd
 6fcbcc90f241aa78bc0cd4ba479ac9bd *man/ans.Rd
 140de526fc0a3c819dcd687e7bb3ed77 *man/bindData.Rd
 a4c69a81cca648bfdc2f6913229b4e0e *man/case.Rd
@@ -149,7 +149,7 @@ cf77c8066c350ae035771a0f28cccc16 *man/first.Rd
 dc8a3653f3c70778ccce2d926194adce *man/gdata-defunct.Rd
 34cfa7a16878f7d2032b49f350eec4a5 *man/gdata-package.Rd
 38580f70b4b3af84ebfa4b952dd7021b *man/getDateTimePart.Rd
-76c13487780d8ea770544678350e3f17 *man/humanReadable.Rd
+364b543833562e48e5cd0656b47f6f33 *man/humanReadable.Rd
 6beab4e8b711110199599f8427d1d042 *man/installXLSXsupport.Rd
 26bb8febce31195f8efcf071270913bc *man/interleave.Rd
 0d70b8cd533a830a68103355b1054ec5 *man/is.what.Rd
@@ -164,7 +164,7 @@ dfe069423abb32eaed74b2daad0a56d8 *man/ls.funs.Rd
 4e3ba1601ecb171596b609516d2e8911 *man/nobs.Rd
 6604b93792d11b827aaa6c40c9a9cb62 *man/object.size.Rd
 2ad3d3570252d4954bdf4d81ea3404fa *man/read.xls.Rd
-b73a198509b4fdcb4a24a85909309532 *man/rename.vars.Rd
+e8ec30f01bf91958cd91121e384f4f7f *man/rename.vars.Rd
 da64c27965060d0f35bed084a416a57a *man/reorder.Rd
 fc28b1b680997fd8ff2ab73478db4872 *man/resample.Rd
 55d4019112a5759791610fd48c20d4b3 *man/sheetCount.Rd

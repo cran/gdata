@@ -24,7 +24,7 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
   {
     object <- get(object.name, pos=pos)
     size <- try(unclass(object.size(object)), silent=TRUE)
-    if(class(size) == "try-error")
+    if(inherits(size,"try-error"))
       size <- 0
     return(size)
   }

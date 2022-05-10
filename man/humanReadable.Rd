@@ -95,9 +95,9 @@ formated similar to human readable format of the Unix \code{ls},
 \references{
 
 Wikipedia:
-\url{http://en.wikipedia.org/wiki/Byte}
-\url{http://en.wikipedia.org/wiki/SI_prefix}
-\url{http://en.wikipedia.org/wiki/Binary_prefix}
+\url{https://en.wikipedia.org/wiki/Byte}
+\url{https://en.wikipedia.org/wiki/SI_prefix}
+\url{https://en.wikipedia.org/wiki/Binary_prefix}
 
 GNU manual for coreutils:
 \url{http://www.gnu.org/software/coreutils/manual/html_node/Block-size.html#Block-size}
