@@ -1,10 +1,11 @@
-## s$Id: read.xls.R 1596 2012-08-22 15:45:22Z warnes $
+## s$Id$
 
 read.xls <- function(xls, sheet = 1, verbose=FALSE, pattern, 
                      na.strings = c("NA","#DIV/0!"), ...,
                      method=c("csv","tsv","tab"),
                      perl="perl")
 {
+  ## .Deprecated message will be shown from xls2sep() call below
   con <- tfn <- NULL
   on.exit({ 
 	err <- FALSE

@@ -5,7 +5,7 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
   {
     object <- get(object.name, pos=pos)
     class <- class(object)[1]
-    return(class)
+    class(object)[1]
   }
 
   get.object.dim <- function(object.name, pos)
@@ -17,26 +17,28 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
       dim <- paste(dim(object), collapse=" x ")
     else
       dim <- length(object)
-    return(dim)
+    dim
   }
 
   get.object.size <- function(object.name, pos)
   {
     object <- get(object.name, pos=pos)
     size <- try(unclass(object.size(object)), silent=TRUE)
-    if(inherits(size,"try-error"))
+    if(inherits(size, "try-error"))
       size <- 0
-    return(size)
+    size
   }
 
   ## 1  Set unit, denominator, original.rank
-  unit <- match.arg(unit, c("bytes","KB","MB"))
-  denominator <- switch(unit, "KB"=1024, "MB"=1024^2, 1)
+  unit <- match.arg(toupper(substring(unit,1,1)), c("B","KB","MB","GB"))
+  denominator <- switch(unit, "KB"=1024, "MB"=1024^2, "GB"=1024^3, 1)
   original.rank <- NULL
 
   ## 2  Detect what 'pos' is like, then get class, size, dim
   if(is.character(pos))  # pos is an environment name
     pos <- match(pos, search())
+  if(isS4(pos))  # pos is an S4 object
+    pos <- sapply(slotNames(pos), slot, object=pos, simplify=FALSE)
   if(is.list(pos))  # pos is a list-like object
   {
     if(is.null(names(pos)))
@@ -88,5 +90,5 @@ ll <- function(pos=1, unit="KB", digits=0, dim=FALSE, sort=FALSE, class=NULL,
     object.frame <- object.frame[include,]
   }
 
-  return(object.frame)
+  object.frame
 }

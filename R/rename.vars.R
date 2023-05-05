@@ -1,4 +1,4 @@
-# $Id: rename.vars.R 2072 2016-02-03 20:00:57Z warnes $
+# $Id$
 
 rename.vars <- function(data,from='',to='',info=TRUE) {
 

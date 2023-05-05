@@ -1,4 +1,4 @@
-% $Id: drop.levels.Rd 1096 2007-06-06 10:19:15Z ggorjan $
+% $Id$
 
 \name{drop.levels}
 \alias{drop.levels}

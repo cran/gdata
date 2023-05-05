@@ -1,7 +1,7 @@
 ### runit.mapLevels.R
 ###------------------------------------------------------------------------
 ### What: Unit tests for mapLevels et al.
-### $Id: runit.mapLevels.R 1784 2014-04-05 02:23:45Z warnes $
+### $Id$
 ### Time-stamp: <2006-10-29 16:41:41 ggorjan>
 ###------------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ test.cLevelsMap <- function()
   checkIdentical(c(mapCha, mapCha), mapChaTest3)
   checkIdentical(c(mapCha, recursive=TRUE), mapChaTest1)
 
-  checkException(c(mapLevels(f1))) # can not combine integer “levelsMaps”
+  checkException(c(mapLevels(f1))) # can not combine integer "levelsMaps"
 
   ## Example with maps of different length of components
   map1 <- list(A=c("a", "e", "i", "o", "u"), B="b", C="c", C="m",

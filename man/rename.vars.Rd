@@ -1,4 +1,4 @@
-% $Id: rename.vars.Rd 1435 2010-05-02 06:11:26Z warnes $
+% $Id$
 %
 % $Log$
 % Revision 1.9  2005/09/12 15:42:45  nj7w

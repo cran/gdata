@@ -1,37 +1,50 @@
 Package: gdata
+Version: 2.19.0
+Date: 2023-05-06
 Title: Various R Programming Tools for Data Manipulation
-Description: Various R programming tools for data manipulation, including:
-   - medical unit conversions ('ConvertMedUnits', 'MedUnits'),
-   - combining objects ('bindData', 'cbindX', 'combine', 'interleave'),
-   - character vector operations ('centerText', 'startsWith', 'trim'),
-   - factor manipulation ('levels', 'reorder.factor', 'mapLevels'),
-   - obtaining information about R objects ('object.size', 'elem', 'env',
-     'humanReadable', 'is.what', 'll', 'keep', 'ls.funs',
-     'Args','nPairs', 'nobs'),
-   - manipulating MS-Excel formatted files ('read.xls',
-     'installXLSXsupport', 'sheetCount', 'xlsFormats'),
-   - generating fixed-width format files ('write.fwf'),
-   - extricating components of date & time objects ('getYear', 'getMonth',
-     'getDay', 'getHour', 'getMin', 'getSec'),
-   - operations on columns of data frames  ('matchcols', 'rename.vars'),
-   - matrix operations ('unmatrix', 'upperTriangle', 'lowerTriangle'),
-   - operations on vectors ('case', 'unknownToNA', 'duplicated2', 'trimSum'),
-   - operations on data frames ('frameApply', 'wideByFactor'),
-   - value of last evaluated expression ('ans'), and
-   - wrapper for 'sample' that ensures consistent behavior for both
-     scalar and vector arguments ('resample').
+Authors@R: c(person(c("Gregory", "R."), "Warnes", role="aut", email="greg@warnes.net"),
+             person("Gregor", "Gorjanc", role="aut"),
+             person("Arni", "Magnusson", role=c("aut","cre"), email="thisisarni@gmail.com"),
+             person("Liviu", "Andronic", role="aut"),
+             person("Jim", "Rogers", role="aut"),
+             person("Don", "MacQueen", role="aut"),
+             person("Ales", "Korosec", role="aut"),
+             person("Ben", "Bolker", role="ctb"),
+             person("Michael", "Chirico", role="ctb"),
+             person("Gabor", "Grothendieck", role="ctb"),
+             person("Thomas", "Lumley", role="ctb"),
+             person("Brian", "Ripley", role="ctb"),
+             person("inoui llc", role="fnd"))
 Depends: R (>= 2.3.0)
-SystemRequirements: perl (>= 5.10.0)
-Imports: gtools, stats, methods, utils
-Version: 2.18.0.1
-Date: 2017-06-05
-Author: Gregory R. Warnes, Ben Bolker, Gregor Gorjanc, Gabor
-        Grothendieck, Ales Korosec, Thomas Lumley, Don MacQueen, Arni
-        Magnusson, Jim Rogers, and others
-Maintainer: Gregory R. Warnes <greg@warnes.net>
-License: GPL-2
-NeedsCompilation: no
+Imports: gtools, methods, stats, utils
 Suggests: RUnit
-Packaged: 2022-05-10 12:33:07 UTC; ripley
+SystemRequirements: perl (>= 5.10.0)
+Description: Various R programming tools for data manipulation, including
+  medical unit conversions, combining objects, character vector operations,
+  factor manipulation, obtaining information about R objects, manipulating
+  MS-Excel formatted files, generating fixed-width format files, extracting
+  components of date & time objects, operations on columns of data frames,
+  matrix operations, operations on vectors, operations on data frames, value of
+  last evaluated expression, and a resample() wrapper for sample() that ensures
+  consistent behavior for both scalar and vector arguments.
+License: GPL-2
+URL: https://github.com/r-gregmisc/gdata
+BugReports: https://github.com/r-gregmisc/gdata/issues
+NeedsCompilation: no
+Packaged: 2023-05-05 16:55:19 UTC; arnim
+Author: Gregory R. Warnes [aut],
+  Gregor Gorjanc [aut],
+  Arni Magnusson [aut, cre],
+  Liviu Andronic [aut],
+  Jim Rogers [aut],
+  Don MacQueen [aut],
+  Ales Korosec [aut],
+  Ben Bolker [ctb],
+  Michael Chirico [ctb],
+  Gabor Grothendieck [ctb],
+  Thomas Lumley [ctb],
+  Brian Ripley [ctb],
+  inoui llc [fnd]
+Maintainer: Arni Magnusson <thisisarni@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-05-10 16:42:52
+Date/Publication: 2023-05-05 23:00:02 UTC

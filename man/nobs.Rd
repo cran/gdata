@@ -1,4 +1,4 @@
-% $Id: nobs.Rd 1549 2012-06-06 21:11:07Z warnes $
+% $Id$
 %
 % $Log$
 % Revision 1.7  2005/09/12 15:42:45  nj7w

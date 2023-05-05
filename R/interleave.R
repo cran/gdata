@@ -1,4 +1,4 @@
-# $Id: interleave.R 789 2005-12-08 20:18:15Z warnes $
+# $Id$
 
 interleave <- function(..., append.source=TRUE, sep=": ", drop=FALSE)
   {

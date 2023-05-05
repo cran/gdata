@@ -1,4 +1,4 @@
-# $Id: nobs.R 1799 2014-04-05 18:38:23Z warnes $
+# $Id$
 
 ## Redefine here, so that the locally defined methods (particularly
 ## nobs.default) take precidence over the ones now defined in the

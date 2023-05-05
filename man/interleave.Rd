@@ -1,4 +1,4 @@
-% $Id: interleave.Rd 1603 2012-09-11 20:41:43Z warnes $
+% $Id$
 %
 % $Log$
 % Revision 1.8  2005/12/12 22:02:48  nj7w

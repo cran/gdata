@@ -1,4 +1,4 @@
-% $Id: combine.Rd 1435 2010-05-02 06:11:26Z warnes $
+% $Id$
 %
 % $Log$
 % Revision 1.4  2005/12/01 16:41:14  nj7w

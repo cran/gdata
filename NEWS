@@ -1,11 +1,89 @@
+Changes in 2.19.0 (2023-05-06)
+------------------------------
+
+New functions:
+
+- Added update.data.frame() to replace rows of a data frame.
+
+New features:
+
+- Added argument 'add.col.nums' to left() and right().
+
+Other changes:
+
+- Improved ll() so it handles S4 objects. Also accepts unit="GB" (contributed by
+  Michael Chirico) and unit="B", now case-insensitive.
+
+- Improved right() so it returns the rightmost columns of a matrix or data
+  frame.
+
+- Renamed first two arguments of startsWith() to 'x' and 'prefix'.
+
+- Removed elem() - was deprecated in gregmisc/gdata 2.0.3 (2005-02-25).
+
+- Excel file support is now deprecated, to be removed in the near future. At the
+  user level, the functions installXLSXsupport(), read.xls(), sheetCount(),
+  sheetNames(), xls2csv(), xls2sep(), xls2tab(), xls2tsv(), and xlsFormats() now
+  raise a warning about the functionality being deprecated. Excel file support
+  was first introduced in gregmisc/gdata 1.11.0 back in 2004, but today we have
+  packages such as openxlsx, readxl, XLConnect, and xlsx offering dedicated
+  Excel file support with more features. When Excel file support will be removed
+  from the gdata package, it will result in lighter package maintenance and no
+  more Perl warnings on the user side.
+
+- Package maintainer is Arni Magnusson.
+
+
+
+
+Changes in 2.18.0.1 (2022-05-10)
+--------------------------------
+
+Other changes:
+
+- Syntax improvements to pass CRAN checks, packaged by Brian Ripley.
+
+
+
+
+Changes in 2.18.0 (2017-06-05)
+------------------------------
+
+New functions:
+
+- Add update.list() function to replace named elements a list.
+
+- Add mv() function to rename an object.
+
+- Add first(), last(), first<-() and last<-() functions to extract
+  or replace first or last vector/list elements.
+
+New features:
+
+- Add 'byrow' argument to lowerTriangle() and upperTriangle() functions.
+
+Other changes:
+
+- humanReadable() now properly handles a single value for the argument
+  'justify'.
+
+- Improve logging and error reporting for remove.vars().
+
+- read.xls() now handles latin-1 files properly on MS Windows.
+
+- write.fwf() now properly handles matrix arguments.
+
+
+
+
 Changes in 2.17.0 (2015-07-02)
 ------------------------------
 
 New features:
 
 - Add new argument 'byrow' to upperTriangle(), lowerTriangle(),
-  upperTriangle<-(), and lowerTriangle<-() to specify by-row rather
-  by-column order.  This makes it simpler to copy values between the
+  upperTriangle<-(), and lowerTriangle<-() to specify by row rather than
+  by column order.  This makes it simpler to copy values between the
   lower and upper triangular areas, e.g. to construct a symmetric
   matrix.
 
@@ -14,6 +92,8 @@ Other changes:
 - Add inline comments to tests to alert reviewers of expected diffs on
   systems lacking the libraries for read.xls() to support XLSX
   formatted files.
+
+
 
 
 Changes in 2.16.1 (2015-04-28)
@@ -30,6 +110,8 @@ Other changes:
 
 - first() and last() are now simply wrappers for calls to 'head(x, n=1)' and
   'tail(x, n=1)', respectively.
+
+
 
 
 Changes in 2.16.0 (2015-04-25)
@@ -90,6 +172,8 @@ Other changes:
   has now been completely removed.
 
 
+
+
 Changes in 2.14.0 (2014-08-27)
 ------------------------------
 
@@ -109,6 +193,8 @@ Other changes:
   Spreadsheet::ParseXLSX.
 
 
+
+
 Changes in 2.13.3 (2014-04-04)
 ------------------------------
 
@@ -125,6 +211,9 @@ Other Changes:
 
 - Minor changes to clean up R CMD check warnings.
 
+
+
+
 Changes in 2.13.2 (2013-06-28)
 ------------------------------
 
@@ -135,6 +224,9 @@ Enhancements:
 
 - Working of deprecation warning message in aggregate.table clarified.
 
+
+
+
 Changes in 2.13.1 (2013-03-24)
 ------------------------------
 
@@ -142,6 +234,8 @@ Enhancements:
 
 - Replaced calls to depreciated function ".path.package" with the new
   public function "path.package".
+
+
 
 
 Changes in 2.13.0 (2012-09-20)
@@ -169,6 +263,8 @@ Bug Fixes:
   reversed and misspelled.
 
 
+
+
 Changes in 2.12.0 (2012-09-12)
 ------------------------------
 
@@ -185,6 +281,9 @@ Other Changes:
    is depreciated and recommending the equivalent call to tapply. It
    will be removed entirely in a future version of gdata.
 
+
+
+
 Changes in 2.11.1 (2012-08-22)
 ------------------------------
 
@@ -198,6 +297,8 @@ Bug Fixes:
 - The perl script utilized by read.xls() was incorrectly appending a
   space character at the end of each line, causing problems with
   character and NA entries in the final column.
+
+
 
 
 Changes in 2.11.0 (2012-06-18)
@@ -218,6 +319,8 @@ Other Changes:
   gdata to function fully.
 
 
+
+
 Changes in 2.10.6 (2012-06-12)
 ------------------------------
 
@@ -226,8 +329,11 @@ Bug fixes:
 - gdata::nobs.default() needs to handle logical vectors in addition to
   numeric vectors.
 
-Changes in 2.10.{3,4,5} (2012-06-08)
-------------------------------------
+
+
+
+Changes in 2.10.5 (2012-06-08)
+------------------------------
 
 Bug fixes:
 
@@ -241,12 +347,16 @@ Other Changes:
 - Add dependency on R 2.13.0, since that is when stats::nobs appeared.
 
 
+
+
 Changes in 2.10.2 (2012-06-06)
----------------------------------------
+------------------------------
 
 Bug fixes:
 
 - Fix issues in nobs.default identified in testing with the gmodels package.
+
+
 
 
 Changes in 2.10.1 (2012-06-06)
@@ -257,6 +367,8 @@ Bug fixes:
 - Undo removal of 'nobs' and 'nobs.lm'.  Instead define aliases for
   'nobs' and 'nobs.lm' to support backward compatibility for packages
   depending on gdata.
+
+
 
 
 Changes in 2.10.0 (2012-06-05)
@@ -270,21 +382,20 @@ New features:
 - New startsWith() function to determine if a string "starts with" the
   specified characters.
 
-
 Enhancements:
 
 - Add 'na.strings' argument to read.xls() to convert Excel's '#DIV/0!' to NA.
-
 
 Bug fixes:
 
 - Correct various R CMD check warnings
 
-
 Other changes:
 
 - Base S3 method for nobs() and nobs.lm() method removed since these
   are now provided in the stats package.
+
+
 
 
 Changes in 2.9.0 (2011-09-30)
@@ -302,7 +413,10 @@ Enhancements:
 
 - Minor improvements to xls2csv() man page.
 
-CHANGES IN 2.8.1 (2011-04-15)
+
+
+
+Changes in 2.8.1 (2011-04-15)
 -----------------------------
 
 Enhancements:
@@ -312,10 +426,13 @@ Enhancements:
 
 Bug fixes:
 
-- Fix errors on windows when R or Perl install path includes spaces by properly quoting the path.
+- Fix errors on windows when R or Perl install path includes spaces by properly
+  quoting the path.
 
 
-CHANGES IN 2.8.1 (2010-11-12)
+
+
+Changes in 2.8.1 (2010-11-12)
 -----------------------------
 
 Enhancements:
@@ -331,7 +448,9 @@ Bug fixes:
   on Windows network shares.
 
 
-CHANGES IN 2.8.0 (2010-04-03)
+
+
+Changes in 2.8.0 (2010-04-03)
 -----------------------------
 
 Enhancements:
@@ -353,7 +472,9 @@ Enhancements:
   'XLSX' files.
 
 
-CHANGES IN 2.7.3 (2010-04-02)
+
+
+Changes in 2.7.3 (2010-04-02)
 -----------------------------
 
 Enhancements:
@@ -367,12 +488,15 @@ Bug Fixes:
   Spreadsheet::XLSX at build/compile time.  This should resolve recent
   build issues, particularly on Windows.
 
-- All perl code can now operate (but generate warnings) when perl modules Compress::Raw::Zlib and
-  Spreadsheet::XLSX when are not installed.
+- All perl code can now operate (but generate warnings) when perl modules
+  Compress::Raw::Zlib and Spreadsheet::XLSX when are not installed.
 
 - Also update Greg's email address.
 
-CHANGES IN 2.7.1 (2010-02-19)
+
+
+
+Changes in 2.7.1 (2010-02-19)
 -----------------------------
 
 Enhancements:
@@ -381,7 +505,10 @@ Enhancements:
   Rtools perl would have otherwise been used in read.xls and other perl
   dependent functions.
 
-CHANGES IN 2.7.0 (2010-01-25)
+
+
+
+Changes in 2.7.0 (2010-01-25)
 -----------------------------
 
 Bug Fixes:
@@ -389,7 +516,9 @@ Bug Fixes:
 - Fix building of Perl libraries on Win32
 
 
-CHANGES IN 2.7.0 (2010-01-25)
+
+
+Changes in 2.7.0 (2010-01-25)
 -----------------------------
 
 Enhancements:
@@ -402,8 +531,6 @@ Enhancements:
 
 - Improved ll() so user can limit output to specified classes
 
-
-
 New Functions:
 
 - sheetCount() and sheetNames() to determine the number and names of
@@ -415,9 +542,10 @@ Bug Fixes:
 
 - Resolve crash of "ll(.GlobalEnv)"
 
--
 
-CHANGES IN 2.6.1 (2009-07-15)
+
+
+Changes in 2.6.1 (2009-07-15)
 -----------------------------
 
 Bug Fixes
@@ -425,7 +553,9 @@ Bug Fixes
 - Modify unit tests to avoid issues related to time zones.
 
 
-CHANGES IN 2.6.0 (2009-07-15)
+
+
+Changes in 2.6.0 (2009-07-15)
 -----------------------------
 
 Bug Fixes
@@ -466,18 +596,21 @@ Other Changes
 - Correct Greg's email address
 
 
-CHANGES IN 2.5.0
-----------------
+
+
+Changes in 2.5.0 (2008-12-31)
+-----------------------------
 
 - New function .runRUnitTestsGdata that enables run of all RUnit tests during
   the R CMD check as well as directly from within R.
 
-- Enhanced function object.size that returns the size of multiple objects. There
-  is also a handy print method that can print size of an object in "human readable"
-  format when options(humanReadable=TRUE) or print(x, humanReadable=TRUE).
+- Enhanced function object.size that returns the size of multiple objects.
+  There is also a handy print method that can print size of an object in
+  "human readable" format when options(humanReadable=TRUE) or
+  print(x, humanReadable=TRUE).
 
-- New function bindData that binds two data frames into a multivariate data frame
-  in a different way than merge.
+- New function bindData that binds two data frames into a multivariate data
+  frame in a different way than merge.
 
 - New function wideByFactor that reshapes given dataset by a given factor -
   it creates a "multivariate" data.frame.
@@ -495,7 +628,10 @@ CHANGES IN 2.5.0
 - write.fwf gains the width argument. The value for unknown can increase or
   decrease the width of the columns. Additional tests and documentation fixes.
 
-CHANGES IN 2.4.2 (2008-05-11)
+
+
+
+Changes in 2.4.2 (2008-05-11)
 -----------------------------
 
 - Enhancements and bug fixes for read.xls() and xls2csv():
@@ -515,7 +651,10 @@ CHANGES IN 2.4.2 (2008-05-11)
        Robert Burns for pointing out the patch
        (http://rt.cpan.org/Public/Bug/Display.html?id=7206)
 
-CHANGES IN 2.4.1 (2008-03-24)
+
+
+
+Changes in 2.4.1 (2008-03-24)
 -----------------------------
 
 - Update perl libraries needed by xls2csv() and read.xls()
@@ -528,7 +667,10 @@ CHANGES IN 2.4.1 (2008-03-24)
 
 - Fix typo in win32 example for read.xls()
 
-CHANGES IN 2.4.0 (2008-01-30)
+
+
+
+Changes in 2.4.0 (2008-01-30)
 -----------------------------
 
 - The keep() function now includes an 'all' argument to specify how
@@ -563,7 +705,10 @@ CHANGES IN 2.4.0 (2008-01-30)
 
 - Implementation of unit tests for most functions.
 
-CHANGES IN 2.3.1 (2006-10-29)
+
+
+
+Changes in 2.3.1 (2006-10-29)
 -----------------------------
 
 - Arguments as well as their position of reorder.factor have been changed
@@ -581,8 +726,11 @@ CHANGES IN 2.3.1 (2006-10-29)
 
 - Added write.fwf, which writes file in *F*ixed *W*idth *F*ormat.
 
-CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
----------------------------------------
+
+
+
+Changes in 2.3.0 (2006-09-19)
+-----------------------------
 
 - Added mapLevels(), which produces a map with information on levels and/or
   internal integer codes.  Contributed by Gregor Gorjanc.
@@ -603,8 +751,11 @@ CHANGES FROM 2.1.X to 2.3.0 (2006-09-19)
 
 - Updated my email address.
 
-CHANGES IN GDATA 2.1.2
------------------------
+
+
+
+Changes in 2.1.2 (2012-10-29)
+-----------------------------
 
  - Fixed bug in interleave.R - option to covert 1-column matrices to
    vector (based on Andrew Burgess's suggestion)
@@ -630,8 +781,10 @@ CHANGES IN GDATA 2.1.2
 -  Updated the example in frameApply
 
 
-CHANGES IN GDATA 2.0.8
------------------------
+
+
+Changes in 2.0.8 (2005-06-02)
+-----------------------------
 
  - Added DESCRIPTION and removed DESCRIPTION.in
 

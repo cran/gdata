@@ -1,0 +1,41 @@
+
+R version 4.2.3 (2023-03-15) -- "Shortstop Beagle"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(gdata)
+
+Attaching package: 'gdata'
+
+The following object is masked from 'package:stats':
+
+    nobs
+
+The following object is masked from 'package:utils':
+
+    object.size
+
+The following object is masked from 'package:base':
+
+    startsWith
+
+> saveto <- tempfile(pattern = "test.txt", tmpdir = tempdir())
+> 
+> write.fwf(x = data.frame(a=1:length(LETTERS), b=LETTERS),
++           file=saveto, eol="\r\n")
+> 
+> proc.time()
+   user  system elapsed 
+  0.082   0.011   0.088 

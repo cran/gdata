@@ -1,12 +1,13 @@
 ### runit.write.fwf.R
 ###------------------------------------------------------------------------
 ### What: Unit tests for write.fwf
-### $Id: runit.write.fwf.R 1966 2015-04-25 16:23:31Z warnes $
+### $Id$
 ### Time-stamp: <2008-08-05 11:58:50 ggorjan>
 ###------------------------------------------------------------------------
 
 ### {{{ --- Test setup ---
 
+# For debugging convenience
 if(FALSE) {
   library("RUnit")
   library("gdata")

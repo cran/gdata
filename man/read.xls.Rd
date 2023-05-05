@@ -59,13 +59,28 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
   Caution: If you call \code{"xls2csv"} directly, is your responsibility 
   to close and delete the file after using it.
 }
-\references{http://www.analytics.washington.edu/statcomp/downloads/xls2csv}
+%\references{http://www.analytics.washington.edu/statcomp/downloads/xls2csv}
 \note{ Either a working version of Perl must be present in the executable
   search path, or the exact path of the perl executable must be provided
   via the \code{perl} argument.  See the examples below for an illustration.}
+\section{Warning}{
+  Excel file support is deprecated in gdata version 2.19.0, to be
+  removed in the near future. At the user level, the functions
+  \code{installXLSXsupport}, \code{read.xls}, \code{sheetCount},
+  \code{sheetNames}, \code{xls2csv}, \code{xls2sep}, \code{xls2tab},
+  \code{xls2tsv}, and \code{xlsFormats} now raise a warning about the
+  functionality being deprecated.
+
+  Excel file support was first introduced in gregmisc/gdata 1.11.0 back
+  in 2004, but today we have packages such as openxlsx, readxl,
+  XLConnect, and xlsx offering dedicated Excel file support with more
+  features. When Excel file support will be removed from the gdata
+  package, it will result in lighter package maintenance and no more
+  Perl warnings on the user side.
+}
 \seealso{ \code{\link[utils]{read.csv}} }
 \examples{
-
+   \dontrun{
    # iris.xls is included in the gregmisc package for use as an example
    xlsfile <- file.path(path.package('gdata'),'xls','iris.xls')
    xlsfile
@@ -76,23 +91,10 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
 
    head(iris)  # look at the top few rows
 
-   \dontshow{
-   iris.1 <- read.xls(xlsfile) # defaults to csv format
-   iris.2 <- read.xls(xlsfile,method="csv") # specify csv format
-   iris.3 <- read.xls(xlsfile,method="tab") # specify tab format
-
-   stopifnot(all.equal(iris.1, iris.2))
-   stopifnot(all.equal(iris.1, iris.3))
-   }
-
-
-  \dontrun{
    ## Example specifying exact Perl path for default MS-Windows install of
    ## ActiveState perl
    iris <- read.xls(xlsfile, perl="C:/perl/bin/perl.exe")
-   }
 
-   \dontrun{
    ## Example specifying exact Perl path for Unix systems
    iris <- read.xls(xlsfile, perl="/usr/bin/perl")
 
@@ -100,16 +102,16 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
    ## (read.xls automatically calls findPerl so this is rarely needed)
    perl <- gdata:::findPerl("perl")
    iris <- read.xls(xlsfile, perl=perl)
-   }
 
-   \dontrun{
-   ## read xls file from net
-   nba.url <- "http://mgtclass.mgt.unm.edu/Bose/Excel/Tutorial.05/Cases/NBA.xls"
-   nba <- read.xls(nba.url)
-   }
+   ## read example xls file from github
+   xls.url <- paste0(
+      "https://github.com/r-gregmisc/gdata/blob/master/",
+      "inst/xls/ExampleExcelFile.xls?raw=true"
+      )
+   xls <- read.xls(xls.url)
 
-   \dontrun{
    ## read xls file ignoring all lines prior to first containing State
+   ## (This URL is no longer valid.)
    crime.url <- "http://www.jrsainfo.org/jabg/state_data2/Tribal_Data00.xls"
    crime <- read.xls(crime.url, pattern = "State")
 
@@ -117,7 +119,6 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
    con <- xls2csv(crime.url)
    print(readLines(con, 2)) 
    file.remove(summary(con)$description)
-   }
 
    ## Examples demonstrating selection of specific 'sheets'
    ## from the example XLS file 'ExampleExcelFile.xls'
@@ -150,8 +151,7 @@ xls2sep(xls, sheet=1, verbose=FALSE, blank.lines.skip=TRUE, ...,
    latinFile <- file.path(path.package('gdata'),'xls','latin-1.xls')
    latin1 <- read.xls(latinFile, fileEncoding="latin1")
    colnames(latin1)
-
-
+   }
 }
 \author{
   Gregory R. Warnes \email{greg@warnes.net},
