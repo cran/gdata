@@ -1,3 +1,18 @@
+Changes in 3.0.0 (2023-10-09)
+-----------------------------
+
+Other changes:
+
+- Removed installXLSXsupport(), read.xls(), sheetCount(), sheetNames(),
+  xls2csv(), xls2tab(), xls2tsv(), xls2sep(), and xlsFormats(). See gdata 2.19.0
+  NEWS entry announcing their deprecation.
+
+- Added aliases n_obs(), object_size(), and starts_with(). Deprecated
+  gdata::object.size().
+
+
+
+
 Changes in 2.19.0 (2023-05-06)
 ------------------------------
 
@@ -123,7 +138,7 @@ New features:
   of an object.
 
 - New functions left() and right() to return the leftmost or
-  rightmost n (default to 6) columns of a matrix or dataframe.
+  rightmost n (default to 6) columns of a matrix or data frame.
 
 - New 'scientific' argument to write.fwf().  Set 'scientific=FALSE' to
   prevent numeric columns from being displayed using scientific
@@ -455,7 +470,7 @@ Changes in 2.8.0 (2010-04-03)
 
 Enhancements:
 
-- When loaded, gtools (via an .onAttach() function) now checks:
+- When loaded, gdata (via an .onAttach() function) now checks:
    1) if perl is available
    2) whether the perl libraries for XLS support are available
    3) whether the perl libraries for XLSX support are available

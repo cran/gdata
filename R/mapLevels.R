@@ -1,16 +1,4 @@
-### mapLevels.R
-###------------------------------------------------------------------------
-### What: Mapping levels
-### $Id$
-### Time-stamp: <2007-04-26 13:16:18 ggorjan>
-###------------------------------------------------------------------------
-
-### {{{ mapLevels
-
-###------------------------------------------------------------------------
-
-mapLevels <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
-                      combine=FALSE, ...)
+mapLevels <- function(x, codes=TRUE, sort=TRUE, drop=FALSE, combine=FALSE, ...)
 {
   UseMethod("mapLevels")
 }
@@ -29,26 +17,24 @@ mapLevels.character <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
 }
 
 ## Could coerce character to factor and then use factor method, but that
-## is more expensive than simple unique and length used bellow in factor
+## is more expensive than simple unique and length used below in factor
 ## method
 
 mapLevels.factor <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
                              combine=FALSE, ...)
 {
-  ## --- Argument actions ----
-
-  if(is.factor(x)) { # factor
+  ## Argument actions
+  if(is.factor(x)) {  # factor
     if(drop) x <- factor(x)
     nlevs <- nlevels(x)
     levs <- levels(x)
-  } else {           # character
+  } else {            # character
     levs <- unique(x)
     nlevs <- length(levs)
     if(sort) levs <- sort(levs, ...)
   }
 
-  ## --- Create a map ---
-
+  ## Create a map
   map <- vector(mode="list", length=nlevs)
   names(map) <- levs
   if(codes) {
@@ -81,10 +67,6 @@ mapLevels.data.frame <- function(x, codes=TRUE, sort=TRUE, drop=FALSE,
   mapLevels.list(x, codes=codes, sort=sort, drop=drop, combine=combine, ...)
 }
 
-### }}}
-### {{{ print.*
-###------------------------------------------------------------------------
-
 .unlistLevelsMap <- function(x, ind=FALSE)
 {
   y <- unlist(x, use.names=FALSE)
@@ -109,10 +91,6 @@ print.listLevelsMap <- function(x, ...)
   print(x, ...)
 }
 
-### }}}
-### {{{ [.*
-###------------------------------------------------------------------------
-
 ## We need these two since [.list method drops class
 
 "[.levelsMap" <- function(x, i)
@@ -133,10 +111,6 @@ print.listLevelsMap <- function(x, ...)
   x
 }
 
-### }}}
-### {{{ is.*
-###------------------------------------------------------------------------
-
 is.levelsMap <- function(x)
   inherits(x=x, what="levelsMap")
 
@@ -151,10 +125,6 @@ is.listLevelsMap <- function(x)
     stop(sprintf("can be used only on %s", dQuote("levelsMap")))
   }
 }
-
-### }}}
-### {{{ as.*
-###------------------------------------------------------------------------
 
 as.levelsMap <- function(x, check=TRUE, ...)
 {
@@ -172,10 +142,6 @@ as.listLevelsMap <- function(x, check=TRUE)
   x
 }
 
-### }}}
-### {{{ .check*
-###------------------------------------------------------------------------
-
 .checkLevelsMap <- function(x, method) {
   xLab <- deparse(substitute(x))
   also <- "\b"
@@ -186,7 +152,6 @@ as.listLevelsMap <- function(x, check=TRUE)
   }
   if(!is.list(x) || is.null(names(x)))
     stop(sprintf("'%s' must be %s a named list", xLab, also))
-
   ## Components can be of different length
   ##  if(!all(sapply(x, FUN=length) == 1))
   ##  stop(sprintf("all components of '%s' must have length 1", xLab))
@@ -206,15 +171,11 @@ as.listLevelsMap <- function(x, check=TRUE)
   lapply(x, FUN=.checkLevelsMap, method=method)
 }
 
-### }}}
-### {{{ c.*
-###------------------------------------------------------------------------
-
 c.levelsMap <- function(..., sort=TRUE, recursive=FALSE)
 {
   x <- list(...)
   class(x) <- "listLevelsMap"
-  ## we use recursive=TRUE here because ... is a lists of lists
+  ## We use recursive=TRUE here because ... is a lists of lists
   c(x, sort=sort, recursive=TRUE)
 }
 
@@ -230,7 +191,7 @@ c.listLevelsMap <- function(..., sort=TRUE, recursive=FALSE)
       stop(sprintf("can not combine integer %s", dQuote("levelsMaps")))
     if(!is.null(names(x))) names(x) <- NULL
     x <- unlist(x, recursive=FALSE)
-    ## how to merge components with the same name?
+    ## How to merge components with the same name?
     class(x) <- "levelsMap"
     if(sort) x <- sort(x)
     x <- unique(x)
@@ -238,16 +199,8 @@ c.listLevelsMap <- function(..., sort=TRUE, recursive=FALSE)
   x
 }
 
-### }}}
-### {{{ sort
-###------------------------------------------------------------------------
-
 sort.levelsMap <- function(x, decreasing=FALSE, na.last=TRUE, ...)
   x[order(names(x), na.last=na.last, decreasing=decreasing)]
-
-### }}}
-### {{{ unique
-###------------------------------------------------------------------------
 
 unique.levelsMap <- function(x, incomparables=FALSE, ...)
 {
@@ -257,13 +210,13 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
   test <- duplicated(cbind(y[[1]], names(y[[1]])),
                      incomparables=incomparables, ...)
   if(any(test)) {
-    if(any(y[[3]] > 1)) { # work with the same structure as in x
+    if(any(y[[3]] > 1)) {  # work with the same structure as in x
       j <- 1
       k <- y[[3]][1]
       empty <- NULL
-      for(i in seq(along=x)) { # how slow is this loop?
+      for(i in seq(along=x)) {  # how slow is this loop?
         tmp <- !test[j:k]
-        if(all(!tmp)) { # these components will be empty
+        if(all(!tmp)) {  # these components will be empty
           empty <- c(empty, i)
         } else {
           x[[i]] <- x[[i]][tmp]
@@ -273,43 +226,37 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
       }
       if(!is.null(empty))
         x[empty] <- NULL
-    } else { # simple one-length components
+    } else {  # simple one-length components
       x <- x[!test]
     }
   }
   x
 }
 
-### }}}
-### {{{ mapLevels<-
-
-###------------------------------------------------------------------------
-
 "mapLevels<-" <- function(x, value)
   UseMethod("mapLevels<-")
 
 "mapLevels<-.default" <- function(x, value)
 {
-  ## --- Checks ---
-
+  ## Checks
   classX <- c("integer", "character", "factor")
   if(any(!(class(x) %in% classX)))
-    stop(sprintf("'x' must be either: %s", paste(dQuote(classX), collapse=", ")))
+    stop(sprintf("'x' must be either: %s",
+                 paste(dQuote(classX), collapse=", ")))
 
   .checkLevelsMap(x=value, method="class")
 
-  ## --- Mapping levels in x ---
-
+  ## Mapping levels in x
   char <- all(sapply(value, is.character))
   int <- all(sapply(value, is.integer))
 
-  if(int) { # codes=TRUE
+  if(int) {  # codes=TRUE
     if(is.integer(x)) x <- factor(x)
     if(is.factor(x)) levels(x) <- value
     if(is.character(x))
       stop(sprintf("can not apply integer %s to %s",
                    dQuote("levelsMap"), dQuote("character")))
-  } else {  # codes=FALSE
+  } else {   # codes=FALSE
     if(!char)
       stop("all components of 'value' must be of the same class")
     if(is.character(x)) x <- factor(x)
@@ -326,7 +273,7 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
   if(!is.listLevelsMap(value)) {
     if(is.levelsMap(value)) {
       value <- as.listLevelsMap(list(value), check=FALSE)
-      ## no need for check as default method does checking anyway
+      ## No need for check as default method does checking anyway
     } else {
       stop(sprintf("'x' must be either %s or %s",
                    dQuote("listLevelsMap"), dQuote("levelsMap")))
@@ -341,13 +288,3 @@ unique.levelsMap <- function(x, incomparables=FALSE, ...)
   x[] <- "mapLevels<-.list"(x, value)
   x
 }
-
-### }}}
-### {{{ Dear Emacs
-## Local variables:
-## folded-file: t
-## End:
-### }}}
-
-###------------------------------------------------------------------------
-### mapLevels.R ends here

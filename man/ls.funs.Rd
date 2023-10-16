@@ -6,7 +6,7 @@
   specified environment.
 }
 \usage{
-ls.funs(...)
+ls.funs(\dots)
 }
 \arguments{
   \item{\dots}{Arguments passed to \code{ls}. See the help for
@@ -32,7 +32,5 @@ ls.funs()
 ## List functions available in the base package:
 ls.funs("package:base")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{misc}
 \keyword{environment}

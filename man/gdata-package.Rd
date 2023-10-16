@@ -4,7 +4,7 @@
 \docType{package}
 \title{Various R Programming Tools for Data Manipulation}
 \description{
-Various R programming tools for data manipulation, including:
+  Various R programming tools for data manipulation, including:
   \itemize{
     \item Medical unit conversions: \code{\link{ConvertMedUnits}},
       \code{\link{MedUnits}}
@@ -16,13 +16,10 @@ Various R programming tools for data manipulation, including:
     \item Factor manipulation: \code{\link{levels}},
       \code{\link{reorder.factor}}, \code{\link{mapLevels}}
     \item Obtaining information about R objects:
-      \code{\link{object.size}}, \code{\link{env}},
+      \code{\link{object_size}}, \code{\link{env}},
       \code{\link{humanReadable}}, \code{\link{is.what}},
       \code{\link{ll}}, \code{\link{keep}}, \code{\link{ls.funs}},
       \code{\link{Args}}, \code{\link{nPairs}}, \code{\link{nobs}}
-    \item Manipulating MS-Excel formatted files: \code{\link{read.xls}},
-      \code{\link{installXLSXsupport}}, \code{\link{sheetCount}},
-      \code{\link{xlsFormats}}
     \item Generating fixed-width format files: \code{\link{write.fwf}}
     \item Extracting components of date & time objects:
       \code{\link{getYear}}, \code{\link{getMonth}},

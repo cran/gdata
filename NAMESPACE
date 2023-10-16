@@ -1,6 +1,4 @@
-
-export(
-       .onAttach,
+export(.onAttach,
        ans,
        Args,
        bindData,
@@ -13,33 +11,28 @@ export(
        duplicated2,
        env,
        first,
-       'first<-',
+       "first<-",
        frameApply,
-       installXLSXsupport,
        interleave,
        is.what,
        keep,
        last,
-       'last<-',
+       "last<-",
        left,
        ll,
        ls.funs,
        lowerTriangle,
        "lowerTriangle<-",
        matchcols,
-       nobs,  # default method now provided by stats package
+       nobs, n_obs,
        nPairs,
        mv,
-       read.xls,
        rename.vars,
        remove.vars,
        reorder.factor,
        resample,
        right,
-       # runPerlScript,
-       sheetCount,
-       sheetNames,
-       startsWith,
+       startsWith, starts_with,
        trim,
        trimSum,
        unmatrix,
@@ -49,14 +42,9 @@ export(
        "upperTriangle<-",
        wideByFactor,
        write.fwf,
-       xls2csv,
-       xls2tab,
-       xls2tsv,
-       xls2sep,
-       xlsFormats,
 
        ## Object size stuff
-       object.size, as.object_sizes, is.object_sizes, humanReadable,
+       object_size, as.object_sizes, is.object_sizes, humanReadable, object.size,
 
        ## getDateTime stuff
        getYear, getMonth, getDay, getHour, getMin, getSec,
@@ -72,7 +60,7 @@ importFrom(stats, reorder)
 importFrom(stats, nobs)
 importFrom(gtools, mixedsort)
 importFrom(methods, is, slot, slotNames)
-importFrom(utils, data, download.file, head, read.csv, read.delim, read.table, tail, write.table)
+importFrom(utils, data, head, read.table, tail, write.table)
 
 S3method(reorder, factor)
 
@@ -132,7 +120,7 @@ S3method(sort, levelsMap)
 ## nobs stuff
 S3method(nobs, data.frame)
 S3method(nobs, default)
-S3method(nobs, lm)      # now provided by stats package
+S3method(nobs, lm)
 
 ## Object size stuff
 S3method(c,      object_sizes)
