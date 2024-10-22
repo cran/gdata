@@ -1,7 +1,7 @@
 6b6f69f4bbdc3e766be9fbdb28a2766c *ChangeLog
-29486768224e0a2bb3cdd9115f18e4ec *DESCRIPTION
+4dc4dd38a829ded450c89dfb80dd81cd *DESCRIPTION
 8832513b8bdfdc39ad73efebbf9919bf *NAMESPACE
-65e7db3b585891f46431ceae9cfdb70d *NEWS
+cc5353b56571c7bbbdb1a972b5bfe001 *NEWS
 92e3ca5e31d594044b8325a441142c37 *R/Args.R
 e5651937af66e256b619a1e05c9d7533 *R/ConvertMedUnits.R
 38de1344cd5bc79f32a0b42e48b43965 *R/ans.R
@@ -21,7 +21,7 @@ c5bdeb65e81954a49fec7d53d43ef244 *R/interleave.R
 42f544fa6c4dc542ffde62ec141738a6 *R/is.what.R
 45389f1cd1683f8e965c3f3eefcb6c2f *R/keep.R
 7bf1a96d05ff617bc69bf9e41683cb85 *R/left.R
-5d5878327a1ff1aea3a78394a4f94788 *R/ll.R
+a9d238b5a83c8821b235ccbe004755ff *R/ll.R
 613631768fe2aa6b60c0fd2d9f14d356 *R/ls.funs.R
 46bf26660dbfc273d929dcf78fcdc024 *R/mapLevels.R
 714e97e1ee4f3d6f4fa338b15728d553 *R/matchcols.R
@@ -42,14 +42,14 @@ bede546800e176f693994feda498156e *R/unmatrix.R
 8402ec0c40ced3172df8e357c0acab8b *R/upperTriangle.R
 65fbf5e16408d2e622bc0e3a72711895 *R/wideByFactor.R
 a3610bdc57e76b62acc32e7f1eeba4a6 *R/write.fwf.R
-a3a2e6cd0538e6977420f3f57749048a *build/vignette.rds
-85489864d11f8d013d6d1b0467f06951 *data/MedUnits.rda
+0481460abb1fcc789869731a52a0dd49 *build/vignette.rds
+f7e8a655c7065f049f78a604d18c78fb *data/MedUnits.rda
 b19ba078add1b84a300ae1adb5167567 *inst/doc/mapLevels.R
 ec3dc2f5438f43ccb71dddb2c1de513c *inst/doc/mapLevels.Rnw
-a30077ed571d6ff08b109303102a58bd *inst/doc/mapLevels.pdf
+db10d061446ee82f461f43a5833fa87d *inst/doc/mapLevels.pdf
 788f58d8791841c0dd0a9bddfa28b8fe *inst/doc/unknown.R
 86db5cd05b30d8f4e83494a55edb308f *inst/doc/unknown.Rnw
-d4936406fffd281d915926e79ecdda76 *inst/doc/unknown.pdf
+5247adcd040fc53e22acce9c6967cbc2 *inst/doc/unknown.pdf
 c8f145e9ea96bc469fade5f31a616c6c *man/Args.Rd
 d019aa8a2e84fef5491e890666ff0f9f *man/ConvertMedUnits.Rd
 34f00196ebc9a2d5b6d70d08a6b2970c *man/MedUnits.Rd
@@ -69,7 +69,7 @@ fc485f38a09dcb3a8d238806eec3fd78 *man/gdata-defunct.Rd
 2f8fe8e68cbc380b860e2e99142f0b64 *man/getDateTimePart.Rd
 4a7ace8994dd7747d99ad61904273d36 *man/humanReadable.Rd
 143ef489b358b0ceab5bb148b9b7d81b *man/interleave.Rd
-c8deb45c2176c5d975b2a86e0627926e *man/is.what.Rd
+44a1a293d752ca911aafd74b69ff6908 *man/is.what.Rd
 0e8ad71b67de30adfd7619cce35a99b2 *man/keep.Rd
 72ec6690ee9471d704ccc8b0c1fa018a *man/left.Rd
 c4e8c6a39a2ea78fe7cb7e24fc34467f *man/ll.Rd
